@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="30dp"
+
+    android:background="@drawable/profile_bottom_sheet_background">
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="40dp"
+        android:layout_height="6dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/button_background"
+        android:backgroundTint="#525252"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/ratingLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="46dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:src="@drawable/ic_star" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="9.5"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/textColorSecondary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ratingLayout" />
+
+    <View
+        android:id="@+id/centerView"
+        android:layout_width="1dp"
+        android:layout_marginTop="23dp"
+        android:layout_height="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="23dp"
+        app:layout_constraintEnd_toStartOf="@id/centerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider">
+
+        <TextView
+            android:id="@+id/followersTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Followers"
+            android:textColor="@color/textColorSecondary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/followersAmountTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="180K"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/followersTv" />
+
+        <ImageView
+            android:id="@+id/followersIncreaseIv"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="7dp"
+            android:src="@drawable/ic_increase"
+            app:layout_constraintBottom_toBottomOf="@id/followersAmountTv"
+            app:layout_constraintStart_toEndOf="@id/followersAmountTv"
+            app:layout_constraintTop_toTopOf="@id/followersAmountTv" />
+
+        <TextView
+            android:id="@+id/followersIncreaseTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+30%"
+            android:textColor="#42BEAD"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="@id/followersIncreaseIv"
+            app:layout_constraintStart_toEndOf="@id/followersIncreaseIv"
+            app:layout_constraintTop_toTopOf="@id/followersIncreaseIv" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="23dp"
+        app:layout_constraintStart_toEndOf="@id/centerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider">
+
+        <TextView
+            android:id="@+id/upvotesTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upvotes"
+            android:textColor="@color/textColorSecondary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/upvotesAmountTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="540"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/upvotesTv" />
+
+        <ImageView
+            android:id="@+id/upvotesIncreaseIv"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="7dp"
+            android:src="@drawable/ic_increase"
+            app:layout_constraintBottom_toBottomOf="@id/upvotesAmountTv"
+            app:layout_constraintStart_toEndOf="@id/upvotesAmountTv"
+            app:layout_constraintTop_toTopOf="@id/upvotesAmountTv" />
+
+        <TextView
+            android:id="@+id/upvotesIncreaseTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+10%"
+            android:textColor="#42BEAD"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="@id/upvotesIncreaseIv"
+            app:layout_constraintStart_toEndOf="@id/upvotesIncreaseIv"
+            app:layout_constraintTop_toTopOf="@id/upvotesIncreaseIv" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:id="@+id/bottomSheetDescriptionTv"
+        android:textSize="12sp"
+        android:lineSpacingExtra="4dp"
+        android:layout_marginTop="22dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/constraintLayout"
+        android:text="Description goes here. Description goes here. Description goes here. Description goes here. Description goes here."/>
+</androidx.constraintlayout.widget.ConstraintLayout>

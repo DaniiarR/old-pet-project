@@ -35,9 +35,13 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
     @Subscribe
     fun onEditProfile(event: EditProfileEvent) {
-        EventBus.getDefault().unregister(this)
         finish()
     }
 }

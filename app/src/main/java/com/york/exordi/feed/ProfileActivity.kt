@@ -19,8 +19,15 @@ class ProfileActivity : AppCompatActivity() {
         setSupportActionBar(profileToolbar)
 
         editProfileButton.setOnClickListener { startSettingsActivity() }
+        ratingLl.setOnClickListener { showBottomSheetDialog() }
         profilePostsRv.layoutManager = GridLayoutManager(this, 3)
         profilePostsRv.adapter = ProfilePhotosAdapter()
+
+    }
+
+    private fun showBottomSheetDialog() {
+        val bottomSheetDialog = ProfileBottomSheetDialog.newInstance()
+        bottomSheetDialog.show(supportFragmentManager, "bottom_sheet_dialog")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

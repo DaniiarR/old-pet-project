@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 30
@@ -65,5 +66,10 @@ dependencies {
     implementation 'com.balysv:material-ripple:1.0.2'
     // EventBus
     implementation 'org.greenrobot:eventbus:3.2.0'
-
+    // Rounded ImageView
+    implementation 'com.makeramen:roundedimageview:2.3.0'
+    // Permission Dispatcher
+    def permissionDispatcherVersion = '4.7.0'
+    implementation "org.permissionsdispatcher:permissionsdispatcher:${permissionDispatcherVersion}"
+    kapt "org.permissionsdispatcher:permissionsdispatcher-processor:${permissionDispatcherVersion}"
 }

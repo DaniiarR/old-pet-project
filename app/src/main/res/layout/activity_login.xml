@@ -30,7 +30,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="305dp"
         android:layout_height="wrap_content"
-        android:id="@+id/usernameEt"
+        android:id="@+id/usernameTil"
         app:layout_constraintStart_toStartOf="parent"
         app:boxCornerRadiusBottomEnd="15dp"
         app:boxCornerRadiusBottomStart="15dp"
@@ -52,7 +52,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="305dp"
         android:layout_height="wrap_content"
-        android:id="@+id/passwordEt"
+        android:id="@+id/passwordTil"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:boxCornerRadiusBottomEnd="15dp"
@@ -61,7 +61,7 @@
         app:boxStrokeColor="@null"
         app:boxCornerRadiusTopEnd="15dp"
         app:boxCornerRadiusTopStart="15dp"
-        app:layout_constraintTop_toBottomOf="@id/usernameEt"
+        app:layout_constraintTop_toBottomOf="@id/usernameTil"
         android:layout_marginTop="20dp">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -74,8 +74,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@id/passwordEt"
-        app:layout_constraintTop_toBottomOf="@id/passwordEt"
+        app:layout_constraintEnd_toEndOf="@id/passwordTil"
+        app:layout_constraintTop_toBottomOf="@id/passwordTil"
         android:id="@+id/forgotPasswordTv"
         android:textColor="@color/textColorSecondary"
         android:textSize="12sp"
@@ -85,7 +85,7 @@
     <com.google.android.material.button.MaterialButton
         android:layout_width="305dp"
         android:layout_height="65dp"
-        app:layout_constraintTop_toBottomOf="@id/passwordEt"
+        app:layout_constraintTop_toBottomOf="@id/passwordTil"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:cornerRadius="12dp"
@@ -113,7 +113,7 @@
         android:clickable="true"
         android:focusable="true"
         android:background="@drawable/button_background"
-        app:layout_constraintStart_toStartOf="@id/usernameEt"
+        app:layout_constraintStart_toStartOf="@id/usernameTil"
         app:layout_constraintTop_toBottomOf="@id/signInBtn"
         android:layout_marginTop="56dp"
         android:id="@+id/googleLoginBtn"/>
@@ -127,7 +127,7 @@
         android:focusable="true"
         android:background="@drawable/button_background"
         app:layout_constraintTop_toBottomOf="@id/signInBtn"
-        app:layout_constraintEnd_toEndOf="@id/usernameEt"
+        app:layout_constraintEnd_toEndOf="@id/usernameTil"
         android:layout_marginTop="56dp"
         android:id="@+id/facebookLoginBtn"/>
 
