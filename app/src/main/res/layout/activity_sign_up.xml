@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".login.SignUpActivity">
+
+    <TextView
+        android:id="@+id/gladToSeeTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Glad to meet you!"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="24sp"
+        app:layout_constraintHorizontal_bias="0.528"
+        app:layout_constraintBottom_toTopOf="@id/signUpWithGoogleBtn"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.7"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="120dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign up to get all amazing features of this app"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/gladToSeeTv"
+        android:layout_marginTop="10dp"/>
+    
+    <RelativeLayout
+        android:id="@+id/signUpWithGoogleBtn"
+        android:layout_width="305dp"
+        android:layout_height="53dp"
+        android:background="@drawable/button_background"
+        app:cornerRadius="12dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/signUpWithFacebookBtn">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_logingoogle"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="13dp"
+                android:text="Sign up with Google"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/signUpWithFacebookBtn"
+        android:layout_width="305dp"
+        android:layout_height="53dp"
+        android:background="@drawable/button_background"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_loginfacebook"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="13dp"
+                android:text="Sign up with Facebook"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/signUpWithEmailBtn"
+        android:layout_width="305dp"
+        android:layout_height="53dp"
+        android:background="@drawable/button_background"
+        app:cornerRadius="12dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/signUpWithFacebookBtn">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_email"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="13dp"
+                android:text="Sign up with Email"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="54dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textColorSecondary"
+            android:text="Already have an account?"/>
+
+        <TextView
+            android:id="@+id/signInBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign In"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/colorPrimary"/>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

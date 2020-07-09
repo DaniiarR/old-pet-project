@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".feed.FeedFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/feedBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                app:title="Art"
+                android:background="@color/backgroundColorPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/feedCategoryTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@android:style/TextAppearance.Material.Widget.Toolbar.Title"
+                        android:text="Art"
+                        android:textSize="24sp"
+                        android:layout_centerVertical="true"/>
+
+<!--                    <com.balysv.materialripple.MaterialRippleLayout-->
+<!--                        android:layout_width="60dp"-->
+<!--                        android:id="@+id/feedProfileButton"-->
+<!--                        android:layout_height="match_parent"-->
+<!--                        app:mrl_rippleColor="@color/textColorSecondary"-->
+<!--                        android:layout_centerVertical="true"-->
+<!--                        android:layout_alignParentEnd="true">-->
+
+<!--                        <ImageView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:background="@null"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:src="@drawable/ic_profile"-->
+<!--                            />-->
+<!--                    </com.balysv.materialripple.MaterialRippleLayout>-->
+
+                    <ImageView
+                        android:id="@+id/feedProfileButton"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_width="32dp"
+                        android:layout_gravity="center"
+                        android:background="@null"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="16dp"
+                        android:src="@drawable/ic_profile"
+                        />
+
+                </RelativeLayout>
+            </com.google.android.material.appbar.MaterialToolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
+    </RelativeLayout>
+
+</FrameLayout>

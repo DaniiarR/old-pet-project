@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#5C69D7</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="backgroundColorPrimary">#000000</color>
+    <color name="textColorPrimary">#FFFFFF</color>
+    <color name="activeViewColor">#525252</color>
+    <color name="textColorSecondary">#C9CAD1</color>
+    <color name="buttonBackgroundColor">#303030</color>
+    <color name="spinnerBoxStrokeColor">@color/textColorSecondary</color>
+</resources>

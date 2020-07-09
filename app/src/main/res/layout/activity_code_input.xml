@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".login.email.CodeInputActivity">
+
+    <TextView
+        android:id="@+id/backBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BACK"
+        android:textSize="12sp"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"/>
+
+    <TextView
+        android:id="@+id/signUpTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign Up"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="24sp"
+        android:layout_marginBottom="76dp"
+        app:layout_constraintBottom_toTopOf="@id/codeTiL"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Where are you from?"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/signUpTv"
+        android:layout_marginTop="10dp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="305dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/codeTiL"
+        app:layout_constraintStart_toStartOf="parent"
+        app:boxCornerRadiusBottomEnd="15dp"
+        app:boxCornerRadiusBottomStart="15dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+        app:boxStrokeColor="@null"
+        app:boxCornerRadiusTopEnd="15dp"
+        app:boxCornerRadiusTopStart="15dp"
+        app:errorEnabled="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="76dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:id="@+id/codeEt"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:inputType="textEmailAddress"
+            android:hint="Code"
+            android:layout_height="match_parent"/>
+    </com.google.android.material.textfield.TextInputLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

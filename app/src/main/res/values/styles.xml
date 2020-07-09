@@ -1,0 +1,80 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar.Bridge">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/backgroundColorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="fontFamily">@font/avenir</item>
+        <item name="android:colorBackground">@color/backgroundColorPrimary</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+        <item name="android:textViewStyle">@style/TextViewStyle</item>
+    </style>
+
+    <style name="AppTheme.Splash">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+    </style>
+    
+    <style name="TextViewStyle" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textColor">@color/textColorPrimary</item>
+    </style>
+
+    <!-- Style for material design 'Spinner'-->
+    <style name="AppTheme.ExposedDropdownMenu"
+        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <!-- color of box ONLY, not dropdown -->
+        <item name="boxBackgroundColor">@color/material_spinner_box</item>
+        <!-- the box outline color depending on state
+             (default, enabled, hovered, focused, but NOT error) -->
+        <item name="boxStrokeColor">@color/spinnerBoxStrokeColor</item>
+        <!-- the hint INSIDE the box, before focusing the TextInputEditText -->
+        <item name="android:textColorHint">@color/textColorSecondary</item>
+<!--        &lt;!&ndash; the hint ON TOP of the box, when the TextInputEditText is focused &ndash;&gt;-->
+<!--        <item name="hintTextColor">@color/textColorSecondary</item>-->
+        <!-- Gain access to additional styling for the child AutoCompleteTextView,
+             which includes this spinner's dropdown/popup menu -->
+        <item name="colorSurface">@color/buttonBackgroundColor  </item>
+        <item name="materialThemeOverlay">@style/AppTheme.ExposedDropdownMenu.MaterialThemeOverlay</item>
+    </style>
+
+    <!-- customization of the material theme for use as
+         an overlay for the ExposedDropdownMenu style  -->
+    <style name="AppTheme.ExposedDropdownMenu.MaterialThemeOverlay"
+        parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- background color of dropdown (popup) items -->
+        <item name="colorSurface">@color/buttonBackgroundColor</item>
+        <!--
+         When this overlay is applied, the AutoCompleteTextView
+         loses padding. Luckily, we can restore it by defining
+         a style that should be applied to all AutoCompletTextView(s)
+         in this theme/overlay
+         -->
+        <item name="autoCompleteTextViewStyle">@style/AppTheme.ExposedDropdownMenu.AutoCompleteStyle</item>
+    </style>
+
+    <!-- style the AutoCompleteTextView of our material spinner -->
+    <style name="AppTheme.ExposedDropdownMenu.AutoCompleteStyle">
+        <!-- restore padding to sanity -->
+        <item name="android:paddingTop">18dp</item>
+        <item name="android:paddingBottom">18dp</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:textColor">@color/textColorSecondary</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <!-- style for material spinner 'item' layout -->
+    <style name="MaterialSpinnerItem" parent="Widget.AppCompat.TextView">
+        <item name="android:color">@color/textColorPrimary</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingTop">18dp</item>
+        <item name="android:paddingBottom">18dp</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+    </style>
+
+</resources>

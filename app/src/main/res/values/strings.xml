@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">EX ORDI</string>
+    <string name="login_welcome_back">Welcome Back!</string>
+    <string name="login_sign_in">Sign in to your account</string>
+    <string name="login_forgot_password">Forgot Password?</string>
+    <string name="login_sign_in_button">Sign in</string>
+    <string name="login_no_account">Don’t have an account yet?</string>
+    <string name="login_sign_up">Sign up</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="nav_feed">Feed</string>
+    <string name="nav_add_post">Add Post</string>
+    <string name="nav_explore">Explore</string>
+</resources>
