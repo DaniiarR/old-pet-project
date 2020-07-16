@@ -15,6 +15,7 @@ import java.util.*
 
 class EmailStepOneActivity : BaseActivity(), DatePickerDialog.OnDateSetListener {
 
+    private var mDate: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,11 +26,11 @@ class EmailStepOneActivity : BaseActivity(), DatePickerDialog.OnDateSetListener 
         }
 
         birthdayRl.setOnClickListener {
-            showSelectBithdayDialog()
+            showSelectBirthdayDialog()
         }
     }
 
-    private fun showSelectBithdayDialog() {
+    private fun showSelectBirthdayDialog() {
         DatePickerDialog(this,
             this,
         Calendar.getInstance().get(Calendar.YEAR),
@@ -46,6 +47,8 @@ class EmailStepOneActivity : BaseActivity(), DatePickerDialog.OnDateSetListener 
         calendar.set(year, month, day)
 //        val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
         val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.US)
+        val formatter2 = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        mDate = formatter2.format(calendar.time)
         setBirthDate(formatter.format(calendar.time))
     }
 
@@ -56,7 +59,7 @@ class EmailStepOneActivity : BaseActivity(), DatePickerDialog.OnDateSetListener 
         nextBtn.setOnClickListener {
             startActivity(Intent(this, EmailStepTwoActivity::class.java)
                 .apply {
-                    putExtra(Const.EXTRA_BIRTHDATE, date)
+                    putExtra(Const.EXTRA_BIRTHDATE, mDate)
                 })
         }
 

@@ -72,4 +72,8 @@ dependencies {
     def permissionDispatcherVersion = '4.7.0'
     implementation "org.permissionsdispatcher:permissionsdispatcher:${permissionDispatcherVersion}"
     kapt "org.permissionsdispatcher:permissionsdispatcher-processor:${permissionDispatcherVersion}"
+    // Google Authentication
+    implementation 'com.google.android.gms:play-services-auth:18.0.0'
+    // Facebook SDK
+    implementation 'com.facebook.android:facebook-login:[5,6)'
 }

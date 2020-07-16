@@ -23,7 +23,6 @@ class EmailStepTwoActivity : AppCompatActivity() {
 
         birthday = intent.getStringExtra(Const.EXTRA_BIRTHDATE).toString()
         backBtn.setOnClickListener { finish() }
-//        populateSpinner()
         countryTiL.setOnClickListener {
             showCountriesPopup()
         }
@@ -51,15 +50,10 @@ class EmailStepTwoActivity : AppCompatActivity() {
             }.show()
     }
 
-//    private fun populateSpinner() {
-//        val adapter = MaterialSpinnerAdapter(this, R.layout.country_spinner_item, getCountryArray())
-//        countrySpinner.setAdapter(adapter)
-//
-//    }
-
     private fun getCountryArray(): Array<String> {
         val countries: SortedSet<String> = TreeSet()
-        for (locale in Locale.getAvailableLocales()) {
+        for (countryCode in Locale.getISOCountries()) {
+            val locale = Locale("en-us", countryCode)
             if (!TextUtils.isEmpty(locale.displayCountry)) {
                 countries.add(locale.displayCountry)
             }

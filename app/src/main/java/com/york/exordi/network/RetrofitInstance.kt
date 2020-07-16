@@ -9,11 +9,14 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 class RetrofitInstance {
 
     companion object {
+
+        private const val BASE_URL = "http://46.101.142.120:8000/api/"
+
         @Volatile
         private var retrofit: Retrofit? = null
         fun getInstance(): Retrofit = retrofit
             ?: Retrofit.Builder()
-                .baseUrl("http://46.101.142.120:8000/api/")
+                .baseUrl(BASE_URL)
                 .client(attachInterceptor())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())

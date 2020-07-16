@@ -32,36 +32,54 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Where are you from?"
+        android:text="Please enter the code sent to your email address"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/signUpTv"
         android:layout_marginTop="10dp"/>
 
-    <com.google.android.material.textfield.TextInputLayout
+    <EditText
         android:layout_width="305dp"
         android:layout_height="wrap_content"
-        android:id="@+id/codeTiL"
-        app:layout_constraintStart_toStartOf="parent"
-        app:boxCornerRadiusBottomEnd="15dp"
-        app:boxCornerRadiusBottomStart="15dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-        app:boxStrokeColor="@null"
-        app:boxCornerRadiusTopEnd="15dp"
-        app:boxCornerRadiusTopStart="15dp"
-        app:errorEnabled="true"
+        android:hint="Code"
+        android:padding="16dp"
+        android:background="@drawable/edit_text_background"
+        android:singleLine="true"
+        android:id="@+id/codeTiL"
+        android:maxLines="1"
+        android:inputType="numberPassword"
+        android:maxLength="4"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="76dp">
+        android:layout_marginTop="76dp"/>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:id="@+id/codeEt"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:inputType="textEmailAddress"
-            android:hint="Code"
-            android:layout_height="match_parent"/>
-    </com.google.android.material.textfield.TextInputLayout>
+    <ProgressBar
+        android:id="@+id/codePb"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:elevation="16dp"
+        android:layout_marginEnd="16dp"
+        android:indeterminateTint="@color/colorPrimary"
+        android:indeterminateTintMode="src_atop"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/codeTiL"
+        app:layout_constraintEnd_toEndOf="@+id/codeTiL"
+        app:layout_constraintTop_toTopOf="@+id/codeTiL" />
+
+    <TextView
+        android:id="@+id/codeErrorTv"
+        android:layout_width="305dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="Wrong code"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="12sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@+id/codeTiL"
+        app:layout_constraintStart_toStartOf="@+id/codeTiL"
+        app:layout_constraintTop_toBottomOf="@id/codeTiL"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
