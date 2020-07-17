@@ -1,4 +1,4 @@
-package com.york.exordi
+package com.york.exordi.base
 
 import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity

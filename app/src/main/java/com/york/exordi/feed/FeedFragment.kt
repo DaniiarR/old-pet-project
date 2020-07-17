@@ -6,7 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
+import com.bumptech.glide.Glide
 import com.york.exordi.R
+import com.york.exordi.shared.Const
 import kotlinx.android.synthetic.main.fragment_feed.*
 
 /**
@@ -15,6 +19,8 @@ import kotlinx.android.synthetic.main.fragment_feed.*
  * create an instance of this fragment.
  */
 class FeedFragment : Fragment() {
+
+    private val viewModel by viewModels<FeedViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +36,13 @@ class FeedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        feedProfileButton.setOnClickListener { startActivity(Intent(activity, ProfileActivity::class.java)) }
+        viewModel.profile.observe(viewLifecycleOwner) {
+            Glide.with(requireContext()).load(it.profilePic).dontAnimate().into(feedProfileButton)
+            feedProfileButton.setOnClickListener {v ->
+                startActivity(Intent(activity, ProfileActivity::class.java).apply { putExtra(Const.EXTRA_PROFILE, it) })
+            }
+        }
+
     }
 
     companion object {

@@ -8,10 +8,6 @@ import java.util.ArrayList
 class SettingsAdapter(val settings: ArrayList<String>) : BaseQuickAdapter<String, BaseViewHolder>(R.layout.settings_list_item, settings) {
     override fun convert(holder: BaseViewHolder, item: String) {
         holder.setText(R.id.settingNameTv, item)
-        if (item == "Log out") {
-            holder.setTextColor(R.id.settingNameTv, android.R.color.holo_red_dark)
-            holder.setVisible(R.id.settingsForwardButton, false)
-        }
     }
 
 

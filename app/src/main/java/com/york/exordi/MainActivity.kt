@@ -5,6 +5,7 @@ import android.view.MenuItem
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.york.exordi.adapters.FragmentAdapter
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.shared.Const
 import kotlinx.android.synthetic.main.activity_main.*
 

@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.DatePicker
 import androidx.core.content.ContextCompat
-import com.york.exordi.BaseActivity
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.R
 import com.york.exordi.shared.Const
 import kotlinx.android.synthetic.main.activity_email_step_one.*

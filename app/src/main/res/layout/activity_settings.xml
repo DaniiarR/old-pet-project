@@ -7,8 +7,9 @@
     tools:context=".settings.SettingsActivity">
 
     <RelativeLayout
+        android:id="@+id/settingsRl"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/settingsBarLayout"
@@ -24,12 +25,23 @@
                 android:layout_height="?attr/actionBarSize"/>
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/settingsRv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:listitem="@layout/settings_list_item"
-            android:layout_below="@id/settingsBarLayout"/>
-
     </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/settingsRv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/settingsRl"
+        tools:listitem="@layout/settings_list_item" />
+
+    <TextView
+        android:id="@+id/logOutBtn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:textSize="14sp"
+        android:textColor="@color/holo_red_light"
+        android:text="Log out"
+        app:layout_constraintTop_toBottomOf="@id/settingsRv"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

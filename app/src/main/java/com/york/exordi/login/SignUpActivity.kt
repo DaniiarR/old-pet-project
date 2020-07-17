@@ -1,12 +1,11 @@
 package com.york.exordi.login
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.york.exordi.BaseActivity
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.R
 import com.york.exordi.login.email.EmailStepOneActivity
 import kotlinx.android.synthetic.main.activity_sign_up.*

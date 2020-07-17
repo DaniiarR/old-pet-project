@@ -59,7 +59,7 @@ class CodeInputActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     response.body()?.let {
                         PrefManager.getMyPrefs(this@CodeInputActivity).edit()
-                            .putString(Const.PREF_AUTH_TOKEN, it.token).apply()
+                            .putString(Const.PREF_AUTH_TOKEN, "Jwt " + it.token).apply()
                         startActivity(Intent(this@CodeInputActivity, MainActivity::class.java))
                         finish()
                     }

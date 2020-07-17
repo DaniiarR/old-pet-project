@@ -29,7 +29,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="305dp"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:id="@+id/usernameTil"
         app:layout_constraintStart_toStartOf="parent"
         app:boxCornerRadiusBottomEnd="15dp"
@@ -45,42 +45,53 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:id="@+id/usernameEt"
+            android:maxLength="15"
             android:hint="Username"
             android:layout_height="match_parent"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+    <EditText
         android:layout_width="305dp"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+        android:hint="Password"
+        android:padding="16dp"
+        android:background="@drawable/edit_text_background"
+        android:singleLine="true"
         android:id="@+id/passwordTil"
+        android:maxLines="1"
+        android:inputType="textPassword"
+        android:maxLength="128"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:boxCornerRadiusBottomEnd="15dp"
-        app:boxCornerRadiusBottomStart="15dp"
-        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-        app:boxStrokeColor="@null"
-        app:boxCornerRadiusTopEnd="15dp"
-        app:boxCornerRadiusTopStart="15dp"
         app:layout_constraintTop_toBottomOf="@id/usernameTil"
-        android:layout_marginTop="20dp">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:id="@+id/passwordEt"
-            android:hint="Password"
-            android:layout_height="match_parent"/>
-    </com.google.android.material.textfield.TextInputLayout>
+        android:layout_marginTop="20dp"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/passwordErrorTv"
+        android:layout_width="305dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@id/passwordTil"
-        app:layout_constraintTop_toBottomOf="@id/passwordTil"
-        android:id="@+id/forgotPasswordTv"
-        android:textColor="@color/textColorSecondary"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="Cannot log in with the given credentials"
+        android:textColor="@android:color/holo_red_dark"
         android:textSize="12sp"
-        android:layout_marginTop="10dp"
-        android:text="@string/login_forgot_password"/>
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@+id/passwordTil"
+        app:layout_constraintStart_toStartOf="@+id/passwordTil"
+        app:layout_constraintTop_toBottomOf="@id/passwordTil" />
+
+
+<!--    <TextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintEnd_toEndOf="@id/passwordTil"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/passwordTil"-->
+<!--        android:id="@+id/forgotPasswordTv"-->
+<!--        android:textColor="@color/textColorSecondary"-->
+<!--        android:textSize="12sp"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:text="@string/login_forgot_password"/>-->
 
     <com.google.android.material.button.MaterialButton
         android:layout_width="305dp"

@@ -29,7 +29,7 @@
         <activity android:name=".login.email.EmailStepOneActivity" />
         <activity android:name=".login.SignUpActivity" />
         <activity android:name=".login.LoginActivity" />
-        <activity android:name=".BaseActivity" />
+        <activity android:name=".base.BaseActivity" />
         <activity
             android:name=".SplashActivity"
             android:theme="@style/AppTheme.Splash">

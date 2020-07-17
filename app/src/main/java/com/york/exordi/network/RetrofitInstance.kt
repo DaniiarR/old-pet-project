@@ -1,5 +1,6 @@
 package com.york.exordi.network
 
+import android.app.Application
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -9,8 +10,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 class RetrofitInstance {
 
     companion object {
-
-        private const val BASE_URL = "http://46.101.142.120:8000/api/"
+        private val BASE_URL = "http://46.101.142.120:8000/api/"
 
         @Volatile
         private var retrofit: Retrofit? = null

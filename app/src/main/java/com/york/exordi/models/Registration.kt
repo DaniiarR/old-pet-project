@@ -26,3 +26,8 @@ class ActivationCode(
 class AuthToken(
     val token: String
 )
+
+class Login(
+    val username: String,
+    val password: String
+)

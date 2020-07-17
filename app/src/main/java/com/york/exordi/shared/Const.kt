@@ -11,8 +11,10 @@ class Const {
         /** Values that are passed as extras between activities */
         const val EXTRA_BIRTHDATE = "birthDate"
         const val EXTRA_COUNTRY = "country"
+        const val EXTRA_PROFILE = "profile"
 
         /** Authentication token */
         const val PREF_AUTH_TOKEN = "authToken"
+        const val AUTH = "Authorization"
     }
 }
