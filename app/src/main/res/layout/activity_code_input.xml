@@ -30,13 +30,14 @@
         app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
+        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="Please enter the code sent to your email address"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/signUpTv"
-        android:layout_marginTop="10dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/signUpTv" />
 
     <EditText
         android:layout_width="305dp"
@@ -82,4 +83,24 @@
         app:layout_constraintEnd_toEndOf="@+id/codeTiL"
         app:layout_constraintStart_toStartOf="@+id/codeTiL"
         app:layout_constraintTop_toBottomOf="@id/codeTiL"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Didn't receive email?"
+        android:textColor="@color/textColorSecondary"
+        app:layout_constraintBottom_toBottomOf="@id/sendAgainBtn"
+        app:layout_constraintEnd_toStartOf="@id/sendAgainBtn"
+        app:layout_constraintTop_toTopOf="@id/sendAgainBtn" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/sendAgainBtn"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:textAllCaps="false"
+        android:text="Send again"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/codeTiL"
+        app:layout_constraintTop_toBottomOf="@+id/codeErrorTv" />
 </androidx.constraintlayout.widget.ConstraintLayout>

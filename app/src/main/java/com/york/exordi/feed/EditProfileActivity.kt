@@ -4,20 +4,46 @@ import android.Manifest
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.text.TextUtils
+import android.util.Log
+import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.lifecycle.observe
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.widget.doOnTextChanged
 import com.bumptech.glide.Glide
 import com.york.exordi.BuildConfig
 import com.york.exordi.R
+import com.york.exordi.events.EditProfileEvent
+import com.york.exordi.models.EditProfile
+import com.york.exordi.models.Profile
+import com.york.exordi.models.ResponseMessage
+import com.york.exordi.models.UsernameCheck
+import com.york.exordi.network.RetrofitInstance
+import com.york.exordi.network.WebService
+import com.york.exordi.repository.AppRepository
+import com.york.exordi.shared.Const
 import com.york.exordi.shared.makeInternetSafeRequest
 import kotlinx.android.synthetic.main.activity_edit_profile.*
+import kotlinx.android.synthetic.main.activity_edit_profile.usernameErrorTv
+import kotlinx.android.synthetic.main.activity_edit_profile.usernameEt
+import kotlinx.android.synthetic.main.activity_edit_profile.usernamePb
+import kotlinx.android.synthetic.main.activity_email_step_three.*
+import org.greenrobot.eventbus.EventBus
 import permissions.dispatcher.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -29,18 +55,88 @@ class EditProfileActivity : AppCompatActivity() {
     companion object {
         const val CAMERA_REQUEST_CODE = 100
         const val GALLERY_REQUEST_CODE = 101
+        private const val TAG = "EditProfileActivity"
     }
 
+    private var repository: AppRepository? = null
+
     private var cameraImageAbsolutePath: String? = null
+
+    private var isUsernameValid = false
+
+    private var usernameDrawable: GradientDrawable? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
 
+        repository = AppRepository.getInstance(application)
+        usernameDrawable = usernameEt.background as GradientDrawable
+        setupInitialProfile()
         editProfileToolbar.setNavigationOnClickListener { finish() }
         editProfileSaveButton.setOnClickListener { makeInternetSafeRequest { editProfile() } }
         profileIv.setOnClickListener { showSelectActionDialog() }
         uploadPhotoTv.setOnClickListener { showSelectActionDialog() }
+        usernameEt.doOnTextChanged { text, _, _, _ ->
+            if (!TextUtils.isEmpty(text)) {
+                when {
+                    text!!.length < 4 -> {
+                        isUsernameValid = false
+                        showUsernameError("Username is too short")
+                    }
+                    text.length > 15 -> {
+                        isUsernameValid = false
+                        showUsernameError("Username is too long")
+                    }
+                    else -> {
+                        if (text.toString().matches("^[a-z0-9_-]{4,15}$".toRegex())) {
+                            makeInternetSafeRequest { checkUsername(text.toString()) }
+                        } else {
+                            isUsernameValid = false
+                            showUsernameError("Username must only contain letters a-z, numbers 0-9, and underscores")
+                        }
+                    }
+                }
+            } else {
+                isUsernameValid = false
+            }
+        }
+    }
+
+    private fun setupInitialProfile() {
+        val profile = intent.getSerializableExtra(Const.EXTRA_PROFILE) as? Profile
+        profile?.let {
+            Glide.with(this).load(it.profilePic).into(profileIv)
+            usernameEt.setText(it.username)
+            descriptionEt.setText(if (!TextUtils.isEmpty(it.bio)) it.bio else "")
+        }
+    }
+
+    private fun checkUsername(username: String) {
+        usernamePb.visibility = View.VISIBLE
+        repository?.checkUsername(UsernameCheck(username)) {
+            if (it == "OK") {
+                isUsernameValid = true
+                hideUsernameError()
+            } else {
+                isUsernameValid = false
+                showUsernameError(it ?: "Error occurred")
+            }
+        }
+    }
+
+    private fun showUsernameError(error: String) {
+        usernamePb.visibility = View.INVISIBLE
+        usernameErrorTv.text = error
+        usernameErrorTv.visibility = View.VISIBLE
+        usernameDrawable?.setStroke(5, Color.RED)
+    }
+
+    private fun hideUsernameError() {
+        usernamePb.visibility = View.INVISIBLE
+        usernameErrorTv.visibility = View.INVISIBLE
+        usernameDrawable?.setStroke(2, ContextCompat.getColor(this, R.color.buttonBackgroundColor))
     }
 
     private fun showSelectActionDialog() {
@@ -145,8 +241,24 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun editProfile() {
-
+        if (isUsernameValid) {
+            editProfilePb.visibility = View.VISIBLE
+            editProfileSaveButton.visibility = View.GONE
+//            viewModel.isProfileEditedSuccessfully.observe(this) {
+//                if (it) {
+//                    EventBus.getDefault().post(EditProfileEvent())
+//                    finish()
+//                }
+//            }
+            repository?.editProfile(EditProfile(usernameEt.text.toString(), descriptionEt.text.toString())) {
+                if (it) {
+                    EventBus.getDefault().post(EditProfileEvent())
+                } else {
+                    Toast.makeText(this, "Could not update profile", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            Toast.makeText(this, "Username is invalid", Toast.LENGTH_SHORT).show()
+        }
     }
-
-
 }

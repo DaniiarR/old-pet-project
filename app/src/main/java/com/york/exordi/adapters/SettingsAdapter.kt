@@ -9,6 +9,4 @@ class SettingsAdapter(val settings: ArrayList<String>) : BaseQuickAdapter<String
     override fun convert(holder: BaseViewHolder, item: String) {
         holder.setText(R.id.settingNameTv, item)
     }
-
-
 }

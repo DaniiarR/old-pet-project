@@ -66,6 +66,7 @@ dependencies {
     implementation 'com.balysv:material-ripple:1.0.2'
     // EventBus
     implementation 'org.greenrobot:eventbus:3.2.0'
+    kapt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
     // Circular ImageView
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     // Permission Dispatcher
@@ -76,4 +77,10 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:18.0.0'
     // Facebook SDK
     implementation 'com.facebook.android:facebook-login:[5,6)'
+}
+
+kapt {
+    arguments {
+        arg('eventBusIndex', 'com.example.myapp.MyEventBusIndex')
+    }
 }

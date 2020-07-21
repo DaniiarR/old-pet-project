@@ -15,10 +15,12 @@ import retrofit2.Response
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import com.york.exordi.R
 import com.york.exordi.models.ActivationCode
 import com.york.exordi.models.AuthToken
+import com.york.exordi.models.ResponseMessage
 import com.york.exordi.network.RetrofitInstance
 import com.york.exordi.network.WebService
 import com.york.exordi.shared.makeInternetSafeRequest
@@ -27,6 +29,8 @@ import kotlinx.android.synthetic.main.activity_code_input.*
 class CodeInputActivity : AppCompatActivity() {
 
     private val TAG = "CodeInputActivity"
+
+    val api = RetrofitInstance.getInstance().create(WebService::class.java)
 
     private var backgroundDrawable: GradientDrawable? = null
 
@@ -45,10 +49,29 @@ class CodeInputActivity : AppCompatActivity() {
                 hideCodeError()
             }
         }
+        sendAgainBtn.setOnClickListener {
+            sendCodeAgain()
+        }
+    }
+
+    private fun sendCodeAgain() {
+        api.resendCode(intent.getStringExtra(Const.EXTRA_USERNAME)!!).enqueue(object : Callback<ResponseMessage> {
+            override fun onFailure(call: Call<ResponseMessage>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message!! )
+            }
+
+            override fun onResponse(
+                call: Call<ResponseMessage>,
+                response: Response<ResponseMessage>
+            ) {
+                if (response.isSuccessful) {
+                    Toast.makeText(this@CodeInputActivity, "The code was sent to your email address", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
     }
 
     private fun activateUser() {
-        val api = RetrofitInstance.getInstance().create(WebService::class.java)
         api.activateUser(ActivationCode(codeTiL.text.toString().toInt())).enqueue(object :
             Callback<AuthToken> {
             override fun onFailure(call: Call<AuthToken>, t: Throwable) {

@@ -282,7 +282,9 @@ class EmailStepThreeActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     response.body()?.let {
                         Toast.makeText(this@EmailStepThreeActivity, it.message!!, Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this@EmailStepThreeActivity, CodeInputActivity::class.java))
+                        startActivity(Intent(this@EmailStepThreeActivity, CodeInputActivity::class.java).apply {
+                            putExtra(Const.EXTRA_USERNAME, usernameEt.text.toString())
+                        })
                     }
                 }
             }

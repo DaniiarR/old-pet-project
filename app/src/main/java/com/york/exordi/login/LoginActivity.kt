@@ -59,6 +59,7 @@ class LoginActivity : BaseActivity() {
             override fun onResponse(call: Call<AuthToken>, response: Response<AuthToken>) {
                 if (response.isSuccessful) {
                     response.body()?.let {
+                        Log.i(TAG, "onResponse: " + "Jwt " + it.token)
                         PrefManager.getMyPrefs(this@LoginActivity).edit().putString(Const.PREF_AUTH_TOKEN, "Jwt " + it.token).apply()
                         startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                     }

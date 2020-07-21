@@ -11,3 +11,8 @@ class Profile(
     @SerializedName("profile_pic")
     val profilePic: String? = null
 ) : Serializable
+
+class EditProfile(
+    val username: String,
+    val bio: String
+)

@@ -18,6 +18,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
 class SettingsActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -54,13 +55,15 @@ class SettingsActivity : AppCompatActivity() {
         when (position) {
             0 -> {
                 EventBus.getDefault().register(this)
-                startActivity(Intent(this, EditProfileActivity::class.java))
+                startActivity(Intent(this, EditProfileActivity::class.java).apply {
+                    putExtra(Const.EXTRA_PROFILE, intent.getSerializableExtra(Const.EXTRA_PROFILE))
+                })
             }
         }
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
         EventBus.getDefault().unregister(this)
     }
 

@@ -3,20 +3,18 @@ package com.york.exordi.repository
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.york.exordi.feed.EditProfileActivity
+import com.york.exordi.models.EditProfile
 import com.york.exordi.models.Profile
-import com.york.exordi.network.OkHttpClientInstance
+import com.york.exordi.models.ResponseMessage
+import com.york.exordi.models.UsernameCheck
 import com.york.exordi.network.RetrofitInstance
 import com.york.exordi.network.WebService
-import com.york.exordi.network.WebServiceInstance
 import com.york.exordi.shared.Const
 import com.york.exordi.shared.PrefManager
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class AppRepository(application: Application) {
 
@@ -41,7 +39,25 @@ class AppRepository(application: Application) {
 
     private fun getAuthToken(): String = prefs.getString(Const.PREF_AUTH_TOKEN, null) ?: ""
 
+    fun checkUsername(usernameCheck: UsernameCheck, callback: (String) -> Unit) {
+        webService.checkUsername(usernameCheck).enqueue(object : Callback<ResponseMessage> {
+            override fun onFailure(call: Call<ResponseMessage>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message!! )
+            }
+
+            override fun onResponse(
+                call: Call<ResponseMessage>,
+                response: Response<ResponseMessage>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let { callback(it.message!!) }
+                }
+            }
+        })
+    }
+
     fun getProfileInfo(profile: MutableLiveData<Profile>) {
+        Log.i(TAG, "getProfileInfo: " + getAuthToken())
         webService.getProfileInfo(getAuthToken()).enqueue(object : Callback<Profile> {
             override fun onFailure(call: Call<Profile>, t: Throwable) {
                 Log.e(TAG, "onFailure: " + t.message!! )
@@ -52,6 +68,26 @@ class AppRepository(application: Application) {
                     response.body()?.let {
                         profile.value = it
                     }
+                }
+            }
+
+        })
+    }
+
+    fun editProfile(
+        profile: EditProfile,
+        callback: (Boolean) -> Unit
+    ) {
+        webService.editProfile(getAuthToken(), profile).enqueue(object : Callback<Profile> {
+            override fun onFailure(call: Call<Profile>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message!! )
+            }
+
+            override fun onResponse(call: Call<Profile>, response: Response<Profile>) {
+                if (response.isSuccessful) {
+                    callback(true)
+                } else {
+                    callback(false)
                 }
             }
 

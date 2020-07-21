@@ -2,6 +2,7 @@ package com.york.exordi.network
 
 import com.york.exordi.models.*
 import com.york.exordi.shared.Const
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -21,6 +22,9 @@ interface WebService {
     @POST("user/user-activation/")
     fun activateUser(@Body activationCode: ActivationCode): Call<AuthToken>
 
+    @GET("user/user-activation-repeat/{username}/")
+    fun resendCode(@Path("username") username: String): Call<ResponseMessage>
+
     @POST("user/login/")
     fun login(@Body login: Login): Call<AuthToken>
 
@@ -30,6 +34,13 @@ interface WebService {
     /** Feed Section */
     @GET("user/me/")
     fun getProfileInfo(@Header(Const.AUTH) authToken: String): Call<Profile>
+
+    @PATCH("user/me/")
+    fun editProfile(@Header(Const.AUTH) authToken: String, @Body profile: EditProfile): Call<Profile>
+
+    @Multipart
+    @POST("user/avatar/upload/")
+    fun editProfilePhoto(@Header(Const.AUTH) authToken: String, @Part profilePhoto: MultipartBody.Part): Call<ResponseMessage>
 
 }
 
