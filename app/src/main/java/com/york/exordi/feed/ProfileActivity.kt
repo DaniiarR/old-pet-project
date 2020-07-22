@@ -3,6 +3,7 @@ package com.york.exordi.feed
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
@@ -30,7 +31,9 @@ class ProfileActivity : AppCompatActivity() {
         setSupportActionBar(profileToolbar)
         profileToolbar.setNavigationOnClickListener { finish() }
 
-        viewModel.profile.value = intent.getSerializableExtra(Const.EXTRA_PROFILE) as Profile
+        if (viewModel.profile.value == null) {
+            viewModel.profile.value = intent.getSerializableExtra(Const.EXTRA_PROFILE) as Profile
+        }
 
         viewModel.profile.observe(this) {
             setupViews(it)
@@ -60,7 +63,9 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun startSettingsActivity() {
-        EventBus.getDefault().register(this)
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
         startActivity(Intent(this, SettingsActivity::class.java).apply {
             putExtra(Const.EXTRA_PROFILE, viewModel.profile.value)
         })
@@ -79,6 +84,10 @@ class ProfileActivity : AppCompatActivity() {
     private fun setupViews(profile: Profile) {
         usernameTv.text = profile.username
         profileDescriptionTv.text = profile.bio
-        Glide.with(this@ProfileActivity).load(profile.profilePic).into(profilePictureIv)
+        if (!TextUtils.isEmpty(profile.profilePic)) {
+            Glide.with(this@ProfileActivity).load(profile.profilePic).into(profilePictureIv)
+        } else {
+
+        }
     }
 }

@@ -13,12 +13,12 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
-        tools:src="@drawable/ic_profile"/>
+        android:src="@drawable/ic_profile"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="DaniiarR"
+        android:text="DaniiarR"
         android:id="@+id/feedUsernameTv"
         app:layout_constraintStart_toEndOf="@id/feedProfilePictureIv"
         android:layout_marginStart="16dp"
@@ -30,7 +30,7 @@
         android:id="@+id/feedPublicationDateTv"
         app:layout_constraintStart_toStartOf="@id/feedUsernameTv"
         app:layout_constraintBottom_toBottomOf="@id/feedProfilePictureIv"
-        tools:text="2h"
+        android:text="2h"
         android:textSize="12sp"
         android:textColor="@color/textColorSecondary"/>
 
@@ -50,6 +50,7 @@
         android:layout_height="0dp"
         app:layout_constraintDimensionRatio="4:4"
         android:scaleType="centerCrop"
+        android:src="@drawable/jisoo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/feedProfilePictureIv"
@@ -79,7 +80,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="3k comments"
+        android:text="3k comments"
         app:layout_constraintTop_toTopOf="@id/feedUpvoteBtn"
         app:layout_constraintBottom_toBottomOf="@id/feedUpvoteBtn"
         app:layout_constraintEnd_toEndOf="parent"
@@ -105,5 +106,5 @@
         android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="@id/feedUpvoteBtn"
         app:layout_constraintEnd_toEndOf="@id/feedCommentsTv"
-        tools:text="Description goes here. Description goes here. Description goes here. Description goes here."/>
+        android:text="Description goes here. Description goes here. Description goes here. Description goes here."/>
 </androidx.constraintlayout.widget.ConstraintLayout>

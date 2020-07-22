@@ -16,3 +16,6 @@ class EditProfile(
     val username: String,
     val bio: String
 )
+
+class Post()
+

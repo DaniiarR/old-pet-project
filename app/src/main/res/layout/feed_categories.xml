@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:background="@drawable/feed_categories_background"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:theme="@style/AppTheme"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:gravity="start|center_vertical"
+        android:textAllCaps="false"
+        android:layout_height="wrap_content"
+        android:text="Art"
+        android:id="@+id/categoryArtBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/activeViewColor"
+        android:id="@+id/artDivider"
+        app:layout_constraintTop_toBottomOf="@id/categoryArtBtn"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:gravity="start|center_vertical"
+        android:textAllCaps="false"
+        android:textColor="@color/textColorPrimary"
+        android:layout_height="wrap_content"
+        android:text="Fashion"
+        android:id="@+id/categoryFashionBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/artDivider"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/activeViewColor"
+        android:id="@+id/fashionDivider"
+        app:layout_constraintTop_toBottomOf="@id/categoryFashionBtn"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:gravity="start|center_vertical"
+        android:textAllCaps="false"
+        android:textColor="@color/textColorPrimary"
+        android:layout_height="wrap_content"
+        android:text="Music"
+        android:id="@+id/categoryMusicBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fashionDivider"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/activeViewColor"
+        android:id="@+id/musicDivider"
+        app:layout_constraintTop_toBottomOf="@id/categoryMusicBtn"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:gravity="start|center_vertical"
+        android:textAllCaps="false"
+        android:textColor="@color/textColorPrimary"
+        android:layout_height="wrap_content"
+        android:text="Sport"
+        android:id="@+id/categorySportBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/musicDivider"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

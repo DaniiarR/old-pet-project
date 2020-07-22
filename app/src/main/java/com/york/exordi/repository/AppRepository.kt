@@ -8,13 +8,17 @@ import com.york.exordi.models.EditProfile
 import com.york.exordi.models.Profile
 import com.york.exordi.models.ResponseMessage
 import com.york.exordi.models.UsernameCheck
+import com.york.exordi.network.OkHttpClientInstance
 import com.york.exordi.network.RetrofitInstance
 import com.york.exordi.network.WebService
+import com.york.exordi.network.WebServiceInstance
 import com.york.exordi.shared.Const
 import com.york.exordi.shared.PrefManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class AppRepository(application: Application) {
 
@@ -31,7 +35,8 @@ class AppRepository(application: Application) {
 //    private val webServiceHolder = WebServiceInstance()
 //    private val okHttpClient = OkHttpClientInstance.Builder(application.applicationContext, webServiceHolder).build()
 //    private val webService = retrofit2.Retrofit.Builder().baseUrl(BASE_URL).client(okHttpClient)
-//        .addConverterFactory(ScalarsConverterFactory.create()).addConverterFactory(GsonConverterFactory.create()).build().create(WebService::class.java)
+//        .addConverterFactory(ScalarsConverterFactory.create()).addConverterFactory(
+//            GsonConverterFactory.create()).build().create(WebService::class.java)
     val webService = RetrofitInstance.getInstance().create(WebService::class.java)
 //    init {
 //        webServiceHolder.webService = webService

@@ -51,9 +51,6 @@ class EmailStepThreeActivity : AppCompatActivity() {
         country = intent.getStringExtra(Const.EXTRA_COUNTRY)
 
         setupObservers()
-        isEmailValid.observe(this) {
-
-        }
         backBtn.setOnClickListener { finish() }
         registerBtn.setOnClickListener {
             if (areInputsValid()) {

@@ -62,7 +62,7 @@ class EditProfileActivity : AppCompatActivity() {
 
     private var cameraImageAbsolutePath: String? = null
 
-    private var isUsernameValid = false
+    private var isUsernameValid = true
 
     private var usernameDrawable: GradientDrawable? = null
 
@@ -253,6 +253,7 @@ class EditProfileActivity : AppCompatActivity() {
             repository?.editProfile(EditProfile(usernameEt.text.toString(), descriptionEt.text.toString())) {
                 if (it) {
                     EventBus.getDefault().post(EditProfileEvent())
+                    finish()
                 } else {
                     Toast.makeText(this, "Could not update profile", Toast.LENGTH_SHORT).show()
                 }

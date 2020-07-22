@@ -50,7 +50,7 @@ class CodeInputActivity : AppCompatActivity() {
             }
         }
         sendAgainBtn.setOnClickListener {
-            sendCodeAgain()
+            makeInternetSafeRequest { sendCodeAgain() }
         }
     }
 
@@ -102,7 +102,7 @@ class CodeInputActivity : AppCompatActivity() {
 
     private fun hideCodeError() {
         codePb.visibility = View.INVISIBLE
-        codeErrorTv.visibility = View.INVISIBLE
+        codeErrorTv.visibility = View.GONE
         backgroundDrawable?.setStroke(2, ContextCompat.getColor(this, R.color.buttonBackgroundColor))
     }
 }
