@@ -3,22 +3,14 @@ package com.york.exordi.repository
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.york.exordi.feed.EditProfileActivity
-import com.york.exordi.models.EditProfile
-import com.york.exordi.models.Profile
-import com.york.exordi.models.ResponseMessage
-import com.york.exordi.models.UsernameCheck
-import com.york.exordi.network.OkHttpClientInstance
+import com.york.exordi.models.*
 import com.york.exordi.network.RetrofitInstance
 import com.york.exordi.network.WebService
-import com.york.exordi.network.WebServiceInstance
 import com.york.exordi.shared.Const
 import com.york.exordi.shared.PrefManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class AppRepository(application: Application) {
 
@@ -81,7 +73,7 @@ class AppRepository(application: Application) {
 
     fun editProfile(
         profile: EditProfile,
-        callback: (Boolean) -> Unit
+        callback: (Profile?) -> Unit
     ) {
         webService.editProfile(getAuthToken(), profile).enqueue(object : Callback<Profile> {
             override fun onFailure(call: Call<Profile>, t: Throwable) {
@@ -90,12 +82,37 @@ class AppRepository(application: Application) {
 
             override fun onResponse(call: Call<Profile>, response: Response<Profile>) {
                 if (response.isSuccessful) {
-                    callback(true)
+                    response.body()?.let {
+                        callback(it)
+                    }
                 } else {
-                    callback(false)
+                    callback(null)
                 }
             }
 
         })
     }
+
+    fun editDescription(
+        description: EditProfileDescription,
+        callback: (Profile?) -> Unit
+    ) {
+        webService.editDescription(getAuthToken(), description).enqueue(object : Callback<Profile> {
+            override fun onFailure(call: Call<Profile>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message!! )
+            }
+
+            override fun onResponse(call: Call<Profile>, response: Response<Profile>) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        callback(it)
+                    }
+                } else {
+                    callback(null)
+                }
+            }
+
+        })
+    }
+
 }

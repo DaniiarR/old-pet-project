@@ -4,7 +4,6 @@ import com.york.exordi.models.*
 import com.york.exordi.shared.Const
 import okhttp3.MultipartBody
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.http.*
 
 interface WebService {
@@ -37,6 +36,9 @@ interface WebService {
 
     @PATCH("user/me/")
     fun editProfile(@Header(Const.AUTH) authToken: String, @Body profile: EditProfile): Call<Profile>
+
+    @PATCH("user/me/")
+    fun editDescription(@Header(Const.AUTH) authToken: String, @Body description: EditProfileDescription): Call<Profile>
 
     @Multipart
     @POST("user/avatar/upload/")

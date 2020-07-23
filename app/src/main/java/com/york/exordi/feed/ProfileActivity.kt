@@ -73,7 +73,9 @@ class ProfileActivity : AppCompatActivity() {
 
     @Subscribe
     fun onEditProfile(event: EditProfileEvent) {
-        viewModel.getNewProfile()
+        val profile = Profile(event.email, event.username, event.birthday, event.bio, event.profilePic)
+        viewModel.profile.value = profile
+        setupViews(profile)
     }
 
     override fun onDestroy() {
@@ -86,8 +88,6 @@ class ProfileActivity : AppCompatActivity() {
         profileDescriptionTv.text = profile.bio
         if (!TextUtils.isEmpty(profile.profilePic)) {
             Glide.with(this@ProfileActivity).load(profile.profilePic).into(profilePictureIv)
-        } else {
-
         }
     }
 }

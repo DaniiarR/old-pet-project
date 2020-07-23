@@ -12,11 +12,8 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.lifecycle.observe
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -26,24 +23,19 @@ import com.york.exordi.BuildConfig
 import com.york.exordi.R
 import com.york.exordi.events.EditProfileEvent
 import com.york.exordi.models.EditProfile
+import com.york.exordi.models.EditProfileDescription
 import com.york.exordi.models.Profile
-import com.york.exordi.models.ResponseMessage
 import com.york.exordi.models.UsernameCheck
-import com.york.exordi.network.RetrofitInstance
-import com.york.exordi.network.WebService
 import com.york.exordi.repository.AppRepository
 import com.york.exordi.shared.Const
+import com.york.exordi.shared.PrefManager
 import com.york.exordi.shared.makeInternetSafeRequest
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 import kotlinx.android.synthetic.main.activity_edit_profile.usernameErrorTv
 import kotlinx.android.synthetic.main.activity_edit_profile.usernameEt
 import kotlinx.android.synthetic.main.activity_edit_profile.usernamePb
-import kotlinx.android.synthetic.main.activity_email_step_three.*
 import org.greenrobot.eventbus.EventBus
 import permissions.dispatcher.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -66,6 +58,7 @@ class EditProfileActivity : AppCompatActivity() {
 
     private var usernameDrawable: GradientDrawable? = null
 
+    private var initialUsername: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +68,7 @@ class EditProfileActivity : AppCompatActivity() {
         usernameDrawable = usernameEt.background as GradientDrawable
         setupInitialProfile()
         editProfileToolbar.setNavigationOnClickListener { finish() }
-        editProfileSaveButton.setOnClickListener { makeInternetSafeRequest { editProfile() } }
+        editProfileSaveButton.setOnClickListener { makeInternetSafeRequest { checkUsernameValidity() } }
         profileIv.setOnClickListener { showSelectActionDialog() }
         uploadPhotoTv.setOnClickListener { showSelectActionDialog() }
         usernameEt.doOnTextChanged { text, _, _, _ ->
@@ -88,6 +81,10 @@ class EditProfileActivity : AppCompatActivity() {
                     text.length > 15 -> {
                         isUsernameValid = false
                         showUsernameError("Username is too long")
+                    }
+                    text == initialUsername -> {
+                        isUsernameValid = true
+                        hideUsernameError()
                     }
                     else -> {
                         if (text.toString().matches("^[a-z0-9_-]{4,15}$".toRegex())) {
@@ -110,6 +107,7 @@ class EditProfileActivity : AppCompatActivity() {
             Glide.with(this).load(it.profilePic).into(profileIv)
             usernameEt.setText(it.username)
             descriptionEt.setText(if (!TextUtils.isEmpty(it.bio)) it.bio else "")
+            initialUsername = it.username
         }
     }
 
@@ -240,26 +238,54 @@ class EditProfileActivity : AppCompatActivity() {
         Glide.with(this).load(cameraImageAbsolutePath).into(profileIv)
     }
 
-    private fun editProfile() {
+    private fun checkUsernameValidity() {
         if (isUsernameValid) {
             editProfilePb.visibility = View.VISIBLE
             editProfileSaveButton.visibility = View.GONE
-//            viewModel.isProfileEditedSuccessfully.observe(this) {
-//                if (it) {
-//                    EventBus.getDefault().post(EditProfileEvent())
-//                    finish()
-//                }
-//            }
-            repository?.editProfile(EditProfile(usernameEt.text.toString(), descriptionEt.text.toString())) {
-                if (it) {
-                    EventBus.getDefault().post(EditProfileEvent())
-                    finish()
-                } else {
-                    Toast.makeText(this, "Could not update profile", Toast.LENGTH_SHORT).show()
-                }
+
+            val username = usernameEt.text.toString()
+            val description = descriptionEt.text.toString()
+
+            if (username != initialUsername) {
+                makeInternetSafeRequest { editProfile(username, description) }
+            } else {
+                makeInternetSafeRequest { editDescription(description) }
             }
         } else {
             Toast.makeText(this, "Username is invalid", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun editProfile(username: String, description: String) {
+        repository?.editProfile(EditProfile(username, description)) {
+            if (it != null) {    // if profile is null, the profile could not be updated
+                handleCallback(it)
+            } else {
+                Toast.makeText(this, "Could not update profile", Toast.LENGTH_SHORT).show()
+                editProfilePb.visibility = View.GONE
+                editProfileSaveButton.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun editDescription(description: String) {
+        repository?.editDescription(EditProfileDescription(description)) {
+            if (it != null) {    // if profile is null, the profile could not be updated
+                handleCallback(it)
+            } else {
+                Toast.makeText(this, "Could not update profile", Toast.LENGTH_SHORT).show()
+                editProfilePb.visibility = View.GONE
+                editProfileSaveButton.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun handleCallback(profile: Profile) {
+        profile.token?.let {
+            PrefManager.getMyPrefs(applicationContext).edit().putString(Const.PREF_AUTH_TOKEN, "Jwt " + it)
+        }
+        val event = EditProfileEvent(profile.email, profile.username, profile.birthday, profile.bio, profile.profilePic)
+        EventBus.getDefault().post(event)
+        finish()
     }
 }

@@ -9,11 +9,16 @@ class Profile(
     val birthday: String? = null,
     val bio: String? = null,
     @SerializedName("profile_pic")
-    val profilePic: String? = null
+    val profilePic: String? = null,
+    val token: String? = null
 ) : Serializable
 
 class EditProfile(
     val username: String,
+    val bio: String
+)
+
+class EditProfileDescription(
     val bio: String
 )
 
