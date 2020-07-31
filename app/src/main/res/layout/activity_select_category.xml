@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    tools:context=".addpost.SelectCategoryActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:id="@+id/selectCategoryBarLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:layout_width="match_parent"
+            android:id="@+id/selectCategoryBar"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/backgroundColorPrimary"
+            app:title="Category"
+            app:navigationIcon="@drawable/ic_back">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:text="Category"
+                    android:textStyle="bold"
+                    android:layout_centerVertical="true"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/doneBtn"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:text="Done"
+                    android:layout_alignParentEnd="true"
+                    android:textAllCaps="false"/>
+            </RelativeLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <TextView
+        android:id="@+id/artBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="20dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:textSize="14sp"
+        android:text="Art"
+        app:layout_constraintTop_toBottomOf="@id/selectCategoryBarLayout" />
+
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/artTick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_tick"
+        android:tint="@color/colorPrimary"
+        app:layout_constraintTop_toTopOf="@id/artBtn"
+        app:layout_constraintBottom_toBottomOf="@id/artBtn"
+        app:layout_constraintEnd_toEndOf="@id/artBtn"
+        android:layout_marginEnd="20dp"/>
+
+    <TextView
+        android:id="@+id/fashionBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="20dp"
+        android:textSize="14sp"
+        android:text="Fashion"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@id/artBtn"/>
+
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/fashionTick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_tick"
+        android:tint="@color/colorPrimary"
+        app:layout_constraintTop_toTopOf="@id/fashionBtn"
+        app:layout_constraintBottom_toBottomOf="@id/fashionBtn"
+        app:layout_constraintEnd_toEndOf="@id/fashionBtn"
+        android:layout_marginEnd="20dp"/>
+
+    <TextView
+        android:id="@+id/musicBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="20dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:textSize="14sp"
+        android:text="Music"
+        app:layout_constraintTop_toBottomOf="@id/fashionBtn"/>
+
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/musicTick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_tick"
+        android:tint="@color/colorPrimary"
+        app:layout_constraintTop_toTopOf="@id/musicBtn"
+        app:layout_constraintBottom_toBottomOf="@id/musicBtn"
+        app:layout_constraintEnd_toEndOf="@id/musicBtn"
+        android:layout_marginEnd="20dp"/>
+
+    <TextView
+        android:id="@+id/sportBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="20dp"
+        android:textSize="14sp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Sport"
+        app:layout_constraintTop_toBottomOf="@id/musicBtn"/>
+
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/sportTick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_tick"
+        android:tint="@color/colorPrimary"
+        app:layout_constraintTop_toTopOf="@id/sportBtn"
+        app:layout_constraintBottom_toBottomOf="@id/sportBtn"
+        app:layout_constraintEnd_toEndOf="@id/sportBtn"
+        android:layout_marginEnd="20dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

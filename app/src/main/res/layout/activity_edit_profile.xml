@@ -46,6 +46,7 @@
                     android:id="@+id/editProfilePb"
                     android:layout_width="30dp"
                     android:visibility="invisible"
+                    android:indeterminateTint="@color/colorPrimary"
                     android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"

@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import com.york.exordi.explore.ExploreFragment
 import com.york.exordi.feed.FeedFragment
-import com.york.exordi.profile.ProfileFragment
+import com.york.exordi.addpost.AddPostFragment
 import com.york.exordi.shared.Const
 
 /**
@@ -38,7 +38,7 @@ class RootFragment : Fragment() {
         arguments?.let {
             when (it.getString(KEY)) {
                 Const.FRAGMENT_FEED -> replaceContainer(FeedFragment())
-                Const.FRAGMENT_PROFILE -> replaceContainer(ProfileFragment())
+                Const.FRAGMENT_ADD_POST -> replaceContainer(AddPostFragment())
                 Const.FRAGMENT_EXPLORE -> replaceContainer(ExploreFragment())
             }
         }

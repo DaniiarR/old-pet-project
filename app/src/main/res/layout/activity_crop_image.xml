@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:animateLayoutChanges="true"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageButton
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:id="@+id/backBtn"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:src="@drawable/ic_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:gravity="end|center_vertical"
+        android:id="@+id/continueBtn"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_width="wrap_content"
+        android:text="Continue"
+        android:textAllCaps="false"
+        android:textColor="@color/textColorPrimary"
+        app:layout_constraintBottom_toBottomOf="@id/backBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/backBtn" />
+
+    <com.isseiaoki.simplecropview.CropImageView xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:scaleType="centerCrop"
+        android:id="@+id/cropView"
+        custom:scv_min_frame_size="100dp"
+        custom:scv_handle_color="@color/colorPrimary"
+        custom:scv_frame_color="@color/colorPrimary"
+        custom:scv_guide_color="@color/colorPrimary"
+        custom:scv_guide_show_mode="show_on_touch"
+        custom:scv_crop_enabled="false"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="4:5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        custom:scv_initial_frame_scale="0.7" />
+
+    <ImageButton
+        android:scaleType="fitCenter"
+        android:id="@+id/cropSwitchBtn"
+        android:padding="10dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_height="40dp"
+        android:layout_marginBottom="20dp"
+        android:layout_width="40dp"
+        android:src="@drawable/ic_crop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/cropBtn"
+        android:layout_width="50dp"
+        android:visibility="invisible"
+        android:layout_marginEnd="10dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_baseline_check_24"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/cropSwitchBtn"
+        app:layout_constraintBottom_toBottomOf="@id/cropSwitchBtn"/>
+
+    <ProgressBar
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/cropPb"
+        android:visibility="invisible"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:indeterminateTint="@color/colorPrimary"
+        app:layout_constraintTop_toTopOf="@id/cropSwitchBtn"
+        app:layout_constraintBottom_toBottomOf="@id/cropSwitchBtn"/>
+
+    <View
+        android:background="@android:color/darker_gray"
+        android:layout_height="0.5dp"
+        android:layout_marginBottom="20dp"
+        android:layout_width="match_parent"
+        app:layout_constraintBottom_toTopOf="@id/cropSwitchBtn"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

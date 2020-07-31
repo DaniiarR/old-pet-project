@@ -14,6 +14,7 @@ import com.york.exordi.MainActivity
 import com.york.exordi.R
 import com.york.exordi.models.AuthToken
 import com.york.exordi.models.Login
+import com.york.exordi.models.LoginToken
 import com.york.exordi.network.RetrofitInstance
 import com.york.exordi.network.WebService
 import com.york.exordi.shared.Const
@@ -51,16 +52,16 @@ class LoginActivity : BaseActivity() {
     private fun login() {
         val api = RetrofitInstance.getInstance().create(WebService::class.java)
         api.login(Login(usernameEt.text.toString(), passwordTil.text.toString())).enqueue(object :
-            Callback<AuthToken> {
-            override fun onFailure(call: Call<AuthToken>, t: Throwable) {
+            Callback<LoginToken> {
+            override fun onFailure(call: Call<LoginToken>, t: Throwable) {
                 Log.e(TAG, "onFailure: " + t.message!!)
             }
 
-            override fun onResponse(call: Call<AuthToken>, response: Response<AuthToken>) {
+            override fun onResponse(call: Call<LoginToken>, response: Response<LoginToken>) {
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        Log.i(TAG, "onResponse: " + "Jwt " + it.token)
-                        PrefManager.getMyPrefs(this@LoginActivity).edit().putString(Const.PREF_AUTH_TOKEN, "Jwt " + it.token).apply()
+                        Log.i(TAG, "onResponse: " + "Jwt " + it.data.token)
+                        PrefManager.getMyPrefs(this@LoginActivity).edit().putString(Const.PREF_AUTH_TOKEN, "Jwt " + it.data.token).apply()
                         startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                     }
                 } else {

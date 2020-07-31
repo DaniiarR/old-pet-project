@@ -7,10 +7,12 @@ import android.net.NetworkInfo
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.LifecycleOwner
+import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
 interface OnItemClickListener {
@@ -70,4 +72,14 @@ fun Context.makeInternetSafeRequest(func: () -> (Unit)) {
     } else {
         this.makeNoConnectionToast()
     }
+}
+
+fun AppCompatActivity.registerActivityForEvents() {
+    if (!EventBus.getDefault().isRegistered(this)) {
+        EventBus.getDefault().register(this)
+    }
+}
+
+fun AppCompatActivity.unregisterActivityFromEvents() {
+    EventBus.getDefault().unregister(this)
 }

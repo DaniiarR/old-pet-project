@@ -10,7 +10,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 class RetrofitInstance {
 
     companion object {
-        private val BASE_URL = "http://46.101.142.120:8000/api/"
+        private val BASE_URL = "https://softloft.xyz/api/"
 
         @Volatile
         private var retrofit: Retrofit? = null
@@ -21,6 +21,7 @@ class RetrofitInstance {
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
+
 
         private fun attachInterceptor(): OkHttpClient {
             val interceptor = HttpLoggingInterceptor()

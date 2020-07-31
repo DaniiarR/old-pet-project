@@ -13,10 +13,12 @@ import android.widget.PopupMenu
 import android.widget.PopupWindow
 import android.widget.RelativeLayout
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.york.exordi.R
 import com.york.exordi.adapters.PostAdapter
@@ -34,6 +36,7 @@ class FeedFragment : Fragment() {
 
     private var layout: FrameLayout? = null
     private lateinit var categoriesPopupWindow: PopupWindow
+    private var progressBar: CircularProgressDrawable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +56,16 @@ class FeedFragment : Fragment() {
         layout = view.findViewById<FrameLayout>(R.id.feedDimLayout)
         layout?.foreground?.alpha = 0
 
+        progressBar = CircularProgressDrawable(requireContext()).apply {
+            strokeWidth = 5F
+            centerRadius = 30F
+            setColorSchemeColors(ContextCompat.getColor(requireContext(), R.color.textColorPrimary))
+            start()
+        }
+
         viewModel.profile.observe(viewLifecycleOwner) {
             if (!TextUtils.isEmpty(it.profilePic)) {
-                Glide.with(requireContext()).load(it.profilePic).dontAnimate().into(feedProfileButton)
+                Glide.with(requireContext()).load(it.profilePic).placeholder(progressBar).into(feedProfileButton)
             }
             feedProfileButton.setOnClickListener {v ->
                 startActivity(Intent(activity, ProfileActivity::class.java).apply { putExtra(Const.EXTRA_PROFILE, it) })

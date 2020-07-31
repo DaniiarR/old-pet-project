@@ -38,7 +38,7 @@
         android:layout_marginBottom="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/signUpWithFacebookBtn">
+        app:layout_constraintBottom_toTopOf="@id/signUpWithFacebookBtnLayout">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -60,36 +60,50 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/signUpWithFacebookBtn"
+
+    <FrameLayout
+        android:id="@+id/signUpWithFacebookBtnLayout"
         android:layout_width="305dp"
         android:layout_height="53dp"
-        android:background="@drawable/button_background"
-        app:cornerRadius="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/fbLoginBtn"
+            android:visibility="gone"
             android:layout_width="wrap_content"
-            android:orientation="horizontal"
-            android:layout_centerInParent="true"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"/>
 
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_loginfacebook"/>
+        <RelativeLayout
+            android:id="@+id/actualFbLoginBtn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/button_background"
+            app:cornerRadius="12dp">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="13dp"
-                android:text="Sign up with Facebook"/>
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:layout_centerInParent="true"
+                android:layout_height="wrap_content">
 
-    </RelativeLayout>
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_loginfacebook"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="13dp"
+                    android:text="Sign up with Facebook"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+    </FrameLayout>
+
 
     <RelativeLayout
         android:id="@+id/signUpWithEmailBtn"
@@ -100,7 +114,7 @@
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/signUpWithFacebookBtn">
+        app:layout_constraintTop_toBottomOf="@id/signUpWithFacebookBtnLayout">
 
         <LinearLayout
             android:layout_width="wrap_content"

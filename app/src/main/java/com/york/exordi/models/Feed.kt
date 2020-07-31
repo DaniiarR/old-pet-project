@@ -8,19 +8,10 @@ class Profile(
     val username: String? = null,
     val birthday: String? = null,
     val bio: String? = null,
-    @SerializedName("profile_pic")
+    @SerializedName("photo")
     val profilePic: String? = null,
     val token: String? = null
 ) : Serializable
-
-class EditProfile(
-    val username: String,
-    val bio: String
-)
-
-class EditProfileDescription(
-    val bio: String
-)
 
 class Post()
 

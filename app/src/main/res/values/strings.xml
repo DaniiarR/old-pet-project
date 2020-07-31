@@ -6,6 +6,9 @@
     <string name="login_sign_in_button">Sign in</string>
     <string name="login_no_account">Don’t have an account yet?</string>
     <string name="login_sign_up">Sign up</string>
+    <string name="google_client_id">214536121200–0eelqcmuaqbe0shjpk9pdhvcp4hc5adk.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">602220597394224</string>
+    <string name="fb_login_protocol_scheme">fb602220597394224</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="nav_feed">Feed</string>

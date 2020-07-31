@@ -6,6 +6,7 @@
     <color name="backgroundColorPrimary">#000000</color>
     <color name="textColorPrimary">#FFFFFF</color>
     <color name="activeViewColor">#525252</color>
+    <color name="selectedTextViewColor">#2C2C2C</color>
     <color name="textColorSecondary">#C9CAD1</color>
     <color name="buttonBackgroundColor">#303030</color>
     <color name="spinnerBoxStrokeColor">@color/textColorSecondary</color>

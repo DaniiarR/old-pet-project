@@ -54,9 +54,9 @@ public class OkHttpClientInstance {
                         }
                     })
                     .addInterceptor(interceptor)
-                    .connectTimeout(20, TimeUnit.SECONDS)
-                    .writeTimeout(20, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS);
+                    .connectTimeout(0, TimeUnit.SECONDS)
+                    .writeTimeout(0, TimeUnit.SECONDS)
+                    .readTimeout(0, TimeUnit.SECONDS);
 
             okHttpClientBuilder.authenticator(authenticator);
             return okHttpClientBuilder.build();

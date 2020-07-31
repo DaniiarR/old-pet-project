@@ -3,11 +3,14 @@ package com.york.exordi.repository
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.york.exordi.events.CreatePostEvent
 import com.york.exordi.models.*
 import com.york.exordi.network.RetrofitInstance
 import com.york.exordi.network.WebService
 import com.york.exordi.shared.Const
 import com.york.exordi.shared.PrefManager
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -15,7 +18,7 @@ import retrofit2.Response
 class AppRepository(application: Application) {
 
     private val TAG = "AppRepository"
-    private val BASE_URL = "http://46.101.142.120:8000/api/"
+    private val BASE_URL = "https://softloft.xyz/api/"
 
     companion object {
         private var repository: AppRepository? = null
@@ -72,10 +75,12 @@ class AppRepository(application: Application) {
     }
 
     fun editProfile(
-        profile: EditProfile,
+        username: RequestBody,
+        description: RequestBody,
+        photo: MultipartBody.Part?,
         callback: (Profile?) -> Unit
     ) {
-        webService.editProfile(getAuthToken(), profile).enqueue(object : Callback<Profile> {
+        webService.editProfile(getAuthToken(), username, description, photo).enqueue(object : Callback<Profile> {
             override fun onFailure(call: Call<Profile>, t: Throwable) {
                 Log.e(TAG, "onFailure: " + t.message!! )
             }
@@ -94,10 +99,11 @@ class AppRepository(application: Application) {
     }
 
     fun editDescription(
-        description: EditProfileDescription,
+        description: RequestBody,
+        photo: MultipartBody.Part?,
         callback: (Profile?) -> Unit
     ) {
-        webService.editDescription(getAuthToken(), description).enqueue(object : Callback<Profile> {
+        webService.editDescription(getAuthToken(), description, photo).enqueue(object : Callback<Profile> {
             override fun onFailure(call: Call<Profile>, t: Throwable) {
                 Log.e(TAG, "onFailure: " + t.message!! )
             }
@@ -115,4 +121,23 @@ class AppRepository(application: Application) {
         })
     }
 
+    fun createPost(category: Int, description: String?, file: MultipartBody.Part, callback: (AddPostResponse) -> Unit) {
+        webService.createPost(getAuthToken(), category, file, description).enqueue(object :
+            Callback<AddPostResponse> {
+            override fun onFailure(call: Call<AddPostResponse>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message!!)
+            }
+
+            override fun onResponse(
+                call: Call<AddPostResponse>,
+                response: Response<AddPostResponse>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        callback(it)
+                    }
+                }
+            }
+        })
+    }
 }

@@ -23,7 +23,7 @@ class MainActivity : BaseActivity() {
         setContentView(R.layout.activity_main)
 
         feedFragment = RootFragment.newInstance(Const.FRAGMENT_FEED)
-        addPostFragment = RootFragment.newInstance(Const.FRAGMENT_PROFILE)
+        addPostFragment = RootFragment.newInstance(Const.FRAGMENT_ADD_POST)
         exploreFragment = RootFragment.newInstance(Const.FRAGMENT_EXPLORE)
         selectedFragment = feedFragment
         setupBottomNav()

@@ -7,8 +7,10 @@ import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.york.exordi.R
 import com.york.exordi.adapters.ProfilePhotosAdapter
@@ -24,6 +26,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private val viewModel by viewModels<ProfileViewModel>()
 
+    private var progressBar: CircularProgressDrawable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,10 +38,17 @@ class ProfileActivity : AppCompatActivity() {
             viewModel.profile.value = intent.getSerializableExtra(Const.EXTRA_PROFILE) as Profile
         }
 
+        progressBar = CircularProgressDrawable(this).apply {
+            strokeWidth = 5F
+            centerRadius = 30F
+            setColorSchemeColors(ContextCompat.getColor(this@ProfileActivity, R.color.textColorPrimary))
+            start()
+        }
+        
         viewModel.profile.observe(this) {
             setupViews(it)
         }
-        editProfileButton.setOnClickListener { startSettingsActivity() }
+        editProfileButton.setOnClickListener { startEditProfileActivity() }
         ratingLl.setOnClickListener { showBottomSheetDialog() }
         profilePostsRv.layoutManager = GridLayoutManager(this, 3)
         profilePostsRv.adapter = ProfilePhotosAdapter()
@@ -71,6 +81,15 @@ class ProfileActivity : AppCompatActivity() {
         })
     }
 
+    private fun startEditProfileActivity() {
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
+        startActivity(Intent(this, EditProfileActivity::class.java).apply {
+            putExtra(Const.EXTRA_PROFILE, viewModel.profile.value)
+        })
+    }
+
     @Subscribe
     fun onEditProfile(event: EditProfileEvent) {
         val profile = Profile(event.email, event.username, event.birthday, event.bio, event.profilePic)
@@ -87,7 +106,7 @@ class ProfileActivity : AppCompatActivity() {
         usernameTv.text = profile.username
         profileDescriptionTv.text = profile.bio
         if (!TextUtils.isEmpty(profile.profilePic)) {
-            Glide.with(this@ProfileActivity).load(profile.profilePic).into(profilePictureIv)
+            Glide.with(this@ProfileActivity).load(profile.profilePic).placeholder(progressBar).into(profilePictureIv)
         }
     }
 }

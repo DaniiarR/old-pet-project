@@ -20,6 +20,7 @@ import androidx.core.widget.doOnTextChanged
 import com.york.exordi.R
 import com.york.exordi.models.ActivationCode
 import com.york.exordi.models.AuthToken
+import com.york.exordi.models.LoginToken
 import com.york.exordi.models.ResponseMessage
 import com.york.exordi.network.RetrofitInstance
 import com.york.exordi.network.WebService
@@ -73,16 +74,16 @@ class CodeInputActivity : AppCompatActivity() {
 
     private fun activateUser() {
         api.activateUser(ActivationCode(codeTiL.text.toString().toInt())).enqueue(object :
-            Callback<AuthToken> {
-            override fun onFailure(call: Call<AuthToken>, t: Throwable) {
+            Callback<LoginToken> {
+            override fun onFailure(call: Call<LoginToken>, t: Throwable) {
                 Log.e(TAG, "onFailure: " + t.message!!)
             }
 
-            override fun onResponse(call: Call<AuthToken>, response: Response<AuthToken>) {
+            override fun onResponse(call: Call<LoginToken>, response: Response<LoginToken>) {
                 if (response.isSuccessful) {
                     response.body()?.let {
                         PrefManager.getMyPrefs(this@CodeInputActivity).edit()
-                            .putString(Const.PREF_AUTH_TOKEN, "Jwt " + it.token).apply()
+                            .putString(Const.PREF_AUTH_TOKEN, "Jwt " + it.data.token).apply()
                         startActivity(Intent(this@CodeInputActivity, MainActivity::class.java))
                         finish()
                     }

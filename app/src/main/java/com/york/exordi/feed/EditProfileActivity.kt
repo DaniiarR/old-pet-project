@@ -22,8 +22,6 @@ import com.bumptech.glide.Glide
 import com.york.exordi.BuildConfig
 import com.york.exordi.R
 import com.york.exordi.events.EditProfileEvent
-import com.york.exordi.models.EditProfile
-import com.york.exordi.models.EditProfileDescription
 import com.york.exordi.models.Profile
 import com.york.exordi.models.UsernameCheck
 import com.york.exordi.repository.AppRepository
@@ -34,25 +32,32 @@ import kotlinx.android.synthetic.main.activity_edit_profile.*
 import kotlinx.android.synthetic.main.activity_edit_profile.usernameErrorTv
 import kotlinx.android.synthetic.main.activity_edit_profile.usernameEt
 import kotlinx.android.synthetic.main.activity_edit_profile.usernamePb
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.greenrobot.eventbus.EventBus
-import permissions.dispatcher.*
+import pub.devrel.easypermissions.EasyPermissions
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-@RuntimePermissions
-class EditProfileActivity : AppCompatActivity() {
+class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     companion object {
-        const val CAMERA_REQUEST_CODE = 100
-        const val GALLERY_REQUEST_CODE = 101
+        const val RC_CAMERA = 100
+        const val RC_GALLERY = 101
+
+        const val CAMERA = 10
+        const val GALLERY = 11
         private const val TAG = "EditProfileActivity"
     }
 
     private var repository: AppRepository? = null
 
-    private var cameraImageAbsolutePath: String? = null
+    private var imageAbsolutePath: String? = null
 
     private var isUsernameValid = true
 
@@ -143,8 +148,8 @@ class EditProfileActivity : AppCompatActivity() {
             setItems(arrayOf("Choose photo from gallery", "Take a new picture"), object: DialogInterface.OnClickListener {
                 override fun onClick(dialog: DialogInterface?, which: Int) {
                     when (which) {
-                        0 -> selectImageFromGalleryWithPermissionCheck()
-                        1 -> takePictureWithCameraWithPermissionCheck()
+                        0 -> selectImageFromGallery()
+                        1 -> takePictureWithCamera()
                     }
                 }
 
@@ -152,48 +157,35 @@ class EditProfileActivity : AppCompatActivity() {
         }.create().show()
     }
 
-    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun selectImageFromGallery() {
-        val intent = Intent(Intent.ACTION_PICK).apply {
-            setType("image/*")
-            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
-        }
-        startActivityForResult(intent, GALLERY_REQUEST_CODE)
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        onPermissionDenied()
     }
 
-    @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun takePictureWithCamera() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        takePictureIntent.resolveActivity(packageManager)?.let {
-            var photoFile: File? = null
-            try {
-                photoFile = createImageFile()
-            } catch (e: IOException) {
-
-            }
-            photoFile?.let {
-                val photoUri: Uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", photoFile)
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE)
-            }
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        when (requestCode) {
+            RC_GALLERY -> selectImageFromGallery()
+            RC_CAMERA -> takePictureWithCamera()
         }
     }
-
-    @OnPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun onCameraDenied() {
-        Toast.makeText(this, "You must allow the app to use the camera to use this feature", Toast.LENGTH_SHORT).show()
-    }
-
-    @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun onShowCameraRationale() {
-        onCameraDenied()
-    }
-
-    @OnNeverAskAgain(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun onNeverAskCameraAgain() {
-        Toast.makeText(this, "You cannot use camera unless the appropriate permission is given in settings", Toast.LENGTH_SHORT).show()
-    }
-
+//
+//    private fun checkGalleryPermission() {
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+//            selectImageFromGallery()
+//        } else {
+//            requestGalleryPermission()
+//        }
+//    }
+//
+//    private fun requestGalleryPermission() {
+//        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+//            AlertDialog.Builder(this).setTitle("Permission needed").setMessage("This permission is need to select images from gallery")
+//                .setPositiveButton("OK") { p0, p1 -> ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), GALLERY_REQUEST_CODE) }
+//                .setNegativeButton("cancel") { p0, p1 -> p0.dismiss()}
+//                .create().show()
+//        } else {
+//            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), GALLERY_REQUEST_CODE)
+//        }
+//    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -201,7 +193,47 @@ class EditProfileActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        onRequestPermissionsResult(requestCode, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    private fun onPermissionDenied() {
+        Toast.makeText(this, "App will no function properly without this permission", Toast.LENGTH_SHORT).show()
+    }
+
+    // read external storage
+    fun selectImageFromGallery() {
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            val intent = Intent(Intent.ACTION_PICK).apply {
+                setType("image/*")
+                putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
+            }
+            startActivityForResult(intent, GALLERY)
+        } else {
+            EasyPermissions.requestPermissions(this, "The App needs this permission to select images from gallery", RC_GALLERY, Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
+    // write external storage
+    fun takePictureWithCamera() {
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)) {
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            takePictureIntent.resolveActivity(packageManager)?.let {
+                var photoFile: File? = null
+                try {
+                    photoFile = createImageFile()
+                } catch (e: IOException) {
+
+                }
+                photoFile?.let {
+                    val photoUri: Uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", photoFile)
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                    startActivityForResult(takePictureIntent, CAMERA)
+                }
+            }
+        } else {
+            EasyPermissions.requestPermissions(this, "The App needs this permission to select take photos from camera", RC_CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+        }
+
     }
 
     fun createImageFile(): File {
@@ -210,7 +242,7 @@ class EditProfileActivity : AppCompatActivity() {
         val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
         val image: File = File.createTempFile(imageFileName, ".jpg", storageDir)
 //        cameraImageAbsolutePath = image.absolutePath
-        cameraImageAbsolutePath = image.absolutePath
+        imageAbsolutePath = image.absolutePath
         return image
     }
 
@@ -219,8 +251,8 @@ class EditProfileActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                CAMERA_REQUEST_CODE -> setImage()
-                GALLERY_REQUEST_CODE -> saveGalleryImagePath(data)
+                RC_CAMERA -> setImage()
+                RC_GALLERY -> saveGalleryImagePath(data)
             }
         }
     }
@@ -230,12 +262,12 @@ class EditProfileActivity : AppCompatActivity() {
         val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
         val cursor = contentResolver?.query(selectedImage, filePathColumn, null, null, null)
         cursor?.moveToFirst()
-        cameraImageAbsolutePath = cursor?.getString(cursor.getColumnIndex(filePathColumn[0]))
+        imageAbsolutePath = cursor?.getString(cursor.getColumnIndex(filePathColumn[0]))
         setImage()
     }
 
     private fun setImage() {
-        Glide.with(this).load(cameraImageAbsolutePath).into(profileIv)
+        Glide.with(this).load(imageAbsolutePath).into(profileIv)
     }
 
     private fun checkUsernameValidity() {
@@ -257,7 +289,11 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun editProfile(username: String, description: String) {
-        repository?.editProfile(EditProfile(username, description)) {
+        val usernameBody: RequestBody = username.toRequestBody("text/plain".toMediaTypeOrNull())
+        val descriptionBody: RequestBody = description.toRequestBody("text/plain".toMediaTypeOrNull())
+        var profilePhotoBody: MultipartBody.Part? = createPhotoMultipartBodyPart()
+
+        repository?.editProfile(usernameBody, descriptionBody, profilePhotoBody) {
             if (it != null) {    // if profile is null, the profile could not be updated
                 handleCallback(it)
             } else {
@@ -269,7 +305,10 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun editDescription(description: String) {
-        repository?.editDescription(EditProfileDescription(description)) {
+        val descriptionBody: RequestBody = description.toRequestBody("text/plain".toMediaTypeOrNull())
+        var profilePhotoBody: MultipartBody.Part? = createPhotoMultipartBodyPart()
+
+        repository?.editDescription(descriptionBody, profilePhotoBody) {
             if (it != null) {    // if profile is null, the profile could not be updated
                 handleCallback(it)
             } else {
@@ -280,9 +319,19 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
+
+    private fun createPhotoMultipartBodyPart(): MultipartBody.Part? {
+        if (imageAbsolutePath != null) {
+            val file = File(imageAbsolutePath!!)
+            val requestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
+            return MultipartBody.Part.createFormData("photo", file.name, requestBody)
+        }
+        return null
+    }
+
     private fun handleCallback(profile: Profile) {
         profile.token?.let {
-            PrefManager.getMyPrefs(applicationContext).edit().putString(Const.PREF_AUTH_TOKEN, "Jwt " + it)
+            PrefManager.getMyPrefs(applicationContext).edit().putString(Const.PREF_AUTH_TOKEN, "Jwt " + it).commit()
         }
         val event = EditProfileEvent(profile.email, profile.username, profile.birthday, profile.bio, profile.profilePic)
         EventBus.getDefault().post(event)

@@ -3,6 +3,8 @@ package com.york.exordi.network
 import com.york.exordi.models.*
 import com.york.exordi.shared.Const
 import okhttp3.MultipartBody
+import okhttp3.Request
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -19,13 +21,13 @@ interface WebService {
     fun registerUser(@Body user: UserRegistration): Call<ResponseMessage>
 
     @POST("user/user-activation/")
-    fun activateUser(@Body activationCode: ActivationCode): Call<AuthToken>
+    fun activateUser(@Body activationCode: ActivationCode): Call<LoginToken>
 
     @GET("user/user-activation-repeat/{username}/")
     fun resendCode(@Path("username") username: String): Call<ResponseMessage>
 
     @POST("user/login/")
-    fun login(@Body login: Login): Call<AuthToken>
+    fun login(@Body login: Login): Call<LoginToken>
 
     @POST("user/token-refresh/")
     fun refreshToken(@Body authToken: AuthToken): Call<AuthToken>
@@ -34,15 +36,17 @@ interface WebService {
     @GET("user/me/")
     fun getProfileInfo(@Header(Const.AUTH) authToken: String): Call<Profile>
 
+    @Multipart
     @PATCH("user/me/")
-    fun editProfile(@Header(Const.AUTH) authToken: String, @Body profile: EditProfile): Call<Profile>
-
-    @PATCH("user/me/")
-    fun editDescription(@Header(Const.AUTH) authToken: String, @Body description: EditProfileDescription): Call<Profile>
+    fun editProfile(@Header(Const.AUTH) authToken: String, @Part("username") username: RequestBody, @Part("bio") bio: RequestBody, @Part photo: MultipartBody.Part?): Call<Profile>
 
     @Multipart
-    @POST("user/avatar/upload/")
-    fun editProfilePhoto(@Header(Const.AUTH) authToken: String, @Part profilePhoto: MultipartBody.Part): Call<ResponseMessage>
+    @PATCH("user/me/")
+    fun editDescription(@Header(Const.AUTH) authToken: String, @Part("bio") bio: RequestBody, @Part photo: MultipartBody.Part?): Call<Profile>
+
+    @Multipart
+    @POST("post/")
+    fun createPost(@Header(Const.AUTH) authToken: String, @Part("category") category: Int, @Part file: MultipartBody.Part, @Part("text") description: String?): Call<AddPostResponse>
 
 }
 
