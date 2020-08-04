@@ -8,6 +8,10 @@
         android:id="@+id/cameraView"
         android:keepScreenOn="true"
         app:cameraFlash="auto"
+        app:cameraPictureSizeMinWidth="320"
+        app:cameraPictureSizeMinHeight="560"
+        app:cameraPictureSizeMaxWidth="4032"
+        app:cameraPictureSizeMaxHeight="3024"
         app:cameraPictureSizeAspectRatio="4:5"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -17,16 +21,15 @@
         android:visibility="visible"
         android:layout_height="match_parent">
 
-        <ImageButton
+        <com.iammert.library.cameravideobuttonlib.CameraVideoButton
             android:id="@+id/captureImageBtn"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="56dp"
-            android:src="@drawable/ic_shoot"/>
+            app:cvb_recording_color="@android:color/holo_red_light"/>
 
         <ImageButton
             android:layout_width="wrap_content"

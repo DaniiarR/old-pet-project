@@ -47,7 +47,10 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun logOut() {
         startActivity(Intent(this, LoginActivity::class.java))
-        PrefManager.getMyPrefs(applicationContext).edit().remove(Const.PREF_AUTH_TOKEN).apply()
+        PrefManager.getMyPrefs(applicationContext).edit()
+            .remove(Const.PREF_AUTH_TOKEN)
+            .remove(Const.PREF_REFRESH_TOKEN)
+            .apply()
         finish()
     }
 

@@ -20,7 +20,7 @@ class UsernameCheck(
 )
 
 class ActivationCode(
-    @SerializedName("activation_code")
+    @SerializedName("code")
     val activationCode: Int
 )
 
@@ -29,7 +29,8 @@ class LoginToken(
 )
 
 class AuthToken(
-    val token: String
+    val access: String,
+    val refresh: String
 )
 
 class Login(
@@ -52,5 +53,8 @@ class LoginResponse(
 class LoginData(
     val email: String?,
     val username: String?,
-    val token: String?
+    @SerializedName("access")
+    val accessToken: String?,
+    @SerializedName("refresh")
+    val refreshToken: String?
 )

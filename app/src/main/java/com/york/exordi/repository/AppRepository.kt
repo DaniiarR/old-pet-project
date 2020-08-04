@@ -75,8 +75,8 @@ class AppRepository(application: Application) {
     }
 
     fun editProfile(
-        username: RequestBody,
-        description: RequestBody,
+        username: String,
+        description: String,
         photo: MultipartBody.Part?,
         callback: (Profile?) -> Unit
     ) {
@@ -99,10 +99,11 @@ class AppRepository(application: Application) {
     }
 
     fun editDescription(
-        description: RequestBody,
+        description: String,
         photo: MultipartBody.Part?,
         callback: (Profile?) -> Unit
     ) {
+        Log.e(TAG, "editDescription: " + getAuthToken() )
         webService.editDescription(getAuthToken(), description, photo).enqueue(object : Callback<Profile> {
             override fun onFailure(call: Call<Profile>, t: Throwable) {
                 Log.e(TAG, "onFailure: " + t.message!! )

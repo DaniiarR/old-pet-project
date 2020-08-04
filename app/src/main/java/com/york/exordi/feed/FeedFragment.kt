@@ -22,8 +22,13 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.york.exordi.R
 import com.york.exordi.adapters.PostAdapter
+import com.york.exordi.events.EditProfileEvent
+import com.york.exordi.models.Profile
+import com.york.exordi.models.ProfileData
 import com.york.exordi.shared.Const
 import kotlinx.android.synthetic.main.fragment_feed.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 /**
  * A simple [Fragment] subclass.
@@ -64,10 +69,13 @@ class FeedFragment : Fragment() {
         }
 
         viewModel.profile.observe(viewLifecycleOwner) {
-            if (!TextUtils.isEmpty(it.profilePic)) {
-                Glide.with(requireContext()).load(it.profilePic).placeholder(progressBar).into(feedProfileButton)
+            if (!TextUtils.isEmpty(it.data.profilePic)) {
+                Glide.with(requireContext()).load(it.data.profilePic).placeholder(progressBar).into(feedProfileButton)
             }
             feedProfileButton.setOnClickListener {v ->
+                if (!EventBus.getDefault().isRegistered(this)) {
+                    EventBus.getDefault().register(this)
+                }
                 startActivity(Intent(activity, ProfileActivity::class.java).apply { putExtra(Const.EXTRA_PROFILE, it) })
             }
         }
@@ -82,6 +90,19 @@ class FeedFragment : Fragment() {
             categoriesPopupWindow.showAsDropDown(v)
             layout?.foreground?.alpha = 220
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this)
+        }
+    }
+
+    @Subscribe
+    fun onEditProfile(event: EditProfileEvent) {
+        val profile = Profile(ProfileData(event.email, event.username, event.birthday, event.bio, event.profilePic))
+        viewModel.profile.value = profile
     }
 
     private fun setupPopupWindow() {

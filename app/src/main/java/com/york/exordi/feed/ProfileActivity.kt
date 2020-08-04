@@ -16,8 +16,11 @@ import com.york.exordi.R
 import com.york.exordi.adapters.ProfilePhotosAdapter
 import com.york.exordi.events.EditProfileEvent
 import com.york.exordi.models.Profile
+import com.york.exordi.models.ProfileData
 import com.york.exordi.settings.SettingsActivity
 import com.york.exordi.shared.Const
+import com.york.exordi.shared.registerActivityForEvents
+import com.york.exordi.shared.unregisterActivityFromEvents
 import kotlinx.android.synthetic.main.activity_profile.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -73,9 +76,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun startSettingsActivity() {
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this)
-        }
+        registerActivityForEvents()
         startActivity(Intent(this, SettingsActivity::class.java).apply {
             putExtra(Const.EXTRA_PROFILE, viewModel.profile.value)
         })
@@ -92,21 +93,21 @@ class ProfileActivity : AppCompatActivity() {
 
     @Subscribe
     fun onEditProfile(event: EditProfileEvent) {
-        val profile = Profile(event.email, event.username, event.birthday, event.bio, event.profilePic)
+        val profile = Profile(ProfileData(event.email, event.username, event.birthday, event.bio, event.profilePic))
         viewModel.profile.value = profile
         setupViews(profile)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        EventBus.getDefault().unregister(this)
+        unregisterActivityFromEvents()
     }
 
     private fun setupViews(profile: Profile) {
-        usernameTv.text = profile.username
-        profileDescriptionTv.text = profile.bio
-        if (!TextUtils.isEmpty(profile.profilePic)) {
-            Glide.with(this@ProfileActivity).load(profile.profilePic).placeholder(progressBar).into(profilePictureIv)
+        usernameTv.text = profile.data.username
+        profileDescriptionTv.text = profile.data.bio
+        if (!TextUtils.isEmpty(profile.data.profilePic)) {
+            Glide.with(this@ProfileActivity).load(profile.data.profilePic).placeholder(progressBar).into(profilePictureIv)
         }
     }
 }

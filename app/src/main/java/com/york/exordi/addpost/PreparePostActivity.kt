@@ -2,11 +2,13 @@ package com.york.exordi.addpost
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.devbrackets.android.exomedia.listener.OnPreparedListener
 import com.york.exordi.R
 import com.york.exordi.events.CreatePostEvent
 import com.york.exordi.repository.AppRepository
@@ -44,6 +46,12 @@ class PreparePostActivity : AppCompatActivity() {
         publishBtn.setOnClickListener {
             publishPhoto()
         }
+//        videoPreview.setVideoURI(Uri.parse())
+        videoPreview.setOnPreparedListener(object : OnPreparedListener {
+            override fun onPrepared() {
+
+            }
+        })
     }
 
     private fun publishPhoto() {

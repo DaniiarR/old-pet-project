@@ -17,9 +17,12 @@ import android.view.Surface
 import android.view.TextureView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.iammert.library.cameravideobuttonlib.CameraVideoButton
 import com.otaliastudios.cameraview.CameraListener
 import com.otaliastudios.cameraview.FileCallback
 import com.otaliastudios.cameraview.PictureResult
+import com.otaliastudios.cameraview.VideoResult
+import com.otaliastudios.cameraview.controls.Mode
 import com.york.exordi.R
 import com.york.exordi.events.CreatePostEvent
 import com.york.exordi.shared.Const
@@ -42,6 +45,8 @@ class CameraActivity : AppCompatActivity() {
         const val RC_ALL = 100
 
         const val GALLERY_CODE = 1000
+
+        const val MAX_VIDEO_DURATION: Long = 60000
     }
 
     private val permissions = arrayOf<String>(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -63,12 +68,34 @@ class CameraActivity : AppCompatActivity() {
         galleryBtn.setOnClickListener {
             selectImageFromGallery()
         }
-        captureImageBtn.setOnClickListener {
-            Toast.makeText(this, "Capture button clicked", Toast.LENGTH_SHORT).show()
-            captureImageBtn.setColorFilter(ContextCompat.getColor(this, R.color.textColorPrimary), PorterDuff.Mode.SRC_IN)
-            if (cameraView.isOpened) {
-                cameraView.takePicture()
+        captureImageBtn.enablePhotoTaking(true)
+        captureImageBtn.enableVideoRecording(true)
+        captureImageBtn.setVideoDuration(MAX_VIDEO_DURATION)
+        captureImageBtn.actionListener = object : CameraVideoButton.ActionListener {
+            override fun onDurationTooShortError() {
+                Toast.makeText(this@CameraActivity, "Video is too short", Toast.LENGTH_SHORT).show()
             }
+
+            override fun onEndRecord() {
+                if (cameraView.isTakingVideo) {
+                    cameraView.stopVideo()
+                }
+            }
+
+            override fun onSingleTap() {
+                if (cameraView.isOpened) {
+                    cameraView.mode = Mode.PICTURE
+                    cameraView.takePicture()
+                }
+            }
+
+            override fun onStartRecord() {
+                if (cameraView.isOpened) {
+                    cameraView.mode = Mode.VIDEO
+                    cameraView.takeVideo(createVideoFile())
+                }
+            }
+
         }
     }
 
@@ -87,6 +114,19 @@ class CameraActivity : AppCompatActivity() {
         if (EasyPermissions.hasPermissions(this, *permissions)) {
             cameraView.setLifecycleOwner(this)
             cameraView.addCameraListener(object : CameraListener() {
+
+                override fun onVideoRecordingStart() {
+
+                }
+
+                override fun onVideoRecordingEnd() {
+
+                }
+
+                override fun onVideoTaken(result: VideoResult) {
+                    
+                }
+
                 override fun onPictureTaken(result: PictureResult) {
                     result.toFile(createImageFile()) {
                         registerActivityForEvents()
@@ -111,6 +151,31 @@ class CameraActivity : AppCompatActivity() {
         return savedPhoto
     }
 
+    fun createVideoFile(): File {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val fileName = "EXORDI_" + timeStamp + "_"
+        val storageDir = getDirPath()
+        val video = File("$storageDir/$fileName.mp4")
+        return video
+    }
+
+    private fun getDirPath(): String {
+        var dirPath = ""
+        var imageDir: File? = null
+        val extStorageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES)
+        if (extStorageDir!!.canWrite()) {
+            imageDir = File(extStorageDir.path + "/video")
+        }
+        imageDir?.let {
+            if (!imageDir.exists()) {
+                imageDir.mkdirs()
+            }
+            if (imageDir.canWrite()) {
+                dirPath = imageDir.path
+            }
+        }
+        return dirPath
+    }
     // read ext storage
     fun selectImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK).apply {

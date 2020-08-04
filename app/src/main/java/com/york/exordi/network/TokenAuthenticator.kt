@@ -19,11 +19,14 @@ class TokenAuthenticator(val context: Context, var webService: WebServiceInstanc
         val prefs = PrefManager.getMyPrefs(context)
         val token = prefs.getString(Const.PREF_AUTH_TOKEN, null)?.substring(4)
 
-        val retrofitResponse: retrofit2.Response<AuthToken>? = webService!!.webService!!.refreshToken(AuthToken(token!!)).execute()
-        retrofitResponse?.let {
-            prefs.edit().putString(Const.PREF_AUTH_TOKEN, "Jwt " + it.body()!!.token).apply()
-            return response.request.newBuilder().header("Authorization", "Jwt " + it.body()!!.token).build()
-        }
+//        val retrofitResponse: retrofit2.Response<AuthToken>? = webService!!.webService!!.refreshToken(AuthToken(token!!)).execute()
+//        retrofitResponse?.let {
+//            prefs.edit()
+//                .putString(Const.PREF_AUTH_TOKEN, "Jwt " + it.body()!!.access)
+//                .putString(Const.PREF_REFRESH_TOKEN, it.body()!!.refresh).apply()
+//
+//            return response.request.newBuilder().header("Authorization", "Jwt " + it.body()!!.access).build()
+//        }
         return null
     }
 

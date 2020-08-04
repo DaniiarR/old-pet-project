@@ -8,6 +8,6 @@ import retrofit2.http.POST
 
 interface AuthWebWebService {
 
-    @POST("user/oauth/login/")
+    @POST("auth/social/login/")
     fun login(@Body credentials: LoginCredentials): Call<LoginResponse>
 }

@@ -46,6 +46,7 @@
             android:layout_width="match_parent"
             android:id="@+id/usernameEt"
             android:maxLength="15"
+            android:maxLines="1"
             android:hint="Username"
             android:layout_height="match_parent"/>
     </com.google.android.material.textfield.TextInputLayout>
@@ -129,18 +130,31 @@
         android:layout_marginTop="56dp"
         android:id="@+id/googleLoginBtn"/>
 
-    <ImageView
-        android:layout_width="145dp"
-        android:layout_height="53dp"
-        android:src="@drawable/ic_loginfacebook"
-        android:padding="15dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="@drawable/button_background"
+
+
+    <FrameLayout
+        android:layout_width="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/signInBtn"
         app:layout_constraintEnd_toEndOf="@id/usernameTil"
         android:layout_marginTop="56dp"
-        android:id="@+id/facebookLoginBtn"/>
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/facebookLoginBtn"
+            android:layout_width="145dp"
+            android:layout_height="53dp"
+            android:src="@drawable/ic_loginfacebook"
+            android:padding="15dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@drawable/button_background" />
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/fbLoginBtn"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -158,12 +172,13 @@
             android:text="@string/login_no_account"
             android:textColor="@color/textColorSecondary"/>
 
-        <TextView
-            android:layout_width="wrap_content"
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="80dp"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:textStyle="bold"
             android:textSize="14sp"
+            android:textAllCaps="false"
             android:clickable="true"
             android:focusable="true"
             android:id="@+id/signUpBtn"

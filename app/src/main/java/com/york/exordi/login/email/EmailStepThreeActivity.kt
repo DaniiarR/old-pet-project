@@ -164,11 +164,11 @@ class EmailStepThreeActivity : AppCompatActivity() {
                             isUsernameValid.value = true
                             usernameTick.visibility = View.VISIBLE
                             hideUsernameError()
-                        } else {
-                            isUsernameValid.value = false
-                            showUsernameError(it.message ?: "Error occurred")
                         }
                     }
+                } else {
+                    isUsernameValid.value = false
+                    showUsernameError("User with the given username already exists")
                 }
             }
 
@@ -193,11 +193,11 @@ class EmailStepThreeActivity : AppCompatActivity() {
                             isEmailValid.value = true
                             emailTick.visibility = View.VISIBLE
                             hideEmailError()
-                        } else {
-                            isEmailValid.value = false
-                            showEmailError(it.message ?: "Error occurred")
                         }
                     }
+                } else {
+                    isEmailValid.value = false
+                    showEmailError("User with the given email already exists")
                 }
             }
 

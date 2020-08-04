@@ -11,22 +11,22 @@ import retrofit2.http.*
 interface WebService {
 
     /** Authentication section */
-    @POST("user/validator-email")
+    @POST("user/validate/email/")
     fun checkEmail(@Body email: EmailCheck): Call<ResponseMessage>
 
-    @POST("user/validator-username")
+    @POST("user/validate/username/")
     fun checkUsername(@Body username: UsernameCheck): Call<ResponseMessage>
 
     @POST("user/register/")
     fun registerUser(@Body user: UserRegistration): Call<ResponseMessage>
 
-    @POST("user/user-activation/")
+    @POST("user/activate/")
     fun activateUser(@Body activationCode: ActivationCode): Call<LoginToken>
 
-    @GET("user/user-activation-repeat/{username}/")
-    fun resendCode(@Path("username") username: String): Call<ResponseMessage>
+    @GET("user/activate/repeat/")
+    fun resendCode(@Body username: String): Call<ResponseMessage>
 
-    @POST("user/login/")
+    @POST("auth/token/")
     fun login(@Body login: Login): Call<LoginToken>
 
     @POST("user/token-refresh/")
@@ -38,11 +38,11 @@ interface WebService {
 
     @Multipart
     @PATCH("user/me/")
-    fun editProfile(@Header(Const.AUTH) authToken: String, @Part("username") username: RequestBody, @Part("bio") bio: RequestBody, @Part photo: MultipartBody.Part?): Call<Profile>
+    fun editProfile(@Header(Const.AUTH) authToken: String, @Part("username") username: String, @Part("bio") bio: String, @Part photo: MultipartBody.Part?): Call<Profile>
 
     @Multipart
     @PATCH("user/me/")
-    fun editDescription(@Header(Const.AUTH) authToken: String, @Part("bio") bio: RequestBody, @Part photo: MultipartBody.Part?): Call<Profile>
+    fun editDescription(@Header(Const.AUTH) authToken: String, @Part("bio") bio: String, @Part photo: MultipartBody.Part?): Call<Profile>
 
     @Multipart
     @POST("post/")

@@ -109,10 +109,10 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
     private fun setupInitialProfile() {
         val profile = intent.getSerializableExtra(Const.EXTRA_PROFILE) as? Profile
         profile?.let {
-            Glide.with(this).load(it.profilePic).into(profileIv)
-            usernameEt.setText(it.username)
-            descriptionEt.setText(if (!TextUtils.isEmpty(it.bio)) it.bio else "")
-            initialUsername = it.username
+            Glide.with(this).load(it.data.profilePic).into(profileIv)
+            usernameEt.setText(it.data.username)
+            descriptionEt.setText(if (!TextUtils.isEmpty(it.data.bio)) it.data.bio else "")
+            initialUsername = it.data.username
         }
     }
 
@@ -251,8 +251,8 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                RC_CAMERA -> setImage()
-                RC_GALLERY -> saveGalleryImagePath(data)
+                CAMERA -> setImage()
+                GALLERY -> saveGalleryImagePath(data)
             }
         }
     }
@@ -289,11 +289,9 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
     }
 
     private fun editProfile(username: String, description: String) {
-        val usernameBody: RequestBody = username.toRequestBody("text/plain".toMediaTypeOrNull())
-        val descriptionBody: RequestBody = description.toRequestBody("text/plain".toMediaTypeOrNull())
         var profilePhotoBody: MultipartBody.Part? = createPhotoMultipartBodyPart()
 
-        repository?.editProfile(usernameBody, descriptionBody, profilePhotoBody) {
+        repository?.editProfile(username, description, profilePhotoBody) {
             if (it != null) {    // if profile is null, the profile could not be updated
                 handleCallback(it)
             } else {
@@ -305,10 +303,9 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
     }
 
     private fun editDescription(description: String) {
-        val descriptionBody: RequestBody = description.toRequestBody("text/plain".toMediaTypeOrNull())
         var profilePhotoBody: MultipartBody.Part? = createPhotoMultipartBodyPart()
 
-        repository?.editDescription(descriptionBody, profilePhotoBody) {
+        repository?.editDescription(description, profilePhotoBody) {
             if (it != null) {    // if profile is null, the profile could not be updated
                 handleCallback(it)
             } else {
@@ -330,10 +327,7 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
     }
 
     private fun handleCallback(profile: Profile) {
-        profile.token?.let {
-            PrefManager.getMyPrefs(applicationContext).edit().putString(Const.PREF_AUTH_TOKEN, "Jwt " + it).commit()
-        }
-        val event = EditProfileEvent(profile.email, profile.username, profile.birthday, profile.bio, profile.profilePic)
+        val event = EditProfileEvent(profile.data.email, profile.data.username, profile.data.birthday, profile.data.bio, profile.data.profilePic)
         EventBus.getDefault().post(event)
         finish()
     }

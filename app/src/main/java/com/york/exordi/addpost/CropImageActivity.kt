@@ -161,6 +161,7 @@ class CropImageActivity : AppCompatActivity() {
         }
         return dirPath
     }
+
     private val saveCallback = object : SaveCallback {
         override fun onSuccess(uri: Uri?) {
             imageUri = uri

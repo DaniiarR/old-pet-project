@@ -20,6 +20,7 @@ class Const {
 
         /** Authentication token */
         const val PREF_AUTH_TOKEN = "authToken"
+        const val PREF_REFRESH_TOKEN = "refreshToken"
         const val AUTH = "Authorization"
     }
 }

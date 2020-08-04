@@ -4,6 +4,10 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 class Profile(
+    val data: ProfileData
+) : Serializable
+
+class ProfileData(
     val email: String? = null,
     val username: String? = null,
     val birthday: String? = null,
@@ -14,4 +18,3 @@ class Profile(
 ) : Serializable
 
 class Post()
-
