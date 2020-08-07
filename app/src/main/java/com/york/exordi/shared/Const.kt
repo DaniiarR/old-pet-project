@@ -15,8 +15,11 @@ class Const {
         const val EXTRA_USERNAME = "username"
         const val EXTRA_COUNTRY = "country"
         const val EXTRA_PROFILE = "profile"
-        const val EXTRA_IMAGE_PATH = "imagePath"
+        const val EXTRA_FILE_PATH = "filePath"
         const val EXTRA_CATEGORY = "category"
+        const val EXTRA_FILE_TYPE = "fileType"
+        const val EXTRA_FILE_TYPE_PHOTO = "image"
+        const val EXTRA_FILE_TYPE_VIDEO = "video"
 
         /** Authentication token */
         const val PREF_AUTH_TOKEN = "authToken"

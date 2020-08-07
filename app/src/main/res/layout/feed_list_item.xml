@@ -1,110 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:id="@+id/feedProfilePictureIv"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        android:src="@drawable/ic_profile"/>
-
-    <TextView
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="DaniiarR"
-        android:id="@+id/feedUsernameTv"
-        app:layout_constraintStart_toEndOf="@id/feedProfilePictureIv"
-        android:layout_marginStart="16dp"
-        app:layout_constraintTop_toTopOf="@id/feedProfilePictureIv"/>
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/feedPublicationDateTv"
-        app:layout_constraintStart_toStartOf="@id/feedUsernameTv"
-        app:layout_constraintBottom_toBottomOf="@id/feedProfilePictureIv"
-        android:text="2h"
-        android:textSize="12sp"
-        android:textColor="@color/textColorSecondary"/>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:id="@+id/feedProfilePictureIv"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_profile"/>
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_details"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/feedProfilePictureIv"
-        app:layout_constraintBottom_toBottomOf="@id/feedProfilePictureIv"
-        android:layout_marginEnd="20dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="DaniiarR"
+            android:id="@+id/feedUsernameTv"
+            app:layout_constraintStart_toEndOf="@id/feedProfilePictureIv"
+            android:layout_marginStart="16dp"
+            app:layout_constraintTop_toTopOf="@id/feedProfilePictureIv"/>
 
-    <ImageView
-        android:id="@+id/feedPhotoIv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="4:4"
-        android:scaleType="centerCrop"
-        android:src="@drawable/jisoo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/feedProfilePictureIv"
-        android:layout_marginTop="16dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/feedPublicationDateTv"
+            app:layout_constraintStart_toStartOf="@id/feedUsernameTv"
+            app:layout_constraintBottom_toBottomOf="@id/feedProfilePictureIv"
+            tools:text="2h"
+            android:textSize="12sp"
+            android:textColor="@color/textColorSecondary"/>
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_upvote"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintTop_toBottomOf="@id/feedPhotoIv"
-        android:layout_marginTop="15dp"
-        android:layout_marginStart="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        android:id="@+id/feedUpvoteBtn"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_details"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/feedProfilePictureIv"
+            app:layout_constraintBottom_toBottomOf="@id/feedProfilePictureIv"
+            android:layout_marginEnd="20dp"/>
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_comments"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintStart_toEndOf="@id/feedUpvoteBtn"
-        app:layout_constraintTop_toTopOf="@id/feedUpvoteBtn"
-        android:layout_marginStart="30dp"
-        android:id="@+id/feedCommentsBtn"/>
+        <ImageView
+            android:id="@+id/feedPhotoIv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="4:4"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/jisoo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/feedProfilePictureIv"
+            android:layout_marginTop="16dp"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="3k comments"
-        app:layout_constraintTop_toTopOf="@id/feedUpvoteBtn"
-        app:layout_constraintBottom_toBottomOf="@id/feedUpvoteBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="20dp"
-        android:textColor="@color/textColorSecondary"
-        android:id="@+id/feedCommentsTv"/>
+        <com.devbrackets.android.exomedia.ui.widget.VideoView
+            android:id="@+id/feedVideoView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="invisible"
+            app:layout_constraintDimensionRatio="4:4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/feedProfilePictureIv"
+            android:layout_marginTop="16dp"/>
 
-    <View
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:id="@+id/feedDivider"
-        android:background="@android:color/darker_gray"
-        app:layout_constraintTop_toBottomOf="@id/feedUpvoteBtn"
-        app:layout_constraintStart_toStartOf="@id/feedUpvoteBtn"
-        app:layout_constraintEnd_toEndOf="@id/feedCommentsTv"
-        android:layout_marginTop="16dp"/>
-    
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/feedDescriptionTv"
-        app:layout_constraintTop_toBottomOf="@id/feedDivider"
-        android:layout_marginTop="10dp"
-        app:layout_constraintStart_toStartOf="@id/feedUpvoteBtn"
-        app:layout_constraintEnd_toEndOf="@id/feedCommentsTv"
-        android:text="Description goes here. Description goes here. Description goes here. Description goes here."/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_upvote"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintTop_toBottomOf="@id/feedPhotoIv"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/feedUpvoteBtn"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_comments"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintStart_toEndOf="@id/feedUpvoteBtn"
+            app:layout_constraintTop_toTopOf="@id/feedUpvoteBtn"
+            android:layout_marginStart="30dp"
+            android:id="@+id/feedCommentsBtn"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="3k comments"
+            app:layout_constraintTop_toTopOf="@id/feedUpvoteBtn"
+            app:layout_constraintBottom_toBottomOf="@id/feedUpvoteBtn"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="20dp"
+            android:textColor="@color/textColorSecondary"
+            android:id="@+id/feedCommentsTv"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:id="@+id/feedDivider"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintTop_toBottomOf="@id/feedUpvoteBtn"
+            app:layout_constraintStart_toStartOf="@id/feedUpvoteBtn"
+            app:layout_constraintEnd_toEndOf="@id/feedCommentsTv"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/feedDescriptionTv"
+            android:layout_marginBottom="20dp"
+            android:lineSpacingMultiplier="1.25"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/feedDivider"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="@id/feedUpvoteBtn"
+            app:layout_constraintEnd_toEndOf="@id/feedCommentsTv"
+            android:text="Description goes here. Description goes here. Description goes here. Description goes here."/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

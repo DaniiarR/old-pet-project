@@ -108,6 +108,8 @@ dependencies {
     implementation 'com.devbrackets.android:exomedia:4.3.0'
     // kostyl'
     implementation 'com.google.api-client:google-api-client:1.30.9'
+    // Paging Library
+    implementation "androidx.paging:paging-runtime-ktx:2.1.2"
 }
 
 kapt {

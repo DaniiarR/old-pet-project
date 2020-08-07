@@ -1,16 +1,13 @@
 package com.york.exordi.addpost
 
-import android.R.attr.path
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.isseiaoki.simplecropview.callback.CropCallback
@@ -22,13 +19,10 @@ import com.york.exordi.shared.Const
 import com.york.exordi.shared.registerActivityForEvents
 import com.york.exordi.shared.unregisterActivityFromEvents
 import kotlinx.android.synthetic.main.activity_crop_image.*
-import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.io.File
-import java.lang.System.currentTimeMillis
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.jar.Manifest
 
 class CropImageActivity : AppCompatActivity() {
 
@@ -57,7 +51,7 @@ class CropImageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_crop_image)
 
-        imagePath = intent.getStringExtra(Const.EXTRA_IMAGE_PATH)
+        imagePath = intent.getStringExtra(Const.EXTRA_FILE_PATH)
         imageUri = Uri.fromFile(File(imagePath))
         cropView.load(imageUri).execute(loadCallback)
 //        Glide.with(this).load(imagePath).into(cropView)
@@ -77,7 +71,8 @@ class CropImageActivity : AppCompatActivity() {
         continueBtn.setOnClickListener {
            registerActivityForEvents()
             startActivity(Intent(this, PreparePostActivity::class.java).apply {
-                putExtra(Const.EXTRA_IMAGE_PATH, imagePath)
+                putExtra(Const.EXTRA_FILE_PATH, imagePath)
+                putExtra(Const.EXTRA_FILE_TYPE, Const.EXTRA_FILE_TYPE_PHOTO)
             })
         }
         cropBtn.setOnClickListener {

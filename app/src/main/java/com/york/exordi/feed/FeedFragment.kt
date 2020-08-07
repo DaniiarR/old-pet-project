@@ -26,6 +26,8 @@ import com.york.exordi.events.EditProfileEvent
 import com.york.exordi.models.Profile
 import com.york.exordi.models.ProfileData
 import com.york.exordi.shared.Const
+import com.york.exordi.shared.OnItemClickListener
+import com.york.exordi.shared.makeInternetSafeRequest
 import kotlinx.android.synthetic.main.fragment_feed.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -58,6 +60,7 @@ class FeedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        context?.makeInternetSafeRequest { viewModel.getNewResults() }
         layout = view.findViewById<FrameLayout>(R.id.feedDimLayout)
         layout?.foreground?.alpha = 0
 
@@ -79,12 +82,31 @@ class FeedFragment : Fragment() {
                 startActivity(Intent(activity, ProfileActivity::class.java).apply { putExtra(Const.EXTRA_PROFILE, it) })
             }
         }
-        val adapter = PostAdapter()
+
+        val adapter = PostAdapter(object : OnItemClickListener {
+            override fun <T> onItemClick(listItem: T) {
+
+            }
+        })
+        viewModel.results?.observe(viewLifecycleOwner) {
+            feedPb.visibility = View.GONE
+            feedSwipeRefreshLayout.isRefreshing = false
+            adapter.submitList(it)
+            feedRv.visibility = View.VISIBLE
+            if (it.isNotEmpty()) {
+//                feedEmptyView.visibility = View.GONE
+            } else {
+//                feedEmptyView.visibility = View.VISIBLE
+//                feedRv.visibility = View.INVISIBLE
+            }
+        }
         feedRv.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         feedRv.adapter = adapter
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(feedRv)
-
+        feedSwipeRefreshLayout.setOnRefreshListener {
+            viewModel.dataSourceLiveData?.value?.invalidate()
+        }
         setupPopupWindow()
         feedCategoryBtn.setOnClickListener { v ->
             categoriesPopupWindow.showAsDropDown(v)

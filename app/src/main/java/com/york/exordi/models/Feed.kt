@@ -17,4 +17,51 @@ class ProfileData(
     val token: String? = null
 ) : Serializable
 
-class Post()
+class Post(
+    val code: Int,
+    val data: PostData
+)
+
+class PostData(
+    val count: Int,
+    val next: String?,
+    val previous: String?,
+    val results: List<Result>
+)
+
+class Result(
+    val id: String,
+    val text: String?,
+    val location: String?,
+    @SerializedName("posted_on")
+    val postedOn: String,
+    @SerializedName("post_comments")
+    val postComments: List<PostComment>,
+    val files: List<PostFile>,
+    @SerializedName("number_of_comments")
+    val commentsAmount: Int,
+    val category: PostCategory,
+//    @SerializedName("upvoted_by_req_user")
+//    val upvotedByReqUser: Boolean,
+    val author: PostAuthor
+)
+
+class PostComment(
+
+)
+
+class PostFile(
+    val file: String,
+    val type: String
+)
+
+class PostCategory(
+    val id: Int,
+    val name: String
+)
+
+class PostAuthor(
+    val id: Int,
+    val username: String?,
+    val photo: String?
+)

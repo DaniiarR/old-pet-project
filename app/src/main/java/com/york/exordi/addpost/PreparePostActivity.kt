@@ -16,6 +16,7 @@ import com.york.exordi.shared.Const
 import kotlinx.android.synthetic.main.activity_prepare_post.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import org.greenrobot.eventbus.EventBus
 import java.io.File
@@ -25,15 +26,40 @@ class PreparePostActivity : AppCompatActivity() {
     companion object {
         const val RC = 100
     }
-    private var imagePath: String? = null
+    private var filePath: String? = null
     private var selectedCategory: Int? = null
+    private var fileType: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_prepare_post)
 
-        imagePath = intent.getStringExtra(Const.EXTRA_IMAGE_PATH)
-        Glide.with(this).load(imagePath).into(imagePreview)
+        val fileCategory = intent.getStringExtra(Const.EXTRA_FILE_TYPE)
+        intent.getStringExtra(Const.EXTRA_FILE_PATH)?.let {
+            filePath = it
+        }
+        fileCategory?.let {
+            fileType = it
+            if (it == Const.EXTRA_FILE_TYPE_PHOTO) {
+                Glide.with(this).load(filePath).into(imagePreview)
+                videoView.visibility = View.INVISIBLE
+            } else if (it == Const.EXTRA_FILE_TYPE_VIDEO) {
+                videoView.setOnPreparedListener(object : OnPreparedListener {
+                    override fun onPrepared() {
+                        videoView.start()
+                    }
+                })
+                videoView.setOnClickListener {
+                    if (videoView.isPlaying) {
+                        videoView.pause()
+                    } else {
+                        videoView.start()
+                    }
+                }
+                videoView.setVideoURI(Uri.parse(File(filePath).toString()))
+                imagePreview.visibility = View.INVISIBLE
+            }
+        }
 
         selectCategoryBtn.setOnClickListener {
             val intent = Intent(this, SelectCategoryActivity::class.java)
@@ -44,24 +70,18 @@ class PreparePostActivity : AppCompatActivity() {
         }
 
         publishBtn.setOnClickListener {
-            publishPhoto()
+            publishPost()
         }
-//        videoPreview.setVideoURI(Uri.parse())
-        videoPreview.setOnPreparedListener(object : OnPreparedListener {
-            override fun onPrepared() {
-
-            }
-        })
     }
 
-    private fun publishPhoto() {
+    private fun publishPost() {
         createFileMultipartBody()?.let {
             var description: String? = null
             if (descriptionEt.text.toString().isNotEmpty()) {
                 description = descriptionEt.text.toString()
             }
             val api = AppRepository.getInstance(application)
-            api.createPost(selectedCategory!!, description, it) { response ->
+            api.createPost(fileType!!, selectedCategory!!, description, it) { response ->
                 if (response.code == 200) {
                     Toast.makeText(this, "Successfully created new post", Toast.LENGTH_SHORT).show()
                     EventBus.getDefault().post(CreatePostEvent())
@@ -72,10 +92,17 @@ class PreparePostActivity : AppCompatActivity() {
     }
 
     private fun createFileMultipartBody(): MultipartBody.Part? {
-        imagePath?.let {
+        filePath?.let {
             val file = File(it)
-            val requestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
-            return MultipartBody.Part.createFormData("post_file", file.name, requestBody)
+            var requestBody: RequestBody? = null
+            if (fileType == Const.EXTRA_FILE_TYPE_PHOTO) {
+                requestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
+            } else if (fileType == Const.EXTRA_FILE_TYPE_VIDEO) {
+                requestBody = file.asRequestBody("video/*".toMediaTypeOrNull())
+            }
+            requestBody?.let {
+                return MultipartBody.Part.createFormData("post_file", file.name, it)
+            }
         }
         return null
     }

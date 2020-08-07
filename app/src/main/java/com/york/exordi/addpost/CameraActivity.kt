@@ -2,24 +2,15 @@ package com.york.exordi.addpost
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.graphics.PorterDuff
-import android.graphics.SurfaceTexture
-import android.hardware.camera2.*
-import android.media.ImageReader
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.view.Surface
-import android.view.TextureView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import com.iammert.library.cameravideobuttonlib.CameraVideoButton
 import com.otaliastudios.cameraview.CameraListener
-import com.otaliastudios.cameraview.FileCallback
 import com.otaliastudios.cameraview.PictureResult
 import com.otaliastudios.cameraview.VideoResult
 import com.otaliastudios.cameraview.controls.Mode
@@ -28,14 +19,11 @@ import com.york.exordi.events.CreatePostEvent
 import com.york.exordi.shared.Const
 import com.york.exordi.shared.registerActivityForEvents
 import kotlinx.android.synthetic.main.activity_camera.*
-import kotlinx.coroutines.selects.select
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -124,7 +112,12 @@ class CameraActivity : AppCompatActivity() {
                 }
 
                 override fun onVideoTaken(result: VideoResult) {
-                    
+                    val videoFile = result.file
+                    registerActivityForEvents()
+                    startActivity(Intent(this@CameraActivity, PreparePostActivity::class.java).apply {
+                        putExtra(Const.EXTRA_FILE_TYPE, Const.EXTRA_FILE_TYPE_VIDEO)
+                        putExtra(Const.EXTRA_FILE_PATH, videoFile.absolutePath)
+                    })
                 }
 
                 override fun onPictureTaken(result: PictureResult) {
@@ -132,7 +125,7 @@ class CameraActivity : AppCompatActivity() {
                         registerActivityForEvents()
                         startActivity(
                             Intent(this@CameraActivity, CropImageActivity::class.java).apply {
-                                putExtra(Const.EXTRA_IMAGE_PATH, imageAbsolutePath)
+                                putExtra(Const.EXTRA_FILE_PATH, imageAbsolutePath)
                             })
                     }
                 }
@@ -202,7 +195,7 @@ class CameraActivity : AppCompatActivity() {
         imageAbsolutePath = cursor?.getString(cursor.getColumnIndex(filePathColumn[0]))
         cursor?.close()
         startActivity(Intent(this@CameraActivity, CropImageActivity::class.java).apply {
-            putExtra(Const.EXTRA_IMAGE_PATH, imageAbsolutePath)
+            putExtra(Const.EXTRA_FILE_PATH, imageAbsolutePath)
         })
     }
 

@@ -46,7 +46,18 @@ interface WebService {
 
     @Multipart
     @POST("post/")
-    fun createPost(@Header(Const.AUTH) authToken: String, @Part("category") category: Int, @Part file: MultipartBody.Part, @Part("text") description: String?): Call<AddPostResponse>
+    fun createPost(@Header(Const.AUTH) authToken: String, @Part("category") category: Int, @Part file: MultipartBody.Part, @Part("text") description: String?, @Part("type") fileType: String): Call<AddPostResponse>
+
+    @GET("post/")
+    fun getAllPosts(@Header(Const.AUTH) authToken: String): Call<Post>
+
+    @GET
+    fun getNextPosts(@Header(Const.AUTH) authToken: String, @Url url: String): Call<Post>
+
+    @GET
+    fun getPreviousPosts(@Header(Const.AUTH) authToken: String, @Url url: String): Call<Post>
+
+
 
 }
 

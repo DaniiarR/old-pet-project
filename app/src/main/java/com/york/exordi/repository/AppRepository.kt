@@ -122,8 +122,8 @@ class AppRepository(application: Application) {
         })
     }
 
-    fun createPost(category: Int, description: String?, file: MultipartBody.Part, callback: (AddPostResponse) -> Unit) {
-        webService.createPost(getAuthToken(), category, file, description).enqueue(object :
+    fun createPost(fileType: String, category: Int, description: String?, file: MultipartBody.Part, callback: (AddPostResponse) -> Unit) {
+        webService.createPost(getAuthToken(), category, file, description, fileType).enqueue(object :
             Callback<AddPostResponse> {
             override fun onFailure(call: Call<AddPostResponse>, t: Throwable) {
                 Log.e(TAG, "onFailure: " + t.message!!)

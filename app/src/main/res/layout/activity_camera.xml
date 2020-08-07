@@ -13,6 +13,7 @@
         app:cameraPictureSizeMaxWidth="4032"
         app:cameraPictureSizeMaxHeight="3024"
         app:cameraPictureSizeAspectRatio="4:5"
+        app:cameraVideoSizeAspectRatio="4:5"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
