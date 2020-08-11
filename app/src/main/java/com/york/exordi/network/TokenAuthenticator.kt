@@ -2,6 +2,8 @@ package com.york.exordi.network
 
 import android.content.Context
 import com.york.exordi.models.AuthToken
+import com.york.exordi.models.LoginToken
+import com.york.exordi.models.RefreshToken
 import com.york.exordi.shared.Const
 import com.york.exordi.shared.PrefManager
 import okhttp3.Authenticator
@@ -17,16 +19,22 @@ class TokenAuthenticator(val context: Context, var webService: WebServiceInstanc
             return null
         }
         val prefs = PrefManager.getMyPrefs(context)
-        val token = prefs.getString(Const.PREF_AUTH_TOKEN, null)?.substring(4)
+        val refreshToken = prefs.getString(Const.PREF_REFRESH_TOKEN, null)
 
-//        val retrofitResponse: retrofit2.Response<AuthToken>? = webService!!.webService!!.refreshToken(AuthToken(token!!)).execute()
-//        retrofitResponse?.let {
-//            prefs.edit()
-//                .putString(Const.PREF_AUTH_TOKEN, "Jwt " + it.body()!!.access)
-//                .putString(Const.PREF_REFRESH_TOKEN, it.body()!!.refresh).apply()
-//
-//            return response.request.newBuilder().header("Authorization", "Jwt " + it.body()!!.access).build()
-//        }
+        val retrofitResponse: retrofit2.Response<LoginToken>? = webService!!.webService!!.refreshToken(
+            RefreshToken(refreshToken!!)
+        ).execute()
+        retrofitResponse?.let {
+            it.body()?.let { body ->
+                prefs.edit()
+                    .putString(Const.PREF_AUTH_TOKEN, "JWT " + body.data.access)
+                    .putString(Const.PREF_REFRESH_TOKEN, body.data.refresh).apply()
+
+                return response.request.newBuilder().header("Authorization", "JWT " + body.data.access).build()
+            }
+
+        }
+
         return null
     }
 

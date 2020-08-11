@@ -20,10 +20,17 @@ class Const {
         const val EXTRA_FILE_TYPE = "fileType"
         const val EXTRA_FILE_TYPE_PHOTO = "image"
         const val EXTRA_FILE_TYPE_VIDEO = "video"
+        const val EXTRA_VIDEO_URL = "videoUrl"
+        const val EXTRA_PLAYBACK_POSITION = "playbackPosition"
 
         /** Authentication token */
         const val PREF_AUTH_TOKEN = "authToken"
         const val PREF_REFRESH_TOKEN = "refreshToken"
         const val AUTH = "Authorization"
+
+        /** View tags */
+        const val TAG_PROFILE = "profile"
+        const val TAG_UPVOTE = "upvote"
+        const val TAG_COMMENTS = "comments"
     }
 }

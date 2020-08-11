@@ -110,6 +110,8 @@ dependencies {
     implementation 'com.google.api-client:google-api-client:1.30.9'
     // Paging Library
     implementation "androidx.paging:paging-runtime-ktx:2.1.2"
+    // ExoPlayer
+    implementation "com.google.android.exoplayer:exoplayer:2.8.4"
 }
 
 kapt {

@@ -41,8 +41,10 @@ public class OkHttpClientInstance {
                             // Add default headers
                             Request.Builder requestBuilder = chain.request().newBuilder()
                                     .addHeader("accept", "*/*")
-                                    .addHeader("accept-encoding:gzip", "gzip, deflate")
-                                    .addHeader("accept-language", "en-US,en;q=0.9");
+                                    .addHeader("accept-encoding", "gzip, deflate, br")
+//                                    .addHeader("accept-language", "en-US,en;q=0.9")
+                                    .addHeader("connection", "keep-alive")
+                                    .addHeader("Content-Type", "application/json");
 
                             if (context != null) {
                                 String token = PrefManager.Companion.getMyPrefs(context).getString(Const.PREF_AUTH_TOKEN, null);

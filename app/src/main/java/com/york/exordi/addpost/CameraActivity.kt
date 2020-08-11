@@ -39,7 +39,7 @@ class CameraActivity : AppCompatActivity() {
 
     private val permissions = arrayOf<String>(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_EXTERNAL_STORAGE)
 
-    private var imageAbsolutePath: String? = null
+    private var mediaAbsolutePath: String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +54,7 @@ class CameraActivity : AppCompatActivity() {
         }
 
         galleryBtn.setOnClickListener {
-            selectImageFromGallery()
+            selectMediaFromGallery()
         }
         captureImageBtn.enablePhotoTaking(true)
         captureImageBtn.enableVideoRecording(true)
@@ -125,7 +125,7 @@ class CameraActivity : AppCompatActivity() {
                         registerActivityForEvents()
                         startActivity(
                             Intent(this@CameraActivity, CropImageActivity::class.java).apply {
-                                putExtra(Const.EXTRA_FILE_PATH, imageAbsolutePath)
+                                putExtra(Const.EXTRA_FILE_PATH, mediaAbsolutePath)
                             })
                     }
                 }
@@ -140,7 +140,7 @@ class CameraActivity : AppCompatActivity() {
         val fileName = "EXORDI_" + timeStamp + "_"
         val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         val savedPhoto = File.createTempFile(fileName, ".jpg", storageDir)
-        imageAbsolutePath = savedPhoto.absolutePath
+        mediaAbsolutePath = savedPhoto.absolutePath
         return savedPhoto
     }
 
@@ -170,10 +170,11 @@ class CameraActivity : AppCompatActivity() {
         return dirPath
     }
     // read ext storage
-    fun selectImageFromGallery() {
+    fun selectMediaFromGallery() {
         val intent = Intent(Intent.ACTION_PICK).apply {
-            setType("image/*")
-            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
+            setType("image/* video/*")
+            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png", "video/mp4", "video/avi", "video/quicktime"))
+            putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60)
         }
         startActivityForResult(intent, GALLERY_CODE)
     }
@@ -181,21 +182,51 @@ class CameraActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                GALLERY_CODE -> saveGalleryImagePath(data)
+//            when (requestCode) {
+//                GALLERY_CODE -> saveGalleryImagePath(data)
+//            }
+            val path = data?.data?.path
+            path?.let {
+                if (it.contains(".mp4")) {
+                    saveGalleryVideoPath(data)
+                } else if (it.contains(".jpg") || it.contains(".jpeg") || it.contains(".png")) {
+                    saveGalleryImagePath(data)
+
+                }
             }
+
         }
     }
 
-    private fun saveGalleryImagePath(data: Intent?) {
-        val selectedImage: Uri = data!!.data!!
+    private fun saveGalleryVideoPath(data: Intent) {
+        val selectedVideoUri = data.data
+        selectedVideoUri?.let {
+            val fileManagerString = selectedVideoUri?.path
+            val filePathColumn = arrayOf(MediaStore.Video.Media.DATA)
+            val cursor = contentResolver.query(it, filePathColumn, null, null, null)
+            val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
+            cursor?.moveToFirst()
+            mediaAbsolutePath = cursor?.getString(columnIndex!!)
+            cursor?.close()
+            registerActivityForEvents()
+            startActivity(Intent(this@CameraActivity, PreparePostActivity::class.java).apply {
+                putExtra(Const.EXTRA_FILE_TYPE, Const.EXTRA_FILE_TYPE_VIDEO)
+                putExtra(Const.EXTRA_FILE_PATH, mediaAbsolutePath)
+            })
+        }
+
+    }
+
+    private fun saveGalleryImagePath(data: Intent) {
+        val selectedImage: Uri = data.data!!
         val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
         val cursor = contentResolver.query(selectedImage, filePathColumn, null, null, null)
         cursor?.moveToFirst()
-        imageAbsolutePath = cursor?.getString(cursor.getColumnIndex(filePathColumn[0]))
+        mediaAbsolutePath = cursor?.getString(cursor.getColumnIndex(filePathColumn[0]))
         cursor?.close()
+        registerActivityForEvents()
         startActivity(Intent(this@CameraActivity, CropImageActivity::class.java).apply {
-            putExtra(Const.EXTRA_FILE_PATH, imageAbsolutePath)
+            putExtra(Const.EXTRA_FILE_PATH, mediaAbsolutePath)
         })
     }
 

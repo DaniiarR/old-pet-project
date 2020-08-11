@@ -1,22 +1,34 @@
 package com.york.exordi.shared
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.os.Build
+import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.LifecycleOwner
+import com.york.exordi.models.Result
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
 interface OnItemClickListener {
     fun <T> onItemClick(listItem: T)
+}
+
+interface OnPostClickListener {
+    fun onItemClick(position: Int, post: Result, tag: String, view: View?)
+}
+
+interface OnFullscreenButtonClickListener {
+    fun onButtonClick(videoUrl: String, currentPosition: Long)
 }
 
 inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {
@@ -59,7 +71,7 @@ fun Context.isNetworkAvailable(): Boolean {
 }
 
 fun Context.makeNoConnectionToast() {
-    Toast.makeText(applicationContext, "Нед подключения к интернету!", Toast.LENGTH_SHORT).show()
+    Toast.makeText(applicationContext, "Нет подключения к интернету!", Toast.LENGTH_SHORT).show()
 }
 
 fun String.toErrorString(): String {

@@ -29,8 +29,8 @@ interface WebService {
     @POST("auth/token/")
     fun login(@Body login: Login): Call<LoginToken>
 
-    @POST("user/token-refresh/")
-    fun refreshToken(@Body authToken: AuthToken): Call<AuthToken>
+    @POST("auth/token/refresh/")
+    fun refreshToken(@Body authToken: RefreshToken): Call<LoginToken>
 
     /** Feed Section */
     @GET("user/me/")
@@ -47,9 +47,13 @@ interface WebService {
     @Multipart
     @POST("post/")
     fun createPost(@Header(Const.AUTH) authToken: String, @Part("category") category: Int, @Part file: MultipartBody.Part, @Part("text") description: String?, @Part("type") fileType: String): Call<AddPostResponse>
+//
+//    @GET("post")
+//    fun getAllPosts(@Header(Const.AUTH) authToken: String, @Query("category") category: Int): Call<Post>
 
-    @GET("post/")
-    fun getAllPosts(@Header(Const.AUTH) authToken: String): Call<Post>
+
+    @GET("post")
+    fun getAllPosts(@Header(Const.AUTH) authToken: String, @Query("category") category: Int): Call<Post>
 
     @GET
     fun getNextPosts(@Header(Const.AUTH) authToken: String, @Url url: String): Call<Post>
@@ -57,7 +61,11 @@ interface WebService {
     @GET
     fun getPreviousPosts(@Header(Const.AUTH) authToken: String, @Url url: String): Call<Post>
 
+    @GET("category")
+    fun getAllCategories(@Header(Const.AUTH) authToken: String): Call<Category>
 
+    @POST("post/upvote/")
+    fun toggleUpvote(@Header(Const.AUTH) authToken: String, @Body postId: PostId): Call<ResponseMessage>
 
 }
 

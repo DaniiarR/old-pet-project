@@ -33,6 +33,10 @@ class AuthToken(
     val refresh: String
 )
 
+class RefreshToken(
+    val refresh: String
+)
+
 class Login(
     val username: String,
     val password: String

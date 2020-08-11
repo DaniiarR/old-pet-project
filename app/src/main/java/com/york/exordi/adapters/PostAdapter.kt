@@ -7,15 +7,19 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.york.exordi.R
 import com.york.exordi.models.Post
 import com.york.exordi.models.Result
 import com.york.exordi.shared.OnItemClickListener
+import com.york.exordi.shared.OnPostClickListener
 import kotlinx.android.synthetic.main.feed_list_item.view.*
 
-class PostAdapter(private val clickListener: OnItemClickListener) : PagedListAdapter<Result, PostAdapter.PostViewHolder>(diffCallback) {
+class PostAdapter(val requestManager: RequestManager) : PagedListAdapter<Result, PostViewHolder>(diffCallback) {
+
+    var clickListener: OnPostClickListener? = null
 
     companion object {
         val diffCallback = object : DiffUtil.ItemCallback<Result>() {
@@ -31,28 +35,11 @@ class PostAdapter(private val clickListener: OnItemClickListener) : PagedListAda
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        return PostViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.feed_list_item, parent, false))
+        return PostViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.feed_list_item, parent, false), clickListener!!)
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        holder.bind(getItem(position), clickListener)
+        holder.bind(position, getItem(position), requestManager)
     }
 
-    inner class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        fun bind(post: Result?, clickListener: OnItemClickListener) {
-            itemView.apply {
-                post?.let {
-                    it.author.photo?.let { Glide.with(context).load(it).into(itemView.feedProfilePictureIv) }
-                    feedUsernameTv.text = it.author.username
-                    if (it.files[0].type == "image") {
-                        Glide.with(context).load(it.files[0].file).into(feedPhotoIv)
-                    }
-                    feedCommentsTv.text = "${it.commentsAmount} comments"
-                    feedDescriptionTv.text = it.text ?: ""
-                }
-            }
-
-        }
-    }
 }

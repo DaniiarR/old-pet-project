@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:id="@+id/feedFrameLayout"
+    android:animateLayoutChanges="true"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".feed.FeedFragment">
@@ -29,11 +30,10 @@
                     android:layout_height="match_parent">
 
                      <com.google.android.material.button.MaterialButton
-                         android:layout_width="70dp"
+                         android:layout_width="wrap_content"
                          android:id="@+id/feedCategoryBtn"
                          android:gravity="start"
                          android:paddingStart="0dp"
-                         android:drawablePadding="0dp"
                          android:layout_height="wrap_content"
                          style="@style/Widget.MaterialComponents.Button.TextButton"
                          android:text="Art"
@@ -138,12 +138,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp">
 
-                    <androidx.recyclerview.widget.RecyclerView
+                    <com.york.exordi.recycler.VideoPlayerRecyclerView
                         android:layout_width="match_parent"
                         android:visibility="invisible"
                         android:layout_height="wrap_content"
                         tools:listitem="@layout/feed_list_item"
                         android:id="@+id/feedRv" />
+
                 </com.york.exordi.widget.HorizontalSwipeRefreshLayout>
 
                 <ProgressBar

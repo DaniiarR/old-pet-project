@@ -109,7 +109,7 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
     private fun setupInitialProfile() {
         val profile = intent.getSerializableExtra(Const.EXTRA_PROFILE) as? Profile
         profile?.let {
-            Glide.with(this).load(it.data.profilePic).into(profileIv)
+            it.data.profilePic?.let { Glide.with(this).load(it).into(profileIv) }
             usernameEt.setText(it.data.username)
             descriptionEt.setText(if (!TextUtils.isEmpty(it.data.bio)) it.data.bio else "")
             initialUsername = it.data.username

@@ -6,12 +6,12 @@ import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import com.york.exordi.models.Result
 
-class PostDataSourceFactory(val application: Application) : DataSource.Factory<String, Result>() {
+class PostDataSourceFactory(val application: Application, var categoryId: Int) : DataSource.Factory<String, Result>() {
 
     val postLiveDataSource = MutableLiveData<PageKeyedDataSource<String, Result>>()
 
     override fun create(): DataSource<String, Result> {
-        val postDataSource = PostDataSource(application)
+        val postDataSource = PostDataSource(application, categoryId)
         postLiveDataSource.postValue(postDataSource)
         return postDataSource
     }

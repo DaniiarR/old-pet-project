@@ -51,6 +51,7 @@ class CropImageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_crop_image)
 
+        backBtn.setOnClickListener { finish() }
         imagePath = intent.getStringExtra(Const.EXTRA_FILE_PATH)
         imageUri = Uri.fromFile(File(imagePath))
         cropView.load(imageUri).execute(loadCallback)

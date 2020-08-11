@@ -5,8 +5,10 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.york.exordi.events.CreatePostEvent
 import com.york.exordi.models.*
+import com.york.exordi.network.OkHttpClientInstance
 import com.york.exordi.network.RetrofitInstance
 import com.york.exordi.network.WebService
+import com.york.exordi.network.WebServiceInstance
 import com.york.exordi.shared.Const
 import com.york.exordi.shared.PrefManager
 import okhttp3.MultipartBody
@@ -14,6 +16,8 @@ import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class AppRepository(application: Application) {
 
@@ -136,6 +140,44 @@ class AppRepository(application: Application) {
                 if (response.isSuccessful) {
                     response.body()?.let {
                         callback(it)
+                    }
+                }
+            }
+        })
+    }
+
+    fun getCategories(callback: (List<CategoryData>) -> Unit) {
+        webService.getAllCategories(getAuthToken()).enqueue(object : Callback<Category> {
+            override fun onFailure(call: Call<Category>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message!! )
+            }
+
+            override fun onResponse(call: Call<Category>, response: Response<Category>) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        if (it.code == 200) {
+                            callback(it.data)
+
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    fun toggleUpvote(postId: PostId, callback: (Boolean) -> Unit) {
+        webService.toggleUpvote(getAuthToken(), postId).enqueue(object : Callback<ResponseMessage> {
+            override fun onFailure(call: Call<ResponseMessage>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message )
+            }
+
+            override fun onResponse(
+                call: Call<ResponseMessage>,
+                response: Response<ResponseMessage>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        callback(it.message == "OK")
                     }
                 }
             }

@@ -14,4 +14,7 @@
     <string name="nav_feed">Feed</string>
     <string name="nav_add_post">Add Post</string>
     <string name="nav_explore">Explore</string>
+    <string name="title_activity_fullscreen_video">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

@@ -41,8 +41,8 @@ class Result(
     @SerializedName("number_of_comments")
     val commentsAmount: Int,
     val category: PostCategory,
-//    @SerializedName("upvoted_by_req_user")
-//    val upvotedByReqUser: Boolean,
+    @SerializedName("upvoted_by_req_user")
+    var upvotedByUser: Boolean,
     val author: PostAuthor
 )
 
@@ -64,4 +64,20 @@ class PostAuthor(
     val id: Int,
     val username: String?,
     val photo: String?
+)
+
+class PostId(
+    @SerializedName("post_uuid")
+    val postId: String
+)
+
+class Category(
+    val code: Int,
+    val data: List<CategoryData>
+)
+
+class CategoryData(
+    val id: Int,
+    val name: String,
+    var isSelected: Boolean = false
 )

@@ -10,4 +10,6 @@
     <color name="textColorSecondary">#C9CAD1</color>
     <color name="buttonBackgroundColor">#303030</color>
     <color name="spinnerBoxStrokeColor">@color/textColorSecondary</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

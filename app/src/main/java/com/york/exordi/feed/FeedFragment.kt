@@ -1,7 +1,9 @@
 package com.york.exordi.feed
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.fragment.app.Fragment
@@ -9,25 +11,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.PopupMenu
+import android.widget.ImageButton
 import android.widget.PopupWindow
-import android.widget.RelativeLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.york.exordi.R
+import com.york.exordi.adapters.CategoryAdapter
 import com.york.exordi.adapters.PostAdapter
 import com.york.exordi.events.EditProfileEvent
+import com.york.exordi.models.CategoryData
 import com.york.exordi.models.Profile
 import com.york.exordi.models.ProfileData
-import com.york.exordi.shared.Const
-import com.york.exordi.shared.OnItemClickListener
-import com.york.exordi.shared.makeInternetSafeRequest
+import com.york.exordi.models.Result
+import com.york.exordi.shared.*
+import kotlinx.android.synthetic.main.feed_categories.view.*
 import kotlinx.android.synthetic.main.fragment_feed.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -38,6 +44,10 @@ import org.greenrobot.eventbus.Subscribe
  * create an instance of this fragment.
  */
 class FeedFragment : Fragment() {
+
+    companion object {
+        const val RC_FULLSCREEN_ACTIVITY = 10
+    }
 
     private val viewModel by viewModels<FeedViewModel>()
 
@@ -60,9 +70,10 @@ class FeedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        context?.makeInternetSafeRequest { viewModel.getNewResults() }
         layout = view.findViewById<FrameLayout>(R.id.feedDimLayout)
         layout?.foreground?.alpha = 0
+
+        setupPopupWindow()
 
         progressBar = CircularProgressDrawable(requireContext()).apply {
             strokeWidth = 5F
@@ -83,14 +94,49 @@ class FeedFragment : Fragment() {
             }
         }
 
-        val adapter = PostAdapter(object : OnItemClickListener {
-            override fun <T> onItemClick(listItem: T) {
-
+        val adapter = PostAdapter(Glide.with(this))
+        adapter.clickListener = object : OnPostClickListener {
+            override fun onItemClick(position: Int, post: Result, tag: String, view: View?) {
+                when (tag) {
+                    Const.TAG_UPVOTE -> {
+//                        if (requireContext().isNetworkAvailable()) {
+//                            toggleUpvoteButton(view as ImageButton, post.upvotedByUser)
+//                            post.upvotedByUser = !post.upvotedByUser
+////                            adapter.notifyItemChanged(position)
+//                            viewModel.toggleUpvote(post.id)
+//                            viewModel.isUpvoteSuccessful.observe(viewLifecycleOwner) {
+//                                it?.let {
+//                                    if (!it) {
+//                                        post.upvotedByUser = !post.upvotedByUser
+//                                        adapter.notifyItemChanged(position)
+//                                    }
+//                                }
+//                            }
+//                        } else {
+//                            requireContext().makeNoConnectionToast()
+//                        }
+                        requireContext().makeInternetSafeRequest {
+                            toggleUpvoteButton(view as ImageButton, post.upvotedByUser)
+                            post.upvotedByUser = !post.upvotedByUser
+//                            adapter.notifyItemChanged(position)
+                            viewModel.toggleUpvote(post.id)
+                            viewModel.isUpvoteSuccessful.observe(viewLifecycleOwner) {
+                                it?.let {
+                                    if (!it) {
+                                        post.upvotedByUser = !post.upvotedByUser
+                                        adapter.notifyItemChanged(position)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-        })
+        }
         viewModel.results?.observe(viewLifecycleOwner) {
             feedPb.visibility = View.GONE
             feedSwipeRefreshLayout.isRefreshing = false
+            feedRv.setResultArrayList(it)
             adapter.submitList(it)
             feedRv.visibility = View.VISIBLE
             if (it.isNotEmpty()) {
@@ -101,17 +147,57 @@ class FeedFragment : Fragment() {
             }
         }
         feedRv.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        feedRv.setOnFullscreenButtonClickListener(object : OnFullscreenButtonClickListener {
+            override fun onButtonClick(videoUrl: String, currentPosition: Long) {
+                launchFullscreenVideoActivity(videoUrl, currentPosition)
+            }
+        })
         feedRv.adapter = adapter
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(feedRv)
         feedSwipeRefreshLayout.setOnRefreshListener {
-            viewModel.dataSourceLiveData?.value?.invalidate()
+            viewModel.refreshResults()
+            feedPb.visibility = View.VISIBLE
+
         }
-        setupPopupWindow()
         feedCategoryBtn.setOnClickListener { v ->
             categoriesPopupWindow.showAsDropDown(v)
             layout?.foreground?.alpha = 220
         }
+    }
+
+    private fun toggleUpvoteButton(
+        button: ImageButton,
+        upvotedByUser: Boolean
+    ) {
+        if (!upvotedByUser) {
+            button.setImageResource(R.drawable.ic_upvote_filled)
+
+        } else {
+            button.setImageResource(R.drawable.ic_upvote)
+        }
+    }
+
+    private fun launchFullscreenVideoActivity(
+        videoUrl: String,
+        currentPosition: Long
+    ) {
+        startActivityForResult(Intent(activity, FullscreenVideoActivity::class.java).apply {
+            putExtra(Const.EXTRA_VIDEO_URL, videoUrl)
+            putExtra(Const.EXTRA_PLAYBACK_POSITION, currentPosition)
+        }, RC_FULLSCREEN_ACTIVITY)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RC_FULLSCREEN_ACTIVITY && resultCode == Activity.RESULT_OK) {
+            setPlaybackPosition(data!!.getLongExtra(Const.EXTRA_PLAYBACK_POSITION, 0))
+        }
+    }
+
+    private fun setPlaybackPosition(position: Long) {
+        feedRv.setPlaybackPosition(position)
     }
 
     override fun onDestroy() {
@@ -130,25 +216,41 @@ class FeedFragment : Fragment() {
     private fun setupPopupWindow() {
         val inflater = context?.applicationContext?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val layout = inflater.inflate(R.layout.feed_categories, null)
+        val adapter = CategoryAdapter()
+        viewModel.categories.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                adapter.setValues(it)
+                adapter.setOnItemClickListener(object : OnItemClickListener {
+                    override fun <T> onItemClick(listItem: T) {
+                        val category = listItem as CategoryData
+                        category.isSelected = true
+                        viewModel.selectedCategory.value = category.id
+                        feedCategoryBtn.text = category.name
+                        for (cat in adapter.getCategories()) {
+                            if (cat.id != category.id) {
+                                cat.isSelected = false
+                            }
+                        }
+                        adapter.notifyDataSetChanged()
+                        categoriesPopupWindow.dismiss()
+                        viewModel.refreshResults()
+                        feedPb.visibility = View.VISIBLE
+                    }
+                })
+            }
+        }
+//        viewModel.selectedCategory.observe(viewLifecycleOwner) {
+//            if (it != 0) {
+//                viewModel.getNewResults()
+//            }
+//        }
+        layout.categoriesRv.layoutManager = LinearLayoutManager(requireContext())
+        layout.categoriesRv.adapter = adapter
         // TODO set onClickListeners for popup buttons
         categoriesPopupWindow = PopupWindow(layout, ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT, true)
         categoriesPopupWindow.setOnDismissListener {
             this.layout?.foreground?.alpha = 0
         }
 
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FeedFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) = FeedFragment()
     }
 }

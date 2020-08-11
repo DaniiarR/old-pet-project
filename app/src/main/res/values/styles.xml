@@ -17,26 +17,29 @@
         <item name="android:windowBackground">@drawable/splash_screen</item>
     </style>
 
-    <style name="AppBottomSheetDialogTheme"
-        parent="Theme.Design.Light.BottomSheetDialog">
+    <style name="AppTheme.FullScreen">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AppModalStyle</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/textColorSecondary</item>
         <item name="android:textViewStyle">@style/TextViewStyle</item>
     </style>
 
-    <style name="AppModalStyle"
-        parent="Widget.Design.BottomSheet.Modal">
+    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/profile_bottom_sheet_background</item>
     </style>
-    
+
     <style name="TextViewStyle" parent="Widget.MaterialComponents.TextView">
         <item name="android:textColor">@color/textColorPrimary</item>
     </style>
 
     <!-- Style for material design 'Spinner'-->
-    <style name="AppTheme.ExposedDropdownMenu"
-        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+    <style name="AppTheme.ExposedDropdownMenu" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <!-- color of box ONLY, not dropdown -->
         <item name="boxBackgroundColor">@color/material_spinner_box</item>
         <!-- the box outline color depending on state
@@ -44,18 +47,18 @@
         <item name="boxStrokeColor">@color/spinnerBoxStrokeColor</item>
         <!-- the hint INSIDE the box, before focusing the TextInputEditText -->
         <item name="android:textColorHint">@color/textColorSecondary</item>
-<!--        &lt;!&ndash; the hint ON TOP of the box, when the TextInputEditText is focused &ndash;&gt;-->
-<!--        <item name="hintTextColor">@color/textColorSecondary</item>-->
+        <!--        &lt;!&ndash; the hint ON TOP of the box, when the TextInputEditText is focused &ndash;&gt;-->
+        <!--        <item name="hintTextColor">@color/textColorSecondary</item>-->
         <!-- Gain access to additional styling for the child AutoCompleteTextView,
              which includes this spinner's dropdown/popup menu -->
-        <item name="colorSurface">@color/buttonBackgroundColor  </item>
-        <item name="materialThemeOverlay">@style/AppTheme.ExposedDropdownMenu.MaterialThemeOverlay</item>
+        <item name="colorSurface">@color/buttonBackgroundColor</item>
+        <item name="materialThemeOverlay">@style/AppTheme.ExposedDropdownMenu.MaterialThemeOverlay
+        </item>
     </style>
 
     <!-- customization of the material theme for use as
          an overlay for the ExposedDropdownMenu style  -->
-    <style name="AppTheme.ExposedDropdownMenu.MaterialThemeOverlay"
-        parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="AppTheme.ExposedDropdownMenu.MaterialThemeOverlay" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- background color of dropdown (popup) items -->
         <item name="colorSurface">@color/buttonBackgroundColor</item>
         <!--
@@ -64,7 +67,9 @@
          a style that should be applied to all AutoCompletTextView(s)
          in this theme/overlay
          -->
-        <item name="autoCompleteTextViewStyle">@style/AppTheme.ExposedDropdownMenu.AutoCompleteStyle</item>
+        <item name="autoCompleteTextViewStyle">
+            @style/AppTheme.ExposedDropdownMenu.AutoCompleteStyle
+        </item>
     </style>
 
     <!-- style the AutoCompleteTextView of our material spinner -->
@@ -91,4 +96,34 @@
         <item name="android:paddingEnd">20dp</item>
     </style>
 
+    <style name="CustomExoMediaButton">
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">50dp</item>
+    </style>
+
+    <style name="CustomExoMediaButton.Play">
+        <item name="android:src">@drawable/ic_play</item>
+    </style>
+
+    <style name="CustomExoMediaButton.Pause">
+        <item name="android:src">@drawable/ic_pause</item>
+    </style>
+
+    <style name="CustomExoMediaButton.Fullscreen">
+        <item name="android:src">@drawable/ic_fullscreen</item>
+    </style>
+
+    <style name="FullscreenTheme" parent="AppTheme">
+        <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
+        <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
+    </style>
+
+    <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/black_overlay</item>
+    </style>
 </resources>
