@@ -26,6 +26,7 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.york.exordi.R
 import com.york.exordi.adapters.CategoryAdapter
+import com.york.exordi.adapters.CommentAdapter
 import com.york.exordi.adapters.PostAdapter
 import com.york.exordi.events.EditProfileEvent
 import com.york.exordi.models.CategoryData
@@ -94,31 +95,28 @@ class FeedFragment : Fragment() {
             }
         }
 
-        val adapter = PostAdapter(Glide.with(this))
+        val commentAdapter = CommentAdapter()
+//        val adapter = PostAdapter(Glide.with(this), object : OnBindListener {
+//            override fun onBind(postId: String, recyclerView: RecyclerView) {
+//                commentAdapter.submitList(null)
+//                viewModel.getNewComments(postId)
+//                viewModel.comments?.observe(viewLifecycleOwner) {
+//                    if (it.isNotEmpty()) {
+//                        commentAdapter.submitList(it)
+//                        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+//                        recyclerView.adapter = commentAdapter
+//            }
+//        }
+//            }
+//        })
+        val adapter = PostAdapter(Glide.with(this), viewLifecycleOwner)
         adapter.clickListener = object : OnPostClickListener {
             override fun onItemClick(position: Int, post: Result, tag: String, view: View?) {
                 when (tag) {
                     Const.TAG_UPVOTE -> {
-//                        if (requireContext().isNetworkAvailable()) {
-//                            toggleUpvoteButton(view as ImageButton, post.upvotedByUser)
-//                            post.upvotedByUser = !post.upvotedByUser
-////                            adapter.notifyItemChanged(position)
-//                            viewModel.toggleUpvote(post.id)
-//                            viewModel.isUpvoteSuccessful.observe(viewLifecycleOwner) {
-//                                it?.let {
-//                                    if (!it) {
-//                                        post.upvotedByUser = !post.upvotedByUser
-//                                        adapter.notifyItemChanged(position)
-//                                    }
-//                                }
-//                            }
-//                        } else {
-//                            requireContext().makeNoConnectionToast()
-//                        }
                         requireContext().makeInternetSafeRequest {
                             toggleUpvoteButton(view as ImageButton, post.upvotedByUser)
                             post.upvotedByUser = !post.upvotedByUser
-//                            adapter.notifyItemChanged(position)
                             viewModel.toggleUpvote(post.id)
                             viewModel.isUpvoteSuccessful.observe(viewLifecycleOwner) {
                                 it?.let {
@@ -139,12 +137,6 @@ class FeedFragment : Fragment() {
             feedRv.setResultArrayList(it)
             adapter.submitList(it)
             feedRv.visibility = View.VISIBLE
-            if (it.isNotEmpty()) {
-//                feedEmptyView.visibility = View.GONE
-            } else {
-//                feedEmptyView.visibility = View.VISIBLE
-//                feedRv.visibility = View.INVISIBLE
-            }
         }
         feedRv.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         feedRv.setOnFullscreenButtonClickListener(object : OnFullscreenButtonClickListener {
@@ -166,13 +158,9 @@ class FeedFragment : Fragment() {
         }
     }
 
-    private fun toggleUpvoteButton(
-        button: ImageButton,
-        upvotedByUser: Boolean
-    ) {
+    private fun toggleUpvoteButton(button: ImageButton, upvotedByUser: Boolean) {
         if (!upvotedByUser) {
             button.setImageResource(R.drawable.ic_upvote_filled)
-
         } else {
             button.setImageResource(R.drawable.ic_upvote)
         }

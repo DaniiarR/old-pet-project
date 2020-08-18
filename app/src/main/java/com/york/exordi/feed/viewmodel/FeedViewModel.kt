@@ -7,6 +7,8 @@ import androidx.paging.LivePagedListBuilder
 import androidx.paging.PageKeyedDataSource
 import androidx.paging.PagedList
 import com.york.exordi.base.BaseViewModel
+import com.york.exordi.feed.datasource.CommentDataSourceFactory
+import com.york.exordi.feed.datasource.PostDataSourceFactory
 import com.york.exordi.models.*
 
 class FeedViewModel(application: Application) : BaseViewModel(application) {
@@ -19,6 +21,10 @@ class FeedViewModel(application: Application) : BaseViewModel(application) {
     var results: LiveData<PagedList<Result>>? = null
     var dataSourceLiveData: LiveData<PageKeyedDataSource<String, Result>>? = null
     lateinit var dataSourceFactory: PostDataSourceFactory
+
+    var commentDataSourceLiveData: LiveData<PageKeyedDataSource<String, CommentResult>>? = null
+    var commentDataSourceFactory: CommentDataSourceFactory? = null
+    var comments: LiveData<PagedList<CommentResult>>? = null
 
     val isUpvoteSuccessful = MutableLiveData<Boolean?>(null)
 
@@ -42,13 +48,33 @@ class FeedViewModel(application: Application) : BaseViewModel(application) {
     }
 
     fun getNewResults() {
-        dataSourceFactory = PostDataSourceFactory(getApplication(), selectedCategory.value!!)
+        dataSourceFactory =
+            PostDataSourceFactory(
+                getApplication(),
+                selectedCategory.value!!
+            )
         dataSourceLiveData = dataSourceFactory.postLiveDataSource
         val config = PagedList.Config.Builder()
             .setInitialLoadSizeHint(1)
             .setPageSize(1)
             .build()
         results = LivePagedListBuilder(dataSourceFactory, config).build()
+    }
+
+    fun getNewComments(postId: String) {
+        if (commentDataSourceFactory == null) {
+            commentDataSourceFactory = CommentDataSourceFactory(getApplication(),postId)
+            commentDataSourceLiveData = commentDataSourceFactory!!.commentLiveDataSource
+            val config = PagedList.Config.Builder()
+                .setInitialLoadSizeHint(1)
+                .setPageSize(1)
+                .build()
+            comments = LivePagedListBuilder(commentDataSourceFactory!!, config).build()
+        } else {
+            commentDataSourceFactory?.postId = postId
+            commentDataSourceLiveData?.value?.invalidate()
+        }
+
     }
 
     fun refreshResults() {
