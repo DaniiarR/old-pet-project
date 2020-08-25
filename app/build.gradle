@@ -112,6 +112,15 @@ dependencies {
     implementation "androidx.paging:paging-runtime-ktx:2.1.2"
     // ExoPlayer
     implementation "com.google.android.exoplayer:exoplayer:2.8.4"
+
+    // Image compressor
+    implementation 'id.zelory:compressor:3.0.0'
+    // Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8'
+    // Apache Commons
+    implementation 'commons-io:commons-io:2.7'
+    // Video compressor
+    implementation 'com.iceteck.silicompressorr:silicompressor:2.2.3'
 }
 
 kapt {

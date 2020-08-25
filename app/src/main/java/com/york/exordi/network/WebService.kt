@@ -3,8 +3,6 @@ package com.york.exordi.network
 import com.york.exordi.models.*
 import com.york.exordi.shared.Const
 import okhttp3.MultipartBody
-import okhttp3.Request
-import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -46,20 +44,13 @@ interface WebService {
 
     @Multipart
     @POST("post/")
-    fun createPost(@Header(Const.AUTH) authToken: String, @Part("category") category: Int, @Part file: MultipartBody.Part, @Part("text") description: String?, @Part("type") fileType: String): Call<AddPostResponse>
-//
-//    @GET("post")
-//    fun getAllPosts(@Header(Const.AUTH) authToken: String, @Query("category") category: Int): Call<Post>
-
+    fun createPost(@Header(Const.AUTH) authToken: String, @Part("category") category: Int, @Part("file_type") fileType: String, @Part file: MultipartBody.Part, @Part("text") description: String?): Call<AddPostResponse>
 
     @GET("post")
-    fun getAllPosts(@Header(Const.AUTH) authToken: String, @Query("category") category: Int): Call<Post>
+    fun getAllPosts(@Header(Const.AUTH) authToken: String, @Query("category") category: Int, @Query("order") order: String): Call<Post>
 
     @GET
-    fun getNextPosts(@Header(Const.AUTH) authToken: String, @Url url: String): Call<Post>
-
-    @GET
-    fun getPreviousPosts(@Header(Const.AUTH) authToken: String, @Url url: String): Call<Post>
+    fun getAdjacentPosts(@Header(Const.AUTH) authToken: String, @Url url: String): Call<Post>
 
     @GET("category")
     fun getAllCategories(@Header(Const.AUTH) authToken: String): Call<Category>
@@ -67,9 +58,50 @@ interface WebService {
     @POST("post/upvote/")
     fun toggleUpvote(@Header(Const.AUTH) authToken: String, @Body postId: PostId): Call<ResponseMessage>
 
+
+    @GET("post/comment/{id}/")
+    fun getComments(@Header(Const.AUTH) authToken: String, @Path("id") postId: String): Call<Comment>
+
+    @POST("post/comment/{id}/")
+    fun postComment(@Header(Const.AUTH) authToken: String, @Path("id") postId: String, @Body comment: CommentText): Call<ResponseMessage>
+
+    @HTTP(method = "DELETE", path = "post/comment/edit/{id}/", hasBody = true)
+    fun deleteComment(@Header(Const.AUTH) authToken: String, @Path("id") commentId: Int): Call<ResponseMessage>
+
+    @GET
+    fun getAdjacentComments(@Header(Const.AUTH) authToken: String, @Url url: String): Call<Comment>
+
+    @GET("user/{username}/")
+    fun getOtherProfile(@Header(Const.AUTH) authToken: String, @Path("username") username: String): Call<OtherProfile>
+
+    @GET("post")
+    fun getUserPosts(@Header(Const.AUTH) authToken: String, @Query("author") author: Int): Call<Post>
+
+    @POST("user/follow/")
+    fun followUser(@Header(Const.AUTH) authToken: String, @Body user: Username): Call<ResponseMessage>
+
+    @GET("user/{user}/{mode}/")
+    fun getFollowers(@Header(Const.AUTH) authToken: String, @Path("mode") mode: String, @Path("user") user: String = "me"): Call<Follower>
+
+    @GET
+    fun getAdjacentFollowers(@Header(Const.AUTH) authToken: String, @Url url: String): Call<Follower>
+    
+    @GET("user")
+    fun searchUser(@Header(Const.AUTH) authToken: String, @Query("q") username: String): Call<SearchUser>
+
+    @GET
+    fun searchAdjacentUser(@Header(Const.AUTH) authToken: String, @Url url: String): Call<SearchUser>
+
 }
 
 class WebServiceInstance {
 
+    companion object {
+
+        private var instance: WebServiceInstance? = null
+        fun get() = instance ?: WebServiceInstance()
+
+    }
     var webService: WebService? = null
+
 }

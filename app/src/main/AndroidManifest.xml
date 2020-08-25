@@ -22,10 +22,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".feed.ui.FollowersOrFollowingsActivity"></activity>
+        <activity android:name=".feed.ui.SinglePostActivity" />
+        <activity android:name=".feed.ui.OtherUserProfileActivity" />
         <activity
-            android:name=".feed.FullscreenVideoActivity"
+            android:name=".feed.ui.FullscreenVideoActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.FullScreen"/>
+            android:theme="@style/AppTheme.FullScreen" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -35,9 +38,9 @@
         <activity android:name=".addpost.PreparePostActivity" />
         <activity android:name=".addpost.CropImageActivity" />
         <activity android:name=".addpost.CameraActivity" />
-        <activity android:name=".feed.EditProfileActivity" />
+        <activity android:name=".feed.ui.EditProfileActivity" />
         <activity android:name=".settings.SettingsActivity" />
-        <activity android:name=".feed.ProfileActivity" />
+        <activity android:name=".feed.ui.ProfileActivity" />
         <activity android:name=".login.email.CodeInputActivity" />
         <activity android:name=".login.email.EmailStepThreeActivity" />
         <activity android:name=".login.email.EmailStepTwoActivity" />

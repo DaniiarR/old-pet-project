@@ -88,19 +88,21 @@ class LoginActivity : BaseActivity() {
             fbLoginBtn.performClick()
         }
         callbackManager = CallbackManager.Factory.create()
+        fbLoginBtn.setPermissions("email")
         fbLoginBtn.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult?) {
                 result?.let {
+                    Log.e(TAG, "onSuccess: " + "facebook onSuccess" )
                     sendTokenToBackend("facebook", it.accessToken.token)
                 }
             }
 
             override fun onCancel() {
-                TODO("Not yet implemented")
+                Log.e(TAG, "onCancel: " + "facebook login cancelled" )
             }
 
             override fun onError(error: FacebookException?) {
-                TODO("Not yet implemented")
+                Log.e(TAG, "onError: " + error?.message )
             }
         })
     }
@@ -147,7 +149,7 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun sendTokenToBackend(provider: String, token: String) {
-        val api = getRetrofit().create(AuthWebWebService::class.java)
+        val api = RetrofitInstance.SimpleInstance.get().create(AuthWebWebService::class.java)
         Log.e(TAG, "sendTokenToBackend: " + token)
         api.login(LoginCredentials(provider, token)).enqueue(object :
             Callback<LoginResponse> {
@@ -160,6 +162,7 @@ class LoginActivity : BaseActivity() {
                 response: Response<LoginResponse>
             ) {
                 if (response.isSuccessful) {
+                    Log.e(TAG, "onResponse: " + "retrofit success" )
                     response.body()?.let { body ->
                         if (body.code == "200") {
                             body.data.accessToken?.let { token ->
@@ -192,7 +195,7 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun login() {
-        val api = RetrofitInstance.getInstance().create(WebService::class.java)
+        val api = RetrofitInstance.SimpleInstance.get().create(WebService::class.java)
         api.login(Login(usernameEt.text.toString(), passwordTil.text.toString())).enqueue(object :
             Callback<LoginToken> {
             override fun onFailure(call: Call<LoginToken>, t: Throwable) {

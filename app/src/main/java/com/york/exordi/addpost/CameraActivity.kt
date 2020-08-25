@@ -79,12 +79,19 @@ class CameraActivity : AppCompatActivity() {
 
             override fun onStartRecord() {
                 if (cameraView.isOpened) {
-                    cameraView.mode = Mode.VIDEO
+                    if (cameraView.mode != Mode.VIDEO) {
+                        cameraView.mode = Mode.VIDEO
+                    }
                     cameraView.takeVideo(createVideoFile())
                 }
             }
 
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mediaAbsolutePath = null
     }
 
     @Subscribe
@@ -95,6 +102,7 @@ class CameraActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
+        setResult(Activity.RESULT_OK)
     }
 
     @AfterPermissionGranted(RC_ALL)
@@ -144,11 +152,25 @@ class CameraActivity : AppCompatActivity() {
         return savedPhoto
     }
 
+    private fun saveGalleryImagePath(data: Intent) {
+        val selectedImage: Uri = data.data!!
+        val filePathColumn = arrayOf(MediaStore.Images.Media.DISPLAY_NAME)
+        val cursor = contentResolver.query(selectedImage, filePathColumn, null, null, null)
+        cursor?.moveToFirst()
+        mediaAbsolutePath = cursor?.getString(cursor.getColumnIndex(filePathColumn[0]))
+        cursor?.close()
+        registerActivityForEvents()
+        startActivity(Intent(this@CameraActivity, CropImageActivity::class.java).apply {
+            putExtra(Const.EXTRA_FILE_PATH, mediaAbsolutePath)
+        })
+    }
+
     fun createVideoFile(): File {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val fileName = "EXORDI_" + timeStamp + "_"
         val storageDir = getDirPath()
         val video = File("$storageDir/$fileName.mp4")
+        mediaAbsolutePath = video.absolutePath
         return video
     }
 
@@ -182,20 +204,35 @@ class CameraActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-//            when (requestCode) {
-//                GALLERY_CODE -> saveGalleryImagePath(data)
-//            }
             val path = data?.data?.path
+            val uri = data?.data
             path?.let {
-                if (it.contains(".mp4")) {
-                    saveGalleryVideoPath(data)
-                } else if (it.contains(".jpg") || it.contains(".jpeg") || it.contains(".png")) {
-                    saveGalleryImagePath(data)
-
+                registerActivityForEvents()
+                if (it.contains(".mp4") || it.contains("video")) {
+                    startPreparePostActivity(uri!!)
+                } else if (it.contains(".jpg") || it.contains(".jpeg") || it.contains(".png") || it.contains("images")) {
+                    startCropActivity(uri!!)
                 }
             }
 
         }
+    }
+
+    private fun startCropActivity(uri: Uri) {
+        startActivity(Intent(this@CameraActivity, CropImageActivity::class.java).apply {
+            setData(uri)
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        })
+    }
+
+    private fun startPreparePostActivity(uri: Uri) {
+        startActivity(Intent(this@CameraActivity, PreparePostActivity::class.java).apply {
+            setData(uri)
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            putExtra(Const.EXTRA_FILE_TYPE, Const.EXTRA_FILE_TYPE_VIDEO)
+        })
     }
 
     private fun saveGalleryVideoPath(data: Intent) {
@@ -217,18 +254,7 @@ class CameraActivity : AppCompatActivity() {
 
     }
 
-    private fun saveGalleryImagePath(data: Intent) {
-        val selectedImage: Uri = data.data!!
-        val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor = contentResolver.query(selectedImage, filePathColumn, null, null, null)
-        cursor?.moveToFirst()
-        mediaAbsolutePath = cursor?.getString(cursor.getColumnIndex(filePathColumn[0]))
-        cursor?.close()
-        registerActivityForEvents()
-        startActivity(Intent(this@CameraActivity, CropImageActivity::class.java).apply {
-            putExtra(Const.EXTRA_FILE_PATH, mediaAbsolutePath)
-        })
-    }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

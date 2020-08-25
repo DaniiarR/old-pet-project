@@ -31,7 +31,7 @@ class CodeInputActivity : AppCompatActivity() {
 
     private val TAG = "CodeInputActivity"
 
-    val api = RetrofitInstance.getInstance().create(WebService::class.java)
+    val api = RetrofitInstance.SimpleInstance.get().create(WebService::class.java)
 
     private var backgroundDrawable: GradientDrawable? = null
 
@@ -86,7 +86,9 @@ class CodeInputActivity : AppCompatActivity() {
                             .putString(Const.PREF_AUTH_TOKEN, "JWT " + it.data.access)
                             .putString(Const.PREF_REFRESH_TOKEN, it.data.refresh)
                             .apply()
-                        startActivity(Intent(this@CodeInputActivity, MainActivity::class.java))
+                        startActivity(Intent(this@CodeInputActivity, MainActivity::class.java).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        })
                         finish()
                     }
                 } else {

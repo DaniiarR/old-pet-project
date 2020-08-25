@@ -30,6 +30,7 @@ import com.york.exordi.login.email.EmailStepOneActivity
 import com.york.exordi.models.LoginCredentials
 import com.york.exordi.models.LoginResponse
 import com.york.exordi.network.AuthWebWebService
+import com.york.exordi.network.RetrofitInstance
 import com.york.exordi.shared.Const
 import com.york.exordi.shared.PrefManager
 import kotlinx.android.synthetic.main.activity_sign_up.*
@@ -75,6 +76,7 @@ class SignUpActivity : BaseActivity() {
             fbLoginBtn.performClick()
         }
         callbackManager = CallbackManager.Factory.create()
+        fbLoginBtn.setPermissions("email")
         fbLoginBtn.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult?) {
                 result?.let {
@@ -134,7 +136,7 @@ class SignUpActivity : BaseActivity() {
     }
 
     private fun sendTokenToBackend(provider: String, token: String) {
-        val api = getRetrofit().create(AuthWebWebService::class.java)
+        val api = RetrofitInstance.SimpleInstance.get().create(AuthWebWebService::class.java)
         Log.e(TAG, "sendTokenToBackend: " + token)
         api.login(LoginCredentials(provider, token)).enqueue(object :
             Callback<LoginResponse> {

@@ -22,15 +22,30 @@ class Const {
         const val EXTRA_FILE_TYPE_VIDEO = "video"
         const val EXTRA_VIDEO_URL = "videoUrl"
         const val EXTRA_PLAYBACK_POSITION = "playbackPosition"
+        const val EXTRA_POST = "post"
+        const val EXTRA_POST_ID = "postId"
+        const val EXTRA_RATING = "rating"
+        const val EXTRA_NUMBER_OF_FOLLOWERS = "numberOfFollowers"
+        const val EXTRA_FOLLOWERS_CHANGE = "followersChange"
+        const val EXTRA_UPVOTES_CHANGE = "upvotesChange"
+        const val EXTRA_RATING_CHANGE = "ratingChange"
+        const val EXTRA_ACTIVITY_MODE = "mode"
+        const val EXTRA_MODE_FOLLOWERS = "Followers"
+        const val EXTRA_MODE_FOLLOWINGS = "Followings"
 
         /** Authentication token */
         const val PREF_AUTH_TOKEN = "authToken"
         const val PREF_REFRESH_TOKEN = "refreshToken"
         const val AUTH = "Authorization"
+        const val PREF_USERNAME = "username"
 
         /** View tags */
         const val TAG_PROFILE = "profile"
         const val TAG_UPVOTE = "upvote"
         const val TAG_COMMENTS = "comments"
+        const val TAG_COMMENT_DETAILS = "commentDetails"
+        const val TAG_FOLLOW = "follow"
+        const val TAG_UNFOLLOW = "unfollow"
+        const val TAG_WHOLE_VIEW = "whole"
     }
 }

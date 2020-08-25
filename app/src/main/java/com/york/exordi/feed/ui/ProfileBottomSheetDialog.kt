@@ -1,56 +1,58 @@
-package com.york.exordi.feed
+package com.york.exordi.feed.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.york.exordi.R
+import com.york.exordi.feed.viewmodel.ProfileViewModel
+import com.york.exordi.shared.Const
+import kotlinx.android.synthetic.main.profile_bottom_sheet.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ProfileBottomSheetDialog.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ProfileBottomSheetDialog : BottomSheetDialogFragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private val viewModel by activityViewModels<ProfileViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.profile_bottom_sheet, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProfileBottomSheetDialog.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance() =
-            ProfileBottomSheetDialog()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        arguments?.let {
+            bottomSheetRatingTv.text = it.getDouble(Const.EXTRA_RATING).toString()
+            followersAmountTv.text = it.getInt(Const.EXTRA_NUMBER_OF_FOLLOWERS).toString()
+            ratingIncreaseTv.text = it.getInt(Const.EXTRA_RATING_CHANGE).toString()
+            followersIncreaseTv.text = it.getInt(Const.EXTRA_FOLLOWERS_CHANGE).toString()
+            upvotesIncreaseTv.text = it.getInt(Const.EXTRA_UPVOTES_CHANGE).toString()
+
+            if (it.getInt(Const.EXTRA_RATING_CHANGE) < 0) {
+                makeViewsRed(ratingIncreaseTv, ratingIncreaseIv)
+            }
+            if (it.getInt(Const.EXTRA_FOLLOWERS_CHANGE) < 0) {
+                makeViewsRed(followersIncreaseTv, followersIncreaseIv)
+            }
+            if (it.getInt(Const.EXTRA_UPVOTES_CHANGE) < 0) {
+                makeViewsRed(upvotesIncreaseTv, upvotesIncreaseIv)
+            }
+        }
     }
+
+    private fun makeViewsRed(textView: TextView, imageView: ImageView) {
+        textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColorDecrease))
+        imageView.setImageResource(R.drawable.ic_decrease)
+    }
+
 }

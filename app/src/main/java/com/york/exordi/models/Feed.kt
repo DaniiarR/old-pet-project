@@ -8,13 +8,26 @@ class Profile(
 ) : Serializable
 
 class ProfileData(
-    val email: String? = null,
-    val username: String? = null,
-    val birthday: String? = null,
-    val bio: String? = null,
+    val id: Int,
+    val email: String?,
+    val username: String,
+    val birthday: String?,
+    val bio: String?,
     @SerializedName("photo")
-    val profilePic: String? = null,
-    val token: String? = null
+    val profilePic: String?,
+    val rating: Double?,
+    @SerializedName("rating_change")
+    val ratingChange: Int,
+    @SerializedName("number_of_posts")
+    val numberOfPosts: Int,
+    @SerializedName("number_of_followers")
+    val numberOfFollowers: Int,
+    @SerializedName("followers_change")
+    val followersChange: Int,
+    @SerializedName("upvotes_change")
+    val upvotesChange: Int,
+    @SerializedName("number_of_following")
+    val numberOfFollowings: Int
 ) : Serializable
 
 class Post(
@@ -43,28 +56,29 @@ class Result(
     val category: PostCategory,
     @SerializedName("upvoted_by_req_user")
     var upvotedByUser: Boolean,
-    val author: PostAuthor
-)
+    val author: PostAuthor,
+    var isCurrentUserPost: Boolean = false
+) : Serializable
 
 class PostComment(
 
-)
+) : Serializable
 
 class PostFile(
     val file: String,
     val type: String
-)
+) : Serializable
 
 class PostCategory(
     val id: Int,
     val name: String
-)
+) : Serializable
 
 class PostAuthor(
     val id: Int,
-    val username: String?,
+    val username: String,
     val photo: String?
-)
+) : Serializable
 
 class PostId(
     @SerializedName("post_uuid")
@@ -80,4 +94,73 @@ class CategoryData(
     val id: Int,
     val name: String,
     var isSelected: Boolean = false
+) : Serializable
+
+class Comment(
+    val code: Int,
+    val data: CommentData
+)
+
+class CommentData(
+    val next: String?,
+    val previous: String?,
+    val results: List<CommentResult>
+)
+
+class CommentResult(
+    val id: Int,
+    val author: PostAuthor,
+    val text: String,
+    @SerializedName("posted_on")
+    val postedOn: String
+)
+
+class OtherProfile(
+    val code: Int,
+    val data: OtherProfileData
+)
+
+class OtherProfileData(
+    val id: Int,
+    val username: String,
+    val fullname: String?,
+    val bio: String?,
+    val photo: String?,
+    @SerializedName("number_of_posts")
+    val numberOfPosts: Int,
+    val rating: Double,
+    @SerializedName("followed_by_req_user")
+    var followedByMe: Boolean,
+    @SerializedName("number_of_following")
+    val numberOfFollowings: Int
+)
+
+class Username(
+    val username: String
+)
+
+class CommentText(
+    val text: String
+)
+
+class Follower(
+    val code: Int,
+    val data: FollowerData
+)
+
+class FollowerData(
+    val count: Int,
+    val next: String?,
+    val previous: String?,
+    val results: List<FollowerResult>
+)
+
+class FollowerResult(
+    val id: Int,
+    val email: String?,
+    val username: String,
+    val rating: Double,
+    val photo: String?,
+    @SerializedName("followed_by_req_user")
+    var isFollowedByUser: Boolean
 )

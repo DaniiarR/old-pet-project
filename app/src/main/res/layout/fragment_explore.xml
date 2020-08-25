@@ -3,12 +3,208 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".explore.ExploreFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Explore Fragment" />
+        android:layout_height="match_parent">
 
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/exploreBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/settingsToolbar"
+            android:layout_width="match_parent"
+            android:background="@color/backgroundColorPrimary"
+            app:title="Explore"
+            android:layout_height="?attr/actionBarSize"/>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_below="@id/exploreBarLayout"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:layout_height="match_parent">
+
+                <EditText
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:hint="Search"
+                    android:drawablePadding="16dp"
+                    android:background="@drawable/edit_text_background"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:drawableStart="@drawable/ic_explore"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:paddingTop="16dp"
+                    android:layout_marginTop="20dp"
+                    android:paddingBottom="16dp"
+                    android:layout_width="match_parent"
+                    android:textColor="@color/textColorPrimary"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:maxLength="20"
+                    android:id="@+id/exploreSearchEt"/>
+
+                <ProgressBar
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:indeterminateTint="@color/colorPrimary"
+                    android:visibility="invisible"
+                    android:id="@+id/exploreSearchPb"
+                    app:layout_constraintEnd_toEndOf="@id/exploreSearchEt"
+                    app:layout_constraintTop_toTopOf="@id/exploreSearchEt"
+                    app:layout_constraintBottom_toBottomOf="@id/exploreSearchEt"
+                    android:layout_marginEnd="16dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/exploreUsersRv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="100dp"
+                    android:visibility="gone"
+                    tools:listitem="@layout/explore_user_list_item"
+                    app:layout_constraintTop_toBottomOf="@id/exploreSearchEt"/>
+
+                <TextView
+                    android:id="@+id/exploreEmptyView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColorSecondary"
+                    android:text="No users found"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/exploreSearchEt"
+                    android:layout_marginTop="20dp"/>
+
+                <TextView
+                    android:id="@+id/browseByCategoriesTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="Browse by categories"
+                    app:layout_constraintTop_toBottomOf="@id/exploreUsersRv"
+                    android:layout_marginTop="35dp"/>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="1dp"
+                    app:layout_constraintTop_toBottomOf="@id/browseByCategoriesTv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:id="@+id/anchorView"/>
+
+                <FrameLayout
+                    android:id="@+id/browseArtBtn"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/anchorView"
+                    app:layout_constraintTop_toBottomOf="@id/browseByCategoriesTv"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:src="@drawable/explore_art"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginStart="20dp"
+                        android:text="Art"/>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/browseFashionBtn"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintTop_toBottomOf="@id/browseByCategoriesTv"
+                    app:layout_constraintStart_toEndOf="@id/anchorView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:src="@drawable/explore_fashion"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginStart="20dp"
+                        android:text="Fashion"/>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/browseMusicBtn"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="15dp"
+                    app:layout_constraintTop_toBottomOf="@id/browseArtBtn"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/anchorView"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/explore_music"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginStart="20dp"
+                        android:text="Music"/>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/browseSportBtn"
+                    android:layout_width="0dp"
+                    app:layout_constraintTop_toTopOf="@id/browseMusicBtn"
+                    app:layout_constraintStart_toEndOf="@id/anchorView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/explore_sport"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginStart="20dp"
+                        android:text="Sport"/>
+                </FrameLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </ScrollView>
+
+    </RelativeLayout>
 </FrameLayout>

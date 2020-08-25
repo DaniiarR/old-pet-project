@@ -37,7 +37,7 @@ class EmailStepThreeActivity : AppCompatActivity() {
     private var passwordDrawable: GradientDrawable? = null
     private var confirmPasswordDrawable: GradientDrawable? = null
 
-    private val api = RetrofitInstance.getInstance().create(WebService::class.java)
+    private val api = RetrofitInstance.SimpleInstance.get().create(WebService::class.java)
 
     private var isEmailValid = MutableLiveData<Boolean>(false)
     private var isUsernameValid = MutableLiveData(false)
@@ -47,6 +47,10 @@ class EmailStepThreeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_email_step_three)
 
+        hideUsernameError()
+        hideEmailError()
+        hideError(passwordDrawable, passwordErrorTv)
+        hideError(confirmPasswordDrawable, confirmPasswordErrorTv)
         birthDay = intent.getStringExtra(Const.EXTRA_BIRTHDATE)
         country = intent.getStringExtra(Const.EXTRA_COUNTRY)
 
@@ -90,7 +94,7 @@ class EmailStepThreeActivity : AppCompatActivity() {
                         showUsernameError("Username is too long")
                     }
                     else -> {
-                        if (text.toString().matches("^[a-z0-9_-]{4,15}$".toRegex())) {
+                        if (text.toString().matches("^[a-zA-Z0-9_-]{4,15}\$".toRegex())) {
                             makeInternetSafeRequest { checkUsername(text.toString()) }
                         } else {
                             isUsernameValid.value = false

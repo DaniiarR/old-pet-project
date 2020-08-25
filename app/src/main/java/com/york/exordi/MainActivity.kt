@@ -1,13 +1,20 @@
 package com.york.exordi
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.core.view.get
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.york.exordi.adapters.FragmentAdapter
+import com.york.exordi.addpost.CameraActivity
 import com.york.exordi.base.BaseActivity
+import com.york.exordi.events.ChangeTabEvent
 import com.york.exordi.shared.Const
+import com.york.exordi.shared.registerActivityForEvents
 import kotlinx.android.synthetic.main.activity_main.*
+import org.greenrobot.eventbus.Subscribe
 
 class MainActivity : BaseActivity() {
 
@@ -22,6 +29,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        registerActivityForEvents()
         feedFragment = RootFragment.newInstance(Const.FRAGMENT_FEED)
         addPostFragment = RootFragment.newInstance(Const.FRAGMENT_ADD_POST)
         exploreFragment = RootFragment.newInstance(Const.FRAGMENT_EXPLORE)
@@ -31,14 +39,36 @@ class MainActivity : BaseActivity() {
 
     }
 
+    @Subscribe
+    fun onChangeTabEvent(event: ChangeTabEvent) {
+        nonSwipeableViewPager.currentItem = 0
+    }
+
     private fun setupBottomNav() {
         bottomNav.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.navigation_feed -> selectFragment(feedFragment, 0)
-                R.id.navigation_add_post -> selectFragment(addPostFragment, 1)
+//                R.id.navigation_add_post -> selectFragment(addPostFragment, 1)
+                R.id.navigation_add_post -> startCameraActivity()
                 R.id.navigation_explore -> selectFragment(exploreFragment, 2)
                 else -> false
             }
+        }
+    }
+
+    private fun startCameraActivity(): Boolean {
+        startActivityForResult(Intent(this, CameraActivity::class.java), 100)
+        return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 100) {
+            if (prevMenuItem == null) {
+                prevMenuItem = bottomNav.menu.getItem(0)
+            }
+            bottomNav.menu.getItem(1).isChecked = false
+            prevMenuItem?.isChecked = true
         }
     }
 

@@ -40,7 +40,7 @@ class EmailStepTwoActivity : AppCompatActivity() {
                         nextBtn.setOnClickListener {
                             startActivity(Intent(this@EmailStepTwoActivity, EmailStepThreeActivity::class.java)
                                 .apply {
-                                    putExtra(Const.EXTRA_BIRTHDATE, birthday)
+                                       putExtra(Const.EXTRA_BIRTHDATE, birthday)
                                     putExtra(Const.EXTRA_COUNTRY, countries[p1])
                                 })
                         }

@@ -1,9 +1,10 @@
-package com.york.exordi.feed
+package com.york.exordi.feed.ui
 
 import android.Manifest
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.widget.doOnTextChanged
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.york.exordi.BuildConfig
 import com.york.exordi.R
@@ -26,23 +28,35 @@ import com.york.exordi.models.Profile
 import com.york.exordi.models.UsernameCheck
 import com.york.exordi.repository.AppRepository
 import com.york.exordi.shared.Const
-import com.york.exordi.shared.PrefManager
+import com.york.exordi.shared.getFileName
 import com.york.exordi.shared.makeInternetSafeRequest
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.format
+import id.zelory.compressor.constraint.quality
+import id.zelory.compressor.constraint.resolution
+import id.zelory.compressor.constraint.size
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 import kotlinx.android.synthetic.main.activity_edit_profile.usernameErrorTv
 import kotlinx.android.synthetic.main.activity_edit_profile.usernameEt
 import kotlinx.android.synthetic.main.activity_edit_profile.usernamePb
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
+import org.apache.commons.io.IOUtils
 import org.greenrobot.eventbus.EventBus
 import pub.devrel.easypermissions.EasyPermissions
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.coroutines.CoroutineContext
 
 class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
@@ -58,6 +72,7 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
     private var repository: AppRepository? = null
 
     private var imageAbsolutePath: String? = null
+    private var imageUri: Uri? = null
 
     private var isUsernameValid = true
 
@@ -70,10 +85,13 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
         setContentView(R.layout.activity_edit_profile)
 
         repository = AppRepository.getInstance(application)
+        hideUsernameError()
         usernameDrawable = usernameEt.background as GradientDrawable
         setupInitialProfile()
         editProfileToolbar.setNavigationOnClickListener { finish() }
-        editProfileSaveButton.setOnClickListener { makeInternetSafeRequest { checkUsernameValidity() } }
+        editProfileSaveButton.setOnClickListener {
+            makeInternetSafeRequest { compressImage() }
+        }
         profileIv.setOnClickListener { showSelectActionDialog() }
         uploadPhotoTv.setOnClickListener { showSelectActionDialog() }
         usernameEt.doOnTextChanged { text, _, _, _ ->
@@ -92,7 +110,7 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
                         hideUsernameError()
                     }
                     else -> {
-                        if (text.toString().matches("^[a-z0-9_-]{4,15}$".toRegex())) {
+                        if (text.toString().matches("^[a-zA-Z0-9_-]{4,15}$".toRegex())) {
                             makeInternetSafeRequest { checkUsername(text.toString()) }
                         } else {
                             isUsernameValid = false
@@ -167,25 +185,6 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
             RC_CAMERA -> takePictureWithCamera()
         }
     }
-//
-//    private fun checkGalleryPermission() {
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-//            selectImageFromGallery()
-//        } else {
-//            requestGalleryPermission()
-//        }
-//    }
-//
-//    private fun requestGalleryPermission() {
-//        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-//            AlertDialog.Builder(this).setTitle("Permission needed").setMessage("This permission is need to select images from gallery")
-//                .setPositiveButton("OK") { p0, p1 -> ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), GALLERY_REQUEST_CODE) }
-//                .setNegativeButton("cancel") { p0, p1 -> p0.dismiss()}
-//                .create().show()
-//        } else {
-//            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), GALLERY_REQUEST_CODE)
-//        }
-//    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -207,9 +206,12 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
                 setType("image/*")
                 putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
             }
-            startActivityForResult(intent, GALLERY)
+            startActivityForResult(intent,
+                GALLERY
+            )
         } else {
-            EasyPermissions.requestPermissions(this, "The App needs this permission to select images from gallery", RC_GALLERY, Manifest.permission.READ_EXTERNAL_STORAGE)
+            EasyPermissions.requestPermissions(this, "The App needs this permission to select images from gallery",
+                RC_GALLERY, Manifest.permission.READ_EXTERNAL_STORAGE)
         }
     }
 
@@ -227,11 +229,14 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
                 photoFile?.let {
                     val photoUri: Uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", photoFile)
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                    startActivityForResult(takePictureIntent, CAMERA)
+                    startActivityForResult(takePictureIntent,
+                        CAMERA
+                    )
                 }
             }
         } else {
-            EasyPermissions.requestPermissions(this, "The App needs this permission to select take photos from camera", RC_CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+            EasyPermissions.requestPermissions(this, "The App needs this permission to select take photos from camera",
+                RC_CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
         }
 
     }
@@ -252,25 +257,25 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 CAMERA -> setImage()
-                GALLERY -> saveGalleryImagePath(data)
+                GALLERY -> {
+                    imageUri = data?.data
+                    setImageFromGallery(data?.data)
+                }
             }
         }
     }
 
-    private fun saveGalleryImagePath(data: Intent?) {
-        val selectedImage: Uri = data!!.data!!
-        val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor = contentResolver?.query(selectedImage, filePathColumn, null, null, null)
-        cursor?.moveToFirst()
-        imageAbsolutePath = cursor?.getString(cursor.getColumnIndex(filePathColumn[0]))
-        setImage()
-    }
-
     private fun setImage() {
         Glide.with(this).load(imageAbsolutePath).into(profileIv)
+        imageUri = null
     }
 
-    private fun checkUsernameValidity() {
+    private fun setImageFromGallery(uri: Uri?) {
+        Glide.with(this).load(uri).into(profileIv)
+        imageAbsolutePath = null
+    }
+
+    private fun checkUsernameValidity(photo: File?) {
         if (isUsernameValid) {
             editProfilePb.visibility = View.VISIBLE
             editProfileSaveButton.visibility = View.GONE
@@ -279,19 +284,43 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
             val description = descriptionEt.text.toString()
 
             if (username != initialUsername) {
-                makeInternetSafeRequest { editProfile(username, description) }
+                makeInternetSafeRequest { editProfile(username, description, photo) }
             } else {
-                makeInternetSafeRequest { editDescription(description) }
+                makeInternetSafeRequest { editDescription(description, photo) }
             }
         } else {
             Toast.makeText(this, "Username is invalid", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun editProfile(username: String, description: String) {
-        var profilePhotoBody: MultipartBody.Part? = createPhotoMultipartBodyPart()
+    private fun compressImage() {
+        var file: File? = null
+        if (imageUri != null) {
+            file = copyFileToCache(imageUri!!)
+        } else if (imageAbsolutePath != null) {
+            file = File(imageAbsolutePath!!)
+        }
+        if (file != null) {
+            lifecycleScope.launch {
+                val compressedFile = Compressor.compress(this@EditProfileActivity, file, Dispatchers.Main) {
+                    resolution(1080, 1350)
+                    quality(80)
+                    format(Bitmap.CompressFormat.JPEG)
+                }
+                checkUsernameValidity(compressedFile)
+            }
+        } else {
+            checkUsernameValidity(file)
+        }
 
-        repository?.editProfile(username, description, profilePhotoBody) {
+    }
+
+    private fun editProfile(username: String, description: String, photo: File?) {
+        var multipartBody: MultipartBody.Part? = null
+        if (photo != null) {
+            multipartBody = MultipartBody.Part.createFormData("photo", photo.name, photo.asRequestBody("image/*".toMediaTypeOrNull()))
+        }
+        repository?.editProfile(username, description, multipartBody) {
             if (it != null) {    // if profile is null, the profile could not be updated
                 handleCallback(it)
             } else {
@@ -302,10 +331,12 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
         }
     }
 
-    private fun editDescription(description: String) {
-        var profilePhotoBody: MultipartBody.Part? = createPhotoMultipartBodyPart()
-
-        repository?.editDescription(description, profilePhotoBody) {
+    private fun editDescription(description: String, photo: File?) {
+        var multipartBody: MultipartBody.Part? = null
+        if (photo != null) {
+            multipartBody = MultipartBody.Part.createFormData("photo", photo.name, photo.asRequestBody("image/*".toMediaTypeOrNull()))
+        }
+        repository?.editDescription(description, multipartBody) {
             if (it != null) {    // if profile is null, the profile could not be updated
                 handleCallback(it)
             } else {
@@ -316,18 +347,46 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
         }
     }
 
+//    private fun createFileMultipartBody(): MultipartBody.Part? {
+//        if (imageUri == null && imageAbsolutePath == null) {
+//            return null
+//        }
+////        fileUri?.let {
+//        var file: File? = null
+//        if (imageUri != null) {
+////            val utils: com.york.exordi.shared.FileUtils = com.york.exordi.shared.FileUtils(this)
+////            file = File(utils.getRealPathFromUri(fileUri))
+//            file = copyFileToCache(imageUri!!)
+//        } else if (imageAbsolutePath != null) {
+//            file = File(imageAbsolutePath!!)
+//        }
+//        var requestBody: RequestBody? = null
+//        if (file!!.length() / 1024 > 1000) {
+//            launch {
+//                file = Compressor.compress(this@EditProfileActivity, file!!, Dispatchers.Main) {
+//                    size(999999)
+//                }
+//
+//            }
+//            requestBody = file!!.asRequestBody("image/*".toMediaTypeOrNull())
+//        } else {
+//            requestBody = file!!.asRequestBody("image/*".toMediaTypeOrNull())
+//        }
+//            return MultipartBody.Part.createFormData("photo", file!!.name, requestBody)
+////        }
+//    }
 
-    private fun createPhotoMultipartBodyPart(): MultipartBody.Part? {
-        if (imageAbsolutePath != null) {
-            val file = File(imageAbsolutePath!!)
-            val requestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
-            return MultipartBody.Part.createFormData("photo", file.name, requestBody)
-        }
-        return null
+    private fun copyFileToCache(fileUri: Uri): File {
+        val parcelFileDescriptor = contentResolver.openFileDescriptor(fileUri, "r", null)
+        val inputStream = FileInputStream(parcelFileDescriptor!!.fileDescriptor)
+        val file = File(cacheDir, contentResolver.getFileName(fileUri))
+        val outputStream = FileOutputStream(file)
+        IOUtils.copy(inputStream, outputStream)
+        return file
     }
 
     private fun handleCallback(profile: Profile) {
-        val event = EditProfileEvent(profile.data.email, profile.data.username, profile.data.birthday, profile.data.bio, profile.data.profilePic)
+        val event = EditProfileEvent(profile.data.id, profile.data.email, profile.data.username, profile.data.birthday, profile.data.bio, profile.data.profilePic, profile.data.rating, profile.data.ratingChange, profile.data.numberOfPosts, profile.data.numberOfFollowers, profile.data.followersChange, profile.data.upvotesChange, profile.data.numberOfFollowings)
         EventBus.getDefault().post(event)
         finish()
     }

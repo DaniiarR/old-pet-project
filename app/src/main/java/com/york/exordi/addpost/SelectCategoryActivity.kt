@@ -4,102 +4,97 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.york.exordi.R
+import com.york.exordi.adapters.PreparePostCategoryAdapter
+import com.york.exordi.models.AddPostCategory
+import com.york.exordi.models.Category
+import com.york.exordi.models.CategoryData
+import com.york.exordi.network.AuthWebWebService
+import com.york.exordi.network.RetrofitInstance
+import com.york.exordi.network.WebService
 import com.york.exordi.shared.Const
+import com.york.exordi.shared.OnItemClickListener
+import com.york.exordi.shared.PrefManager
 import kotlinx.android.synthetic.main.activity_select_category.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SelectCategoryActivity : AppCompatActivity() {
 
-    private val categoryList: ArrayList<TextView> = arrayListOf()
-    private val ticksHashMap = HashMap<TextView, ImageView>()
+    companion object {
+        private const val TAG = "SelectCategoryActivity"
+    }
 
-    private var selectedCategory: Int? = null
+    private var categoryList: List<CategoryData>? = null
+
+    private var selectedCategory: CategoryData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_category)
-
-        categoryList.apply {
-            add(artBtn)
-            add(fashionBtn)
-            add(musicBtn)
-            add(sportBtn)
-        }
-        ticksHashMap[artBtn] = artTick
-        ticksHashMap[fashionBtn] = fashionTick
-        ticksHashMap[musicBtn] = musicTick
-        ticksHashMap[sportBtn] = sportTick
-
-        val category = intent.getIntExtra(Const.EXTRA_CATEGORY, 0)
-        if (category != 0) {
-            selectedCategory = category
-            selectCategoryUsingName(getCategoryNameById(category))
-            doneBtn.visibility = View.VISIBLE
-        }
-
         setSupportActionBar(selectCategoryBar)
         selectCategoryBar.setNavigationOnClickListener { finish() }
 
-        artBtn.setOnClickListener { selectCategory(it as TextView) }
-        fashionBtn.setOnClickListener { selectCategory(it as TextView) }
-        musicBtn.setOnClickListener { selectCategory(it as TextView) }
-        sportBtn.setOnClickListener { selectCategory(it as TextView) }
+        val adapter = PreparePostCategoryAdapter()
+        adapter.clickListener = object : OnItemClickListener {
+            override fun <T> onItemClick(listItem: T) {
+                selectedCategory = listItem as CategoryData
+                adapter.setValues(selectCategory(categoryList!!) as ArrayList<CategoryData>)
+                doneBtn.visibility = View.VISIBLE
+            }
+        }
+
+        val category = intent.getSerializableExtra(Const.EXTRA_CATEGORY) as CategoryData?
+        category?.let {
+            selectedCategory = it
+            doneBtn.visibility = View.VISIBLE
+        }
         doneBtn.setOnClickListener {
-            val intent = Intent()
-            intent.putExtra(Const.EXTRA_CATEGORY, selectedCategory)
-            setResult(Activity.RESULT_OK, intent)
-            finish()
-        }
-    }
+            selectedCategory?.let { cat ->
+                val intent = Intent()
+                intent.putExtra(Const.EXTRA_CATEGORY, cat)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
 
-    private fun selectCategoryUsingName(category: String) {
-        for (cat in categoryList) {
-            if (cat.text.toString() == category) {
-                cat.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedTextViewColor))
-                ticksHashMap[cat]?.visibility = View.VISIBLE
-            } else {
-                cat.setBackgroundColor(ContextCompat.getColor(this, R.color.backgroundColorPrimary))
-                ticksHashMap[cat]?.visibility = View.INVISIBLE
             }
         }
+
+        val api = RetrofitInstance.SimpleInstance.get().create(WebService::class.java)
+        api.getAllCategories(PrefManager.getMyPrefs(applicationContext).getString(Const.PREF_AUTH_TOKEN, null)!!).enqueue(
+            object : Callback<Category> {
+                override fun onFailure(call: Call<Category>, t: Throwable) {
+                    Log.e(TAG, "onFailure: " + t.message!! )
+                }
+
+                override fun onResponse(call: Call<Category>, response: Response<Category>) {
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            categoryList = selectCategory(it.data)
+                            adapter.setValues(categoryList as ArrayList<CategoryData>)
+                            preparePostCategoryRv.layoutManager = LinearLayoutManager(this@SelectCategoryActivity)
+                            preparePostCategoryRv.adapter = adapter
+                        }
+                    }
+                }
+
+            })
     }
 
-    private fun selectCategory(view: TextView) {
-        for (cat in categoryList) {
-            if (cat == view) {
-                cat.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedTextViewColor))
-                ticksHashMap[cat]?.visibility = View.VISIBLE
-            } else {
-                cat.setBackgroundColor(ContextCompat.getColor(this, R.color.backgroundColorPrimary))
-                ticksHashMap[cat]?.visibility = View.INVISIBLE
+    private fun selectCategory(cats: List<CategoryData>): List<CategoryData> {
+        selectedCategory?.let {
+            cats.forEach {cat ->
+                cat.isSelected = cat.id == it.id
             }
         }
-        selectedCategory = getCategoryIdByName(view.text.toString())
-        doneBtn.visibility = View.VISIBLE
-
+        return cats
     }
 
-    fun getCategoryIdByName(name: String): Int {
-        when (name) {
-            "Art" -> return 1
-            "Fashion" -> return 2
-            "Music" -> return 3
-            "Sport" -> return 4
-        }
-        return 0
-    }
-
-    fun getCategoryNameById(id: Int): String {
-        when (id) {
-            1 -> return "Art"
-            2 -> return "Fashion"
-            3 -> return "Music"
-            4 -> return "Sport"
-        }
-        return ""
-    }
 }

@@ -3,23 +3,20 @@ package com.york.exordi.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
-import com.chad.library.adapter.base.BaseQuickAdapter
-import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.york.exordi.R
-import com.york.exordi.models.Post
 import com.york.exordi.models.Result
-import com.york.exordi.shared.OnItemClickListener
 import com.york.exordi.shared.OnPostClickListener
+import com.york.exordi.shared.OnViewDetachedFromWindowListener
 import kotlinx.android.synthetic.main.feed_list_item.view.*
 
-class PostAdapter(val requestManager: RequestManager) : PagedListAdapter<Result, PostViewHolder>(diffCallback) {
+class PostAdapter(val requestManager: RequestManager, val lifecycleOwner: LifecycleOwner) : PagedListAdapter<Result, PostViewHolder>(diffCallback) {
 
     var clickListener: OnPostClickListener? = null
+    var onViewDetachedListener: OnViewDetachedFromWindowListener? = null
 
     companion object {
         val diffCallback = object : DiffUtil.ItemCallback<Result>() {
@@ -34,12 +31,28 @@ class PostAdapter(val requestManager: RequestManager) : PagedListAdapter<Result,
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        return PostViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.feed_list_item, parent, false), clickListener!!)
+
+    override fun onViewDetachedFromWindow(holder: PostViewHolder) {
+        onViewDetachedListener?.onViewDetached()
+        holder.itemView.feedCommentsRv.adapter = null
+        holder.itemView.feedBlankSpace.visibility = View.GONE
+        holder.itemView.feedCommentsRv.visibility = View.GONE
     }
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
+        return PostViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.feed_list_item, parent, false), clickListener!!, lifecycleOwner)
+    }
+
+//    override fun onViewDetachedFromWindow(holder: PostViewHolder) {
+//        var adapter = holder.commentsRv.adapter as PagedListAdapter<CommentResult, CommentAdapter.CommentViewHolder>
+//        adapter.submitList(null)
+//    }
+
+
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        holder.bind(position, getItem(position), requestManager)
+//        holder.bind(position, getItem(position), requestManager)
+        holder.bind(position, getItem(holder.bindingAdapterPosition), requestManager)
+
     }
 
 }

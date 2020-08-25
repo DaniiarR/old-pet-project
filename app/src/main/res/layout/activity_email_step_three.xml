@@ -1,237 +1,243 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView
     android:layout_width="match_parent"
-    android:animateLayoutChanges="true"
     android:layout_height="match_parent"
-    tools:context=".login.email.EmailStepThreeActivity">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-        android:id="@+id/backBtn"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:animateLayoutChanges="true"
         android:layout_height="wrap_content"
-        android:text="BACK"
-        android:textColor="@color/colorPrimary"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"/>
+        tools:context=".login.email.EmailStepThreeActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Step 3/3"
-        android:textColor="@color/textColorSecondary"
-        app:layout_constraintBottom_toBottomOf="@id/backBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/backBtn" />
+        <TextView
+            android:id="@+id/backBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BACK"
+            android:textColor="@color/colorPrimary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"/>
 
-    <TextView
-        android:id="@+id/signUpTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sign Up"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="24sp"
-        android:layout_marginTop="94dp"
-        app:layout_constraintTop_toBottomOf="@id/backBtn"
-        app:layout_constraintStart_toStartOf="parent"/>
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Step 3/3"
+            android:textColor="@color/textColorSecondary"
+            app:layout_constraintBottom_toBottomOf="@id/backBtn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/backBtn" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Where are you from?"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/signUpTv"
-        android:layout_marginTop="10dp"/>
+        <TextView
+            android:id="@+id/signUpTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign Up"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textSize="24sp"
+            android:layout_marginTop="94dp"
+            app:layout_constraintTop_toBottomOf="@id/backBtn"
+            app:layout_constraintStart_toStartOf="parent"/>
 
-    <EditText
-        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-        android:hint="Email"
-        android:padding="16dp"
-        android:background="@drawable/edit_text_background"
-        android:layout_marginTop="76dp"
-        android:layout_width="305dp"
-        android:layout_height="55dp"
-        android:singleLine="true"
-        android:maxLines="1"
-        android:maxLength="254"
-        android:id="@+id/emailEt"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/signUpTv" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Where are you from?"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/signUpTv"
+            android:layout_marginTop="10dp"/>
 
-    <ProgressBar
-        android:id="@+id/emailPb"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:visibility="invisible"
-        android:indeterminateTint="@color/colorPrimary"
-        android:indeterminateTintMode="src_atop"
-        android:layout_marginEnd="16dp"
-        android:elevation="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/emailErrorTv"
-        app:layout_constraintEnd_toEndOf="@+id/emailEt"
-        app:layout_constraintTop_toTopOf="@+id/emailEt" />
-    
-    <ImageView
-        android:id="@+id/emailTick"
-        android:layout_width="14dp"
-        android:layout_height="14dp"
-        android:visibility="invisible"
-        android:src="@drawable/ic_tick"
-        android:layout_marginEnd="16dp"
-        android:elevation="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/emailErrorTv"
-        app:layout_constraintEnd_toEndOf="@+id/emailEt"
-        app:layout_constraintTop_toTopOf="@+id/emailEt"/>
+        <EditText
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            android:hint="Email"
+            android:padding="16dp"
+            android:background="@drawable/edit_text_background"
+            android:layout_marginTop="76dp"
+            android:layout_width="305dp"
+            android:layout_height="55dp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:maxLength="254"
+            android:id="@+id/emailEt"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/signUpTv" />
 
-    <TextView
-        android:id="@+id/emailErrorTv"
-        android:layout_width="305dp"
-        android:layout_height="wrap_content"
-        android:text="Passwords do not match"
-        android:textSize="12sp"
-        android:visibility="invisible"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:textColor="@android:color/holo_red_dark"
-        app:layout_constraintTop_toBottomOf="@id/emailEt"
-        app:layout_constraintStart_toStartOf="@id/confirmPasswordEt"
-        app:layout_constraintEnd_toEndOf="@id/confirmPasswordEt"/>
+        <ProgressBar
+            android:id="@+id/emailPb"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:visibility="invisible"
+            android:indeterminateTint="@color/colorPrimary"
+            android:indeterminateTintMode="src_atop"
+            android:layout_marginEnd="16dp"
+            android:elevation="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/emailErrorTv"
+            app:layout_constraintEnd_toEndOf="@+id/emailEt"
+            app:layout_constraintTop_toTopOf="@+id/emailEt" />
 
-    <EditText
-        android:id="@+id/usernameEt"
-        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-        android:layout_width="305dp"
-        android:layout_height="55dp"
-        android:hint="Username"
-        android:padding="16dp"
-        android:singleLine="true"
-        android:maxLines="1"
-        android:maxLength="15"
-        android:background="@drawable/edit_text_background"
-        android:layout_marginTop="29dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/emailEt" />
+        <ImageView
+            android:id="@+id/emailTick"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:visibility="invisible"
+            android:src="@drawable/ic_tick"
+            android:layout_marginEnd="16dp"
+            android:elevation="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/emailErrorTv"
+            app:layout_constraintEnd_toEndOf="@+id/emailEt"
+            app:layout_constraintTop_toTopOf="@+id/emailEt"/>
 
-    <ProgressBar
-        android:id="@+id/usernamePb"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:elevation="16dp"
-        android:visibility="invisible"
-        android:indeterminateTint="@color/colorPrimary"
-        android:indeterminateTintMode="src_atop"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/usernameErrorTv"
-        app:layout_constraintEnd_toEndOf="@+id/usernameEt"
-        app:layout_constraintTop_toTopOf="@+id/usernameEt" />
+        <TextView
+            android:id="@+id/emailErrorTv"
+            android:layout_width="305dp"
+            android:layout_height="wrap_content"
+            android:text="Passwords do not match"
+            android:textSize="12sp"
+            android:visibility="invisible"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@android:color/holo_red_dark"
+            app:layout_constraintTop_toBottomOf="@id/emailEt"
+            app:layout_constraintStart_toStartOf="@id/confirmPasswordEt"
+            app:layout_constraintEnd_toEndOf="@id/confirmPasswordEt"/>
 
-    <ImageView
-        android:id="@+id/usernameTick"
-        android:layout_width="14dp"
-        android:layout_height="14dp"
-        android:elevation="16dp"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_tick"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/usernameErrorTv"
-        app:layout_constraintEnd_toEndOf="@+id/usernameEt"
-        app:layout_constraintTop_toTopOf="@+id/usernameEt" />
+        <EditText
+            android:id="@+id/usernameEt"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            android:layout_width="305dp"
+            android:layout_height="55dp"
+            android:hint="Username"
+            android:padding="16dp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:maxLength="15"
+            android:background="@drawable/edit_text_background"
+            android:layout_marginTop="29dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/emailEt" />
 
-    <TextView
-        android:id="@+id/usernameErrorTv"
-        android:layout_width="305dp"
-        android:layout_height="wrap_content"
-        android:text="Passwords do not match"
-        android:textSize="12sp"
-        android:visibility="invisible"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:textColor="@android:color/holo_red_dark"
-        app:layout_constraintTop_toBottomOf="@id/usernameEt"
-        app:layout_constraintStart_toStartOf="@id/confirmPasswordEt"
-        app:layout_constraintEnd_toEndOf="@id/confirmPasswordEt"/>
+        <ProgressBar
+            android:id="@+id/usernamePb"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:elevation="16dp"
+            android:visibility="invisible"
+            android:indeterminateTint="@color/colorPrimary"
+            android:indeterminateTintMode="src_atop"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/usernameErrorTv"
+            app:layout_constraintEnd_toEndOf="@+id/usernameEt"
+            app:layout_constraintTop_toTopOf="@+id/usernameEt" />
 
-    <EditText
-        android:layout_width="305dp"
-        android:layout_height="55dp"
-        android:id="@+id/passwordEt"
-        android:hint="Password"
-        android:padding="16dp"
-        android:singleLine="true"
-        android:maxLines="1"
-        android:textSize="14sp"
-        android:maxLength="128"
-        android:inputType="textPassword"
-        style="@style/Widget.AppCompat.EditText"
-        android:background="@drawable/edit_text_background"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/usernameEt"
-        android:layout_marginTop="29dp"/>
+        <ImageView
+            android:id="@+id/usernameTick"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:elevation="16dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_tick"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/usernameErrorTv"
+            app:layout_constraintEnd_toEndOf="@+id/usernameEt"
+            app:layout_constraintTop_toTopOf="@+id/usernameEt" />
 
-    <TextView
-        android:id="@+id/passwordErrorTv"
-        android:layout_width="305dp"
-        android:layout_height="wrap_content"
-        android:text="Your password needs to be at least 8 characters long."
-        android:textSize="12sp"
-        android:paddingStart="16dp"
-        android:textColor="@color/textColorSecondary"
-        android:paddingEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@id/passwordEt"
-        app:layout_constraintStart_toStartOf="@id/confirmPasswordEt"
-        app:layout_constraintEnd_toEndOf="@id/confirmPasswordEt"/>
+        <TextView
+            android:id="@+id/usernameErrorTv"
+            android:layout_width="305dp"
+            android:layout_height="wrap_content"
+            android:text="Passwords do not match"
+            android:textSize="12sp"
+            android:visibility="invisible"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@android:color/holo_red_dark"
+            app:layout_constraintTop_toBottomOf="@id/usernameEt"
+            app:layout_constraintStart_toStartOf="@id/confirmPasswordEt"
+            app:layout_constraintEnd_toEndOf="@id/confirmPasswordEt"/>
 
-    <EditText
-        android:layout_width="305dp"
-        android:layout_height="55dp"
-        android:id="@+id/confirmPasswordEt"
-        android:hint="Confirm password"
-        android:padding="16dp"
-        android:singleLine="true"
-        android:maxLines="1"
-        android:textSize="14sp"
-        android:inputType="textPassword"
-        android:maxLength="128"
-        style="@style/Widget.AppCompat.EditText"
-        android:background="@drawable/edit_text_background"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/passwordEt"
-        android:layout_marginTop="29dp"/>
+        <EditText
+            android:layout_width="305dp"
+            android:layout_height="55dp"
+            android:id="@+id/passwordEt"
+            android:hint="Password"
+            android:padding="16dp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:textSize="14sp"
+            android:maxLength="128"
+            android:inputType="textPassword"
+            style="@style/Widget.AppCompat.EditText"
+            android:background="@drawable/edit_text_background"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/usernameEt"
+            android:layout_marginTop="29dp"/>
 
-    <TextView
-        android:id="@+id/confirmPasswordErrorTv"
-        android:layout_width="305dp"
-        android:layout_height="wrap_content"
-        android:text="Passwords do not match"
-        android:textSize="12sp"
-        android:visibility="invisible"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:textColor="@android:color/holo_red_dark"
-        app:layout_constraintTop_toBottomOf="@id/confirmPasswordEt"
-        app:layout_constraintStart_toStartOf="@id/confirmPasswordEt"
-        app:layout_constraintEnd_toEndOf="@id/confirmPasswordEt"/>
+        <TextView
+            android:id="@+id/passwordErrorTv"
+            android:layout_width="305dp"
+            android:layout_height="wrap_content"
+            android:text="Your password needs to be at least 8 characters long."
+            android:textSize="12sp"
+            android:paddingStart="16dp"
+            android:textColor="@color/textColorSecondary"
+            android:paddingEnd="16dp"
+            app:layout_constraintTop_toBottomOf="@id/passwordEt"
+            app:layout_constraintStart_toStartOf="@id/confirmPasswordEt"
+            app:layout_constraintEnd_toEndOf="@id/confirmPasswordEt"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:layout_width="305dp"
-        android:layout_height="65dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/confirmPasswordEt"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:cornerRadius="12dp"
-        android:id="@+id/registerBtn"
-        android:text="register"
-        android:textColor="@color/textColorPrimary"
-        android:layout_marginTop="29dp"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <EditText
+            android:layout_width="305dp"
+            android:layout_height="55dp"
+            android:id="@+id/confirmPasswordEt"
+            android:hint="Confirm password"
+            android:padding="16dp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:textSize="14sp"
+            android:inputType="textPassword"
+            android:maxLength="128"
+            style="@style/Widget.AppCompat.EditText"
+            android:background="@drawable/edit_text_background"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/passwordEt"
+            android:layout_marginTop="29dp"/>
+
+        <TextView
+            android:id="@+id/confirmPasswordErrorTv"
+            android:layout_width="305dp"
+            android:layout_height="wrap_content"
+            android:text="Passwords do not match"
+            android:textSize="12sp"
+            android:visibility="invisible"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@android:color/holo_red_dark"
+            app:layout_constraintTop_toBottomOf="@id/confirmPasswordEt"
+            app:layout_constraintStart_toStartOf="@id/confirmPasswordEt"
+            app:layout_constraintEnd_toEndOf="@id/confirmPasswordEt"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="305dp"
+            android:layout_height="65dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/confirmPasswordEt"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:cornerRadius="12dp"
+            android:id="@+id/registerBtn"
+            android:text="register"
+            android:textColor="@color/textColorPrimary"
+            android:layout_marginTop="29dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

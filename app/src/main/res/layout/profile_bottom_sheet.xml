@@ -35,12 +35,30 @@
             android:src="@drawable/ic_star" />
 
         <TextView
+            android:id="@+id/bottomSheetRatingTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="9.5"
+            tools:text="9.5"
             android:textSize="20sp"
             android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/ratingIncreaseIv"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="7dp"
+            android:src="@drawable/ic_increase" />
+
+        <TextView
+            android:id="@+id/ratingIncreaseTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="+30%"
+            android:textSize="12sp"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/textColorIncrease" />
     </LinearLayout>
 
     <View
@@ -88,7 +106,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="180K"
+            tools:text="180K"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -108,8 +126,8 @@
             android:id="@+id/followersIncreaseTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="+30%"
-            android:textColor="#42BEAD"
+            tools:text="+30%"
+            android:textColor="@color/textColorIncrease"
             android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="@id/followersIncreaseIv"
             app:layout_constraintStart_toEndOf="@id/followersIncreaseIv"
@@ -160,7 +178,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="+10%"
-            android:textColor="#42BEAD"
+            android:textColor="@color/textColorIncrease"
             android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="@id/upvotesIncreaseIv"
             app:layout_constraintStart_toEndOf="@id/upvotesIncreaseIv"

@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import com.york.exordi.explore.ExploreFragment
-import com.york.exordi.feed.FeedFragment
+import com.york.exordi.feed.ui.FeedFragment
 import com.york.exordi.addpost.AddPostFragment
 import com.york.exordi.shared.Const
 

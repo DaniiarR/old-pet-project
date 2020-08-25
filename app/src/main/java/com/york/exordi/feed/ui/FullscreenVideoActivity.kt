@@ -1,4 +1,4 @@
-package com.york.exordi.feed
+package com.york.exordi.feed.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -8,16 +8,19 @@ import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelection
 import com.google.android.exoplayer2.trackselection.TrackSelector
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.york.exordi.R
 import com.york.exordi.base.BaseActivity
 import com.york.exordi.shared.Const
-import com.york.exordi.shared.isNetworkAvailable
 import kotlinx.android.synthetic.main.activity_fullscreen_video.*
 import kotlinx.android.synthetic.main.exo_playback_control_view.*
 
@@ -39,9 +42,15 @@ class FullscreenVideoActivity : BaseActivity() {
         exoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector)
         val userAgent = Util.getUserAgent(this, getString(R.string.app_name))
         //2
-        val mediaSource = ExtractorMediaSource
-            .Factory(DefaultDataSourceFactory(this, userAgent))
-            .setExtractorsFactory(DefaultExtractorsFactory())
+        val dataSourceFactory = DefaultHttpDataSourceFactory(
+            userAgent,
+            DefaultBandwidthMeter(),
+            DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+            DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
+            true
+        )
+        val mediaSource = HlsMediaSource
+            .Factory(dataSourceFactory)
             .createMediaSource(Uri.parse(videoUrl))
         //3
         exoPlayer.prepare(mediaSource)

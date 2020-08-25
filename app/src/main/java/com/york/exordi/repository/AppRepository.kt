@@ -31,15 +31,21 @@ class AppRepository(application: Application) {
     }
 
     private val prefs = PrefManager.getMyPrefs(application.applicationContext)
-//    private val webServiceHolder = WebServiceInstance()
+    private val webServiceHolder = WebServiceInstance.get()
 //    private val okHttpClient = OkHttpClientInstance.Builder(application.applicationContext, webServiceHolder).build()
 //    private val webService = retrofit2.Retrofit.Builder().baseUrl(BASE_URL).client(okHttpClient)
 //        .addConverterFactory(ScalarsConverterFactory.create()).addConverterFactory(
 //            GsonConverterFactory.create()).build().create(WebService::class.java)
-    val webService = RetrofitInstance.getInstance().create(WebService::class.java)
+//    val webService = RetrofitInstance.getInstance().create(WebService::class.java)
 //    init {
 //        webServiceHolder.webService = webService
 //    }
+
+    private val webService = RetrofitInstance.getInstance(application.applicationContext, webServiceHolder).create(WebService::class.java)
+
+    init {
+        webServiceHolder.webService = this.webService
+    }
 
     private fun getAuthToken(): String = prefs.getString(Const.PREF_AUTH_TOKEN, null) ?: ""
 
@@ -127,7 +133,7 @@ class AppRepository(application: Application) {
     }
 
     fun createPost(fileType: String, category: Int, description: String?, file: MultipartBody.Part, callback: (AddPostResponse) -> Unit) {
-        webService.createPost(getAuthToken(), category, file, description, fileType).enqueue(object :
+        webService.createPost(getAuthToken(), category, fileType, file, description).enqueue(object :
             Callback<AddPostResponse> {
             override fun onFailure(call: Call<AddPostResponse>, t: Throwable) {
                 Log.e(TAG, "onFailure: " + t.message!!)
@@ -183,4 +189,83 @@ class AppRepository(application: Application) {
             }
         })
     }
+
+    fun getOtherUserProfile(username: String, profile: MutableLiveData<OtherProfileData>) {
+        webService.getOtherProfile(getAuthToken(), username).enqueue(object :
+            Callback<OtherProfile> {
+            override fun onFailure(call: Call<OtherProfile>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message )
+            }
+
+            override fun onResponse(call: Call<OtherProfile>, response: Response<OtherProfile>) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        if (it.code == 200) {
+                            profile.value = it.data
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    fun followUser(username: Username, callback: (Boolean) -> Unit) {
+        webService.followUser(getAuthToken(), username).enqueue(object : Callback<ResponseMessage> {
+            override fun onFailure(call: Call<ResponseMessage>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message )
+            }
+
+            override fun onResponse(
+                call: Call<ResponseMessage>,
+                response: Response<ResponseMessage>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        callback(it.code == 200)
+                    }
+                }
+            }
+        })
+    }
+
+    fun commentPost(comment: CommentText, postId: String, callback: (Boolean) -> Unit) {
+        webService.postComment(getAuthToken(), postId, comment).enqueue(object :
+            Callback<ResponseMessage> {
+            override fun onFailure(call: Call<ResponseMessage>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message )
+            }
+
+            override fun onResponse(
+                call: Call<ResponseMessage>,
+                response: Response<ResponseMessage>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        callback(it.code == 200)
+                    }
+                }
+            }
+        })
+    }
+
+    fun deleteComment(commentId: Int, callback: (Boolean) -> Unit) {
+        webService.deleteComment(getAuthToken(), commentId).enqueue(object :
+            Callback<ResponseMessage> {
+            override fun onFailure(call: Call<ResponseMessage>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message )
+            }
+
+            override fun onResponse(
+                call: Call<ResponseMessage>,
+                response: Response<ResponseMessage>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        callback(it.code == 200)
+                    }
+                }
+            }
+        })
+    }
+
 }

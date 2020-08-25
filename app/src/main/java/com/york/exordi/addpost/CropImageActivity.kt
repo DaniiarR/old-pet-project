@@ -53,7 +53,13 @@ class CropImageActivity : AppCompatActivity() {
 
         backBtn.setOnClickListener { finish() }
         imagePath = intent.getStringExtra(Const.EXTRA_FILE_PATH)
-        imageUri = Uri.fromFile(File(imagePath))
+        // this logic is for checking whether the image came from camera or gallery
+        // if images is selected from gallery, we only have its URI that is passes as setData()
+        if (imagePath == null) {
+            imageUri = intent.data
+        } else {
+            imageUri = Uri.fromFile(File(imagePath))
+        }
         cropView.load(imageUri).execute(loadCallback)
 //        Glide.with(this).load(imagePath).into(cropView)
         cropSwitchBtn.setOnClickListener {
@@ -74,6 +80,9 @@ class CropImageActivity : AppCompatActivity() {
             startActivity(Intent(this, PreparePostActivity::class.java).apply {
                 putExtra(Const.EXTRA_FILE_PATH, imagePath)
                 putExtra(Const.EXTRA_FILE_TYPE, Const.EXTRA_FILE_TYPE_PHOTO)
+                setData(imageUri)
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             })
         }
         cropBtn.setOnClickListener {
@@ -161,12 +170,12 @@ class CropImageActivity : AppCompatActivity() {
     private val saveCallback = object : SaveCallback {
         override fun onSuccess(uri: Uri?) {
             imageUri = uri
-            val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
+//            val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
 
-            val cursor = contentResolver.query(uri!!, null, null, null, null)
-            cursor?.moveToFirst()
-            imagePath = cursor?.getString(cursor.getColumnIndex(filePathColumn[0]))
-            cursor?.close()
+//            val cursor = contentResolver.query(uri!!, null, null, null, null)
+//            cursor?.moveToFirst()
+//            imagePath = cursor?.getString(cursor.getColumnIndex(filePathColumn[0]))
+//            cursor?.close()
             cropView.load(imageUri).execute(loadCallback)
 
         }

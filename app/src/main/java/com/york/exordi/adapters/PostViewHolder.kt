@@ -3,7 +3,7 @@ package com.york.exordi.adapters
 import android.view.View
 import android.widget.*
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
@@ -12,9 +12,8 @@ import com.york.exordi.R
 import com.york.exordi.models.Result
 import com.york.exordi.shared.Const
 
-import com.york.exordi.shared.OnItemClickListener
 import com.york.exordi.shared.OnPostClickListener
-import kotlinx.android.synthetic.main.feed_list_item.view.*
+import com.york.exordi.shared.toHoursAgo
 
 class PostViewHolder : RecyclerView.ViewHolder {
 
@@ -29,12 +28,14 @@ class PostViewHolder : RecyclerView.ViewHolder {
     lateinit var commentsButton: ImageButton
     lateinit var commentsAmount: TextView
     lateinit var description: TextView
+    lateinit var postedOn: TextView
     lateinit var requestManager: RequestManager
     lateinit var photoProgressBar: CircularProgressDrawable
-
+    lateinit var commentsRv: RecyclerView
     private var clickListener: OnPostClickListener?
-
-    constructor(itemView: View, clickListener: OnPostClickListener) : super(itemView) {
+    private var lifecycleOwner: LifecycleOwner
+    
+    constructor(itemView: View, clickListener: OnPostClickListener, lifecycleOwner: LifecycleOwner) : super(itemView) {
         parent = itemView
         frameLayout = itemView.findViewById(R.id.feedListItemFrameLayout)
         profilePicture = itemView.findViewById(R.id.feedProfilePictureIv)
@@ -44,6 +45,7 @@ class PostViewHolder : RecyclerView.ViewHolder {
         publicationDate = itemView.findViewById(R.id.feedPublicationDateTv)
         postImageView = itemView.findViewById(R.id.feedPhotoIv)
         progressBar = itemView.findViewById(R.id.feedListItemPb)
+        postedOn = itemView.findViewById(R.id.feedPublicationDateTv)
         upvoteButton = itemView.findViewById(R.id.feedUpvoteBtn)
         upvoteButton.tag = Const.TAG_UPVOTE
         commentsButton = itemView.findViewById(R.id.feedCommentsBtn)
@@ -56,7 +58,9 @@ class PostViewHolder : RecyclerView.ViewHolder {
             setColorSchemeColors(ContextCompat.getColor(itemView.context, R.color.textColorPrimary))
             start()
         }
+        commentsRv = itemView.findViewById(R.id.feedCommentsRv)
         this.clickListener = clickListener
+        this.lifecycleOwner = lifecycleOwner
     }
         fun bind(position: Int, post: Result?, requestManager: RequestManager) {
             parent.tag = this
@@ -69,29 +73,27 @@ class PostViewHolder : RecyclerView.ViewHolder {
                     profilePicture.setImageResource(R.drawable.ic_profile)
                 }
                 profilePicture.setOnClickListener { clickListener?.onItemClick(position, post, it.tag.toString(), null) }
-                val upvoteDrawable = DrawableCompat.wrap(upvoteButton.drawable)
-                profilePicture.setOnClickListener { clickListener?.onItemClick(position, post, it.tag.toString(), null) }
                 username.setOnClickListener { clickListener?.onItemClick(position, post, it.tag.toString(), null) }
                 if (!it.upvotedByUser) {
-//                    DrawableCompat.setTint(
-//                        upvoteDrawable,
-//                        ContextCompat.getColor(itemView.context, R.color.textColorPrimary)
-//                    )
-//                    upvoteButton.setColorFilter(ContextCompat.getColor(itemView.context, R.color.textColorPrimary))
                     upvoteButton.setImageResource(R.drawable.ic_upvote)
                 } else {
-//                    upvoteDrawable.setTintList(null)
                     upvoteButton.setImageResource(R.drawable.ic_upvote_filled)
 
                 }
+
+                postedOn.text = it.postedOn.toHoursAgo()
                 upvoteButton.setOnClickListener { clickListener?.onItemClick(position, post, it.tag.toString(), it) }
                 username.text = it.author.username
                 if (it.files[0].type == "image") {
                     Glide.with(itemView.context).load(it.files[0].file).placeholder(photoProgressBar).into(postImageView)
+                } else {
+
                 }
                 commentsAmount.text = "${it.commentsAmount} comments"
                 description.text = it.text ?: ""
-                commentsButton.setOnClickListener { clickListener?.onItemClick(position, post, it.tag.toString(), null) }
+                commentsButton.setOnClickListener {
+                    clickListener?.onItemClick(position, post, it.tag.toString(), itemView)
+                }
             }
         }
 }

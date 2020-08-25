@@ -23,13 +23,17 @@ import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
@@ -41,6 +45,8 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.york.exordi.R;
 import com.york.exordi.adapters.PostViewHolder;
@@ -49,6 +55,7 @@ import com.york.exordi.shared.OnFullscreenButtonClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Handler;
 
 public class VideoPlayerRecyclerView extends RecyclerView {
 
@@ -109,7 +116,6 @@ public class VideoPlayerRecyclerView extends RecyclerView {
         TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
         TrackSelector trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
-
         // 2. Create the player
         videoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
         // Bind the player to the view.
@@ -117,7 +123,9 @@ public class VideoPlayerRecyclerView extends RecyclerView {
         videoSurfaceView.setPlayer(videoPlayer);
         setVolumeControl(VolumeState.ON);
 
+        final boolean[] isScrolled = {false};
         addOnScrollListener(new RecyclerView.OnScrollListener() {
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -139,16 +147,28 @@ public class VideoPlayerRecyclerView extends RecyclerView {
                 }
             }
 
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                // this bit of logic is used when the first item is video
+                // since @onScrollStateChanged won't get called to play it
+                if (!isScrolled[0]) {
+                    if(!recyclerView.canScrollHorizontally(1)){
+                        playVideo(true);
+                    }
+                    else{
+                        playVideo(false);
+                    }
+                    isScrolled[0] = true;
+                }
             }
         });
 
         addOnChildAttachStateChangeListener(new OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(View view) {
-
+                Log.e(TAG, "onChildViewAttachedToWindow: " );
             }
 
             @Override
@@ -161,21 +181,6 @@ public class VideoPlayerRecyclerView extends RecyclerView {
         });
 
         videoPlayer.addListener(new Player.EventListener() {
-            @Override
-            public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
-
-            }
-
-            @Override
-            public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-
-            }
-
-            @Override
-            public void onLoadingChanged(boolean isLoading) {
-
-            }
-
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
                 switch (playbackState) {
@@ -207,38 +212,10 @@ public class VideoPlayerRecyclerView extends RecyclerView {
                         break;
                 }
             }
-
-            @Override
-            public void onRepeatModeChanged(int repeatMode) {
-
-            }
-
-            @Override
-            public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
-
-            }
-
-            @Override
-            public void onPlayerError(ExoPlaybackException error) {
-
-            }
-
-            @Override
-            public void onPositionDiscontinuity(int reason) {
-
-            }
-
-            @Override
-            public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-
-            }
-
-            @Override
-            public void onSeekProcessed() {
-
-            }
         });
+
     }
+
 
     public void playVideo(boolean isEndOfList) {
 
@@ -312,18 +289,19 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 
         viewHolderParent.setOnClickListener(videoViewClickListener);
 
-        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(
-                context, Util.getUserAgent(context, context.getString(R.string.app_name)));
+//        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(
+//                context, Util.getUserAgent(context, context.getString(R.string.app_name)));
+        DataSource.Factory dataSourceFactory =
+                new DefaultHttpDataSourceFactory(Util.getUserAgent(context, context.getString(R.string.app_name)), new DefaultBandwidthMeter(), DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS, DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, true);
         if (resultArrayList.get(targetPosition).getFiles().get(0).getType().equals("video")) {
-//            String mediaUrl = resultArrayList.get(targetPosition).getFiles().get(0).getFile();
-            String mediaUrl = "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.mp4";
+            String mediaUrl = resultArrayList.get(targetPosition).getFiles().get(0).getFile();
+//            String mediaUrl = "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.mp4";
             fullscreenButton.setOnClickListener(v -> {
                 listener.onButtonClick(mediaUrl, videoPlayer.getCurrentPosition());
                 videoPlayer.setPlayWhenReady(false);
             });
             if (mediaUrl != null) {
-                MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
-                        .createMediaSource(Uri.parse(mediaUrl));
+                HlsMediaSource videoSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mediaUrl));
                 videoPlayer.prepare(videoSource);
                 videoSurfaceView.setUseController(true);
 //                videoPlayer.setPlayWhenReady(true);

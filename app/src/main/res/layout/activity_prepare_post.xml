@@ -15,6 +15,7 @@
         android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/preparePostTb"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="Add post"
@@ -43,6 +44,16 @@
                     android:text="Publish"
                     android:layout_alignParentEnd="true"
                     android:textAllCaps="false"/>
+
+                <ProgressBar
+                    android:id="@+id/publishPb"
+                    android:layout_width="30dp"
+                    android:visibility="invisible"
+                    android:indeterminateTint="@color/colorPrimary"
+                    android:layout_height="30dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="50dp"/>
             </RelativeLayout>
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
@@ -58,15 +69,26 @@
         app:riv_corner_radius="5dp"
         android:scaleType="centerCrop"/>
 
-    <com.devbrackets.android.exomedia.ui.widget.VideoView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+    <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/videoView"
-        app:layout_constraintTop_toBottomOf="@id/prepareBarLayout"
         android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/prepareBarLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="150dp"
+        android:visibility="invisible"
+        android:layout_height="150dp"
+        android:keepScreenOn="true" />
 
+    <ProgressBar
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/preparePostPb"
+        app:layout_constraintStart_toStartOf="@id/videoView"
+        app:layout_constraintEnd_toEndOf="@id/videoView"
+        app:layout_constraintTop_toTopOf="@id/videoView"
+        app:layout_constraintBottom_toBottomOf="@id/videoView"
+        android:visibility="invisible"/>
     <EditText
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
         android:hint="Post description..."
@@ -104,5 +126,13 @@
         app:layout_constraintTop_toTopOf="@id/selectCategoryBtn"
         app:layout_constraintBottom_toBottomOf="@id/selectCategoryBtn"
         app:layout_constraintEnd_toEndOf="@id/selectCategoryBtn"/>
+
+    <ImageView
+        android:id="@+id/compressedImage"
+        android:layout_width="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/selectCategoryBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="wrap_content"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

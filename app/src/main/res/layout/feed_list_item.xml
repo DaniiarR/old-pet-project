@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView android:layout_width="match_parent"
+<ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/feedListItemScrollView"
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
+        android:layout_height="wrap_content">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="35dp"
@@ -53,7 +54,7 @@
             android:id="@+id/feedPhotoIv"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="4:4"
+            app:layout_constraintDimensionRatio="4:5"
             android:scaleType="centerCrop"
             tools:src="@drawable/jisoo"
             app:layout_constraintStart_toStartOf="parent"
@@ -65,7 +66,7 @@
             android:id="@+id/feedListItemFrameLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="4:4"
+            app:layout_constraintDimensionRatio="4:5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/feedProfilePictureIv"
@@ -126,17 +127,65 @@
             android:layout_marginTop="16dp"/>
 
         <TextView
+            android:id="@+id/feedDescriptionTv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/feedDescriptionTv"
-            android:layout_marginBottom="20dp"
-            android:lineSpacingMultiplier="1.25"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/feedDivider"
             android:layout_marginTop="10dp"
+            android:lineSpacingMultiplier="1.25"
+            android:text="Description goes here. Description goes here. Description goes here. Description goes here."
+            app:layout_constraintEnd_toEndOf="@id/feedCommentsTv"
+            app:layout_constraintStart_toStartOf="@id/feedUpvoteBtn"
+            app:layout_constraintTop_toBottomOf="@id/feedDivider" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:id="@+id/feedSecondDivider"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintTop_toBottomOf="@id/feedDescriptionTv"
             app:layout_constraintStart_toStartOf="@id/feedUpvoteBtn"
             app:layout_constraintEnd_toEndOf="@id/feedCommentsTv"
-            android:text="Description goes here. Description goes here. Description goes here. Description goes here."/>
+            android:layout_marginTop="16dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/feedCommentsRv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:listitem="@layout/comment_list_item"
+            app:layout_constraintTop_toBottomOf="@id/feedSecondDivider"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="600dp"
+            android:visibility="gone"
+            android:id="@+id/feedBlankSpace"
+            app:layout_constraintTop_toBottomOf="@id/feedCommentsRv"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/feedCommentsEmptyView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:visibility="gone"
+            android:textColor="@color/textColorSecondary"
+            app:layout_constraintStart_toStartOf="@id/feedCommentsRv"
+            app:layout_constraintEnd_toEndOf="@id/feedCommentsRv"
+            app:layout_constraintTop_toBottomOf="@id/feedSecondDivider"
+            android:text="There are no comments yet"/>
+
+        <ProgressBar
+            android:visibility="invisible"
+            android:id="@+id/commentsPb"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toBottomOf="@id/feedCommentsRv"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/feedCommentsRv"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

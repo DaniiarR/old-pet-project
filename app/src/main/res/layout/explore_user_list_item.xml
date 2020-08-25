@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="16dp"
+    android:background="?attr/selectableItemBackground"
+    android:id="@+id/exploreUserWholeView"
+    android:paddingBottom="16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/profile_empty"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/exploreUserIv"/>
+
+    <TextView
+        android:id="@+id/exploreUsernameTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="DaniiarR"
+        app:layout_constraintStart_toEndOf="@id/exploreUserIv"
+        android:layout_marginStart="20dp"
+        app:layout_constraintTop_toTopOf="@id/exploreUserIv" />
+
+    <ImageView
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:src="@drawable/ic_star"
+        android:id="@+id/exploreUserRatingIv"
+        app:layout_constraintStart_toStartOf="@id/exploreUsernameTv"
+        app:layout_constraintBottom_toBottomOf="@id/exploreUserIv"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        tools:text="4.5"
+        android:id="@+id/exploreUserRatingTv"
+        app:layout_constraintStart_toEndOf="@id/exploreUserRatingIv"
+        app:layout_constraintBottom_toBottomOf="@id/exploreUserIv"
+        android:layout_marginStart="5dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
