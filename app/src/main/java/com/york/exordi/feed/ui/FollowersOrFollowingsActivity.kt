@@ -8,15 +8,12 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import com.york.exordi.R
 import com.york.exordi.feed.viewmodel.FollowersViewModel
-import com.york.exordi.shared.Const
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.york.exordi.adapters.FollowerAdapter
 import com.york.exordi.events.FollowUnfollowEvent
 import com.york.exordi.models.FollowerResult
-import com.york.exordi.shared.OnItemWithTagClickListener
-import com.york.exordi.shared.registerActivityForEvents
-import com.york.exordi.shared.unregisterActivityFromEvents
+import com.york.exordi.shared.*
 import kotlinx.android.synthetic.main.activity_followers_or_followings.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -42,9 +39,9 @@ class FollowersOrFollowingsActivity : AppCompatActivity() {
         adapter.clickListener = object : OnItemWithTagClickListener {
             override fun <T> onItemClick(listItem: T, tag: String, position: Int) {
                 when (tag) {
-                    Const.TAG_WHOLE_VIEW -> startOtherUserActivity(listItem as FollowerResult)
-                    Const.TAG_FOLLOW -> followOrUnfollowUser(listItem as FollowerResult, position)
-                    Const.TAG_UNFOLLOW -> followOrUnfollowUser(listItem as FollowerResult, position)
+                    Const.TAG_WHOLE_VIEW -> makeInternetSafeRequest { startOtherUserActivity(listItem as FollowerResult) }
+                    Const.TAG_FOLLOW -> makeInternetSafeRequest { followOrUnfollowUser(listItem as FollowerResult, position) }
+                    Const.TAG_UNFOLLOW -> makeInternetSafeRequest { followOrUnfollowUser(listItem as FollowerResult, position) }
                 }
             }
         }
@@ -61,9 +58,11 @@ class FollowersOrFollowingsActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.getNewFollowers()?.observe(this) {
-            adapter.submitList(it)
-            followersRv.adapter = adapter
+        makeInternetSafeRequest {
+            viewModel.getNewFollowers()?.observe(this) {
+                adapter.submitList(it)
+                followersRv.adapter = adapter
+            }
         }
     }
 

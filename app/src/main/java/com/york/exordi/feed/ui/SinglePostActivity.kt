@@ -35,6 +35,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.york.exordi.R
 import com.york.exordi.adapters.CommentAdapter
+import com.york.exordi.events.DeletePostEvent
 import com.york.exordi.events.UpvoteEvent
 import com.york.exordi.models.CommentResult
 import com.york.exordi.models.Result
@@ -80,8 +81,16 @@ class SinglePostActivity : AppCompatActivity() {
             if (!it.author.photo.isNullOrEmpty()) {
                 Glide.with(this).load(it.author.photo).placeholder(getCircularProgressDrawable()).into(feedProfilePictureIv)
             }
+            if (it.author.username == PrefManager.getMyPrefs(applicationContext).getString(Const.PREF_USERNAME, "")) {
+                feedDeletePost.visibility = View.VISIBLE
+                feedDeletePost.setOnClickListener { v ->
+                    showDeletePostDialog(it.id)
+                }
+            } else {
+                feedDeletePost.visibility = View.GONE
+            }
             feedUsernameTv.text = it.author.username
-            feedPublicationDateTv.text = it.postedOn
+            feedPublicationDateTv.text = it.postedOn.toHoursAgo()
             feedCommentsTv.text = it.commentsAmount.toString() + " comments"
             feedDescriptionTv.text = it.text
             if (it.files[0].type == "video") {
@@ -116,6 +125,28 @@ class SinglePostActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun showDeletePostDialog(postId: String) {
+        AlertDialog.Builder(this)
+            .setTitle("Delete post")
+            .setMessage("Are you sure you want to delete this post?")
+            .setPositiveButton("Delete") { _, _ ->
+                viewModel.isDeletePostSuccessful.observe(this) {
+                    it?.let {
+                        if (it) {
+                            Toast.makeText(this, "Post deleted successfully", Toast.LENGTH_SHORT).show()
+                            EventBus.getDefault().post(DeletePostEvent())
+                            finish()
+                        } else {
+                            Toast.makeText(this, "Could not delete this post", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                viewModel.deletePost(postId)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun showComments(post: Result) {

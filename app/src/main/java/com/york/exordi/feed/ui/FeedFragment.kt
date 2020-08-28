@@ -3,6 +3,8 @@ package com.york.exordi.feed.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.fragment.app.Fragment
@@ -60,6 +62,8 @@ class FeedFragment : Fragment() {
     private lateinit var categoryAdapter: CategoryAdapter
     private val orderButtons = arrayListOf<MaterialButton>()
 
+    private var areCommentsOpen = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         registerFragmentForEvents()
@@ -75,14 +79,16 @@ class FeedFragment : Fragment() {
 
     @Subscribe
     fun onChangeTabEvent(event: ChangeTabEvent) {
-        viewModel.categories.value?.forEach {
-            if (event.category.toLowerCase() == it.name.toLowerCase()) {
-                it.isSelected = true
-                feedCategoryBtn.text = it.name
-                viewModel.selectedCategory.value = it.id
+        requireContext().makeInternetSafeRequest {
+            viewModel.categories.value?.forEach {
+                if (event.category.toLowerCase() == it.name.toLowerCase()) {
+                    it.isSelected = true
+                    feedCategoryBtn.text = it.name
+                    viewModel.selectedCategory.value = it.id
+                }
             }
+            viewModel.refreshResults()
         }
-        viewModel.refreshResults()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -95,7 +101,7 @@ class FeedFragment : Fragment() {
             EventBus.getDefault().register(this)
         }
 
-        setupPopupWindow()
+        requireContext().makeInternetSafeRequest { setupPopupWindow() }
 
         progressBar = CircularProgressDrawable(requireContext()).apply {
             strokeWidth = 5F
@@ -141,7 +147,24 @@ class FeedFragment : Fragment() {
                         launchOtherUserProfileActivity(post.author.username)
                     }
                     Const.TAG_COMMENTS -> {
-                        showComments(post, view[0] as View, position)
+                        if (!areCommentsOpen) {
+                            showComments(post, view[0] as View, position)
+                        } else {
+                            hideComments(view[0] as View)
+                        }
+                    }
+                    Const.TAG_DELETE_POST -> {
+                        showDeletePostDialog(post.id)
+                        viewModel.isDeletePostSuccessful.observe(viewLifecycleOwner) {
+                            it?.let {
+                                if (it) {
+                                    Toast.makeText(requireContext(), "Post deleted successfully", Toast.LENGTH_SHORT).show()
+                                    adapter?.notifyItemRemoved(position)
+                                } else {
+                                    Toast.makeText(requireContext(), "Could not delete this post", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -149,6 +172,7 @@ class FeedFragment : Fragment() {
         adapter?.onViewDetachedListener = object : OnViewDetachedFromWindowListener {
             override fun onViewDetached() {
                 feedCommentsLayout.visibility = View.INVISIBLE
+                areCommentsOpen = false
             }
         }
 
@@ -179,17 +203,48 @@ class FeedFragment : Fragment() {
         })
     }
 
-    private fun setOrderMode(button: MaterialButton) {
-        button.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.textColorPrimary))
-        button.setTextColor(ContextCompat.getColor(requireContext(), R.color.backgroundColorPrimary))
-        for (btn in orderButtons) {
-            if (btn != button) {
-                btn.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.buttonBackgroundColor))
-                btn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColorSecondary))
-            }
+    private fun showDeletePostDialog(postId: String) {
+        requireContext().makeInternetSafeRequest {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Delete post")
+                .setMessage("Are you sure you want to delete this post?")
+                .setPositiveButton("Delete") { _, _ ->
+                    viewModel.deletePost(postId)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
-        viewModel.selectedOrder = button.text.toString().toLowerCase()
-        viewModel.refreshResults()
+    }
+
+    private fun setOrderMode(button: MaterialButton) {
+        requireContext().makeInternetSafeRequest {
+            button.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.textColorPrimary))
+            button.setTextColor(ContextCompat.getColor(requireContext(), R.color.backgroundColorPrimary))
+            for (btn in orderButtons) {
+                if (btn != button) {
+                    btn.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.buttonBackgroundColor))
+                    btn.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColorSecondary))
+                }
+            }
+            viewModel.selectedOrder = button.text.toString().toLowerCase()
+            viewModel.refreshResults()
+        }
+
+    }
+
+    private fun hideComments(itemView: View) {
+        itemView.feedListItemScrollView.post {
+            itemView.feedListItemScrollView.smoothScrollTo(0, 0)
+            areCommentsOpen = false
+            viewModel.comments = null
+            viewModel.isCommentListEmpty.value =  false
+            feedCommentsLayout.visibility = View.INVISIBLE
+            itemView.feedCommentsRv.visibility = View.GONE
+            itemView.feedBlankSpace.visibility = View.GONE
+            feedCommentsEmptyView.visibility = View.GONE
+            commentsPb.visibility = View.INVISIBLE
+        }
+
     }
 
     private fun showComments(
@@ -197,6 +252,7 @@ class FeedFragment : Fragment() {
         itemView: View,
         position: Int
     ) {
+        areCommentsOpen = true
         viewModel.comments = null
         viewModel.isCommentListEmpty.value =  false
         // show the recyclerView, editText, and blank space here
@@ -265,7 +321,9 @@ class FeedFragment : Fragment() {
     }
 
     private fun deleteComment(comment: CommentResult) {
-        viewModel.deleteComment(comment)
+        requireContext().makeInternetSafeRequest {
+            viewModel.deleteComment(comment)
+        }
     }
 
 
@@ -287,14 +345,17 @@ class FeedFragment : Fragment() {
 
 
     private fun postComment(comment: String, postId: String) {
-        viewModel.postComment(comment, postId).observe(viewLifecycleOwner) {
-            it?.let {
-                feedCommentsEmptyView.visibility = View.GONE
-                if (it) {
-                    feedCommentsLayout.feedCommentsEt.text = null
-                    viewModel.getNewComments(postId)
-                } else {
-                    Toast.makeText(requireContext(), "Could not comment this post", Toast.LENGTH_SHORT).show()
+        requireContext().makeInternetSafeRequest {
+
+            viewModel.postComment(comment, postId).observe(viewLifecycleOwner) {
+                it?.let {
+                    feedCommentsEmptyView.visibility = View.GONE
+                    if (it) {
+                        feedCommentsLayout.feedCommentsEt.text = null
+                        viewModel.getNewComments(postId)
+                    } else {
+                        Toast.makeText(requireContext(), "Could not comment this post", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -306,6 +367,11 @@ class FeedFragment : Fragment() {
         } else {
             button.setImageResource(R.drawable.ic_upvote)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        feedRv.pauseVideo()
     }
 
     private fun launchFullscreenVideoActivity(
@@ -335,6 +401,7 @@ class FeedFragment : Fragment() {
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this)
         }
+        feedRv?.releasePlayer()
     }
 
     @Subscribe
@@ -355,6 +422,8 @@ class FeedFragment : Fragment() {
                     feedCategoryBtn.text = data.name
                     viewModel.selectedCategory.value = data.id
                 }
+            }
+            requireContext().makeInternetSafeRequest {
             }
             setupPosts()
             categoryAdapter.setOnItemClickListener(object : OnItemClickListener {
@@ -412,6 +481,11 @@ class FeedFragment : Fragment() {
 //        viewModel.commentsAmount.observe(viewLifecycleOwner) {
 //            adapter.setCommentsAmount()
 //        }
+        feedRv.setOnPlayerReadyListener(object : OnPlayerReadyListener {
+            override fun onPlayerReady() {
+
+            }
+        })
         feedRv.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         feedRv.setOnFullscreenButtonClickListener(object : OnFullscreenButtonClickListener {
             override fun onButtonClick(videoUrl: String, currentPosition: Long) {
@@ -419,12 +493,11 @@ class FeedFragment : Fragment() {
             }
         })
         feedRv.adapter = adapter
-        val snapHelper = PagerSnapHelper()
-        snapHelper.attachToRecyclerView(feedRv)
         feedSwipeRefreshLayout.setOnRefreshListener {
-            viewModel.refreshResults()
-            feedPb.visibility = View.VISIBLE
-
+            requireContext().makeInternetSafeRequest {
+                viewModel.refreshResults()
+                feedPb.visibility = View.VISIBLE
+            }
         }
         feedCategoryBtn.setOnClickListener { v ->
             categoriesPopupWindow.showAsDropDown(v)

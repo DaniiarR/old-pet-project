@@ -16,8 +16,11 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -52,6 +55,7 @@ import com.york.exordi.R;
 import com.york.exordi.adapters.PostViewHolder;
 import com.york.exordi.models.Result;
 import com.york.exordi.shared.OnFullscreenButtonClickListener;
+import com.york.exordi.shared.OnPlayerReadyListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,12 +67,13 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 
     private enum VolumeState {ON, OFF};
 
+    private SnapHelper snapHelper;
     // ui
-    private ImageView thumbnail, volumeControl;
+    private ImageView postPhoto, volumeControl;
     private ProgressBar progressBar;
     private View viewHolderParent;
     private FrameLayout frameLayout;
-    private PlayerView videoSurfaceView;
+    public PlayerView videoSurfaceView;
     private SimpleExoPlayer videoPlayer;
     private ImageButton fullscreenButton;
 
@@ -83,6 +88,7 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 
     // controlling playback state
     private VolumeState volumeState;
+    private OnPlayerReadyListener onPlayerReadyListener;
 
     private OnFullscreenButtonClickListener listener;
 
@@ -99,6 +105,8 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 
     private void init(Context context){
         this.context = context.getApplicationContext();
+        snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(this);
         Display display = context.getDisplay();
         Point point = new Point();
         display.getRealSize(point);
@@ -153,15 +161,15 @@ public class VideoPlayerRecyclerView extends RecyclerView {
                 super.onScrolled(recyclerView, dx, dy);
                 // this bit of logic is used when the first item is video
                 // since @onScrollStateChanged won't get called to play it
-                if (!isScrolled[0]) {
-                    if(!recyclerView.canScrollHorizontally(1)){
-                        playVideo(true);
-                    }
-                    else{
-                        playVideo(false);
-                    }
-                    isScrolled[0] = true;
-                }
+//                if (!isScrolled[0]) {
+//                    if(!recyclerView.canScrollHorizontally(1)){
+//                        playVideo(true);
+//                    }
+//                    else{
+//                        playVideo(false);
+//                    }
+//                    isScrolled[0] = true;
+//                }
             }
         });
 
@@ -201,10 +209,20 @@ public class VideoPlayerRecyclerView extends RecyclerView {
                         break;
                     case Player.STATE_READY:
                         Log.e(TAG, "onPlayerStateChanged: Ready to play.");
-                        if (progressBar != null) {
-                            progressBar.setVisibility(GONE);
+                        // this logic is required to check if the current visible post item is video
+                        // because there was a bug when a video from previous post starts playing in the current post
+                        View visibleView = snapHelper.findSnapView(getLayoutManager());
+                        int position = getLayoutManager().getPosition(visibleView);
+                        boolean isVideo = false;
+                        if (resultArrayList.get(position).getFiles().get(0).getType().equals("video")) {
+                            isVideo = true;
                         }
-                        if(!isVideoViewAdded){
+
+                        if(!isVideoViewAdded && isVideo){
+                            if (progressBar != null) {
+                                progressBar.setVisibility(GONE);
+                            }
+                            postPhoto.setVisibility(View.INVISIBLE);
                             addVideoView();
                         }
                         break;
@@ -216,6 +234,9 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 
     }
 
+    public void setOnPlayerReadyListener(OnPlayerReadyListener listener) {
+        onPlayerReadyListener = listener;
+    }
 
     public void playVideo(boolean isEndOfList) {
 
@@ -235,15 +256,15 @@ public class VideoPlayerRecyclerView extends RecyclerView {
                 return;
             }
 
-            // if there is more than 1 list-item on the screen
-//            if (startPosition != endPosition) {
-//                int startPositionVideoHeight = getVisibleVideoSurfaceHeight(startPosition);
-//                int endPositionVideoHeight = getVisibleVideoSurfaceHeight(endPosition);
-//
-//                targetPosition = startPositionVideoHeight > endPositionVideoHeight ? startPosition : endPosition;
-//            } else {
-//                targetPosition = startPosition;
-//            }
+//             if there is more than 1 list-item on the screen
+            if (startPosition != endPosition) {
+                int startPositionVideoHeight = getVisibleVideoSurfaceHeight(startPosition);
+                int endPositionVideoHeight = getVisibleVideoSurfaceHeight(endPosition);
+
+                targetPosition = startPositionVideoHeight > endPositionVideoHeight ? startPosition : endPosition;
+            } else {
+                targetPosition = startPosition;
+            }
             targetPosition = startPosition;
         } else {
             targetPosition = resultArrayList.size() - 1;
@@ -283,9 +304,11 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 //        volumeControl = holder.volumeControl;
         viewHolderParent = holder.itemView;
         requestManager = holder.requestManager;
+        postPhoto = holder.postImageView;
         frameLayout = holder.itemView.findViewById(R.id.feedListItemFrameLayout);
 
         videoSurfaceView.setPlayer(videoPlayer);
+
 
         viewHolderParent.setOnClickListener(videoViewClickListener);
 
@@ -301,13 +324,13 @@ public class VideoPlayerRecyclerView extends RecyclerView {
                 videoPlayer.setPlayWhenReady(false);
             });
             if (mediaUrl != null) {
-                HlsMediaSource videoSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mediaUrl));
+                HlsMediaSource videoSource = new HlsMediaSource.Factory(dataSourceFactory)
+                        .setAllowChunklessPreparation(true)
+                        .createMediaSource(Uri.parse(mediaUrl));
                 videoPlayer.prepare(videoSource);
                 videoSurfaceView.setUseController(true);
 //                videoPlayer.setPlayWhenReady(true);
             }
-        } else {
-            removeVideoView(videoSurfaceView);
         }
     }
 
@@ -349,7 +372,7 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 
 
     // Remove the old player
-    private void removeVideoView(PlayerView videoView) {
+    public void removeVideoView(PlayerView videoView) {
         videoPlayer.setPlayWhenReady(false);
         ViewGroup parent = (ViewGroup) videoView.getParent();
         if (parent == null) {
@@ -357,10 +380,8 @@ public class VideoPlayerRecyclerView extends RecyclerView {
         }
 
         int index = parent.indexOfChild(videoView);
-        int childAmount = parent.getChildCount();
         if (index >= 0) {
             parent.removeViewAt(index);
-            int childAmount2 = parent.getChildCount();
             isVideoViewAdded = false;
             viewHolderParent.setOnClickListener(null);
         }
@@ -373,6 +394,7 @@ public class VideoPlayerRecyclerView extends RecyclerView {
         videoSurfaceView.requestFocus();
         videoSurfaceView.setVisibility(VISIBLE);
         videoSurfaceView.setAlpha(1);
+//        postPhoto.setVisibility(View.INVISIBLE);
 //        thumbnail.setVisibility(GONE);
     }
 
@@ -393,6 +415,10 @@ public class VideoPlayerRecyclerView extends RecyclerView {
         }
 
         viewHolderParent = null;
+    }
+
+    public void pauseVideo() {
+        videoPlayer.setPlayWhenReady(false);
     }
 
     private void toggleVolume() {

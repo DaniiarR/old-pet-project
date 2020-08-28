@@ -93,18 +93,31 @@ class LoginActivity : BaseActivity() {
             override fun onSuccess(result: LoginResult?) {
                 result?.let {
                     Log.e(TAG, "onSuccess: " + "facebook onSuccess" )
+                    showProgressBar()
                     sendTokenToBackend("facebook", it.accessToken.token)
                 }
             }
 
             override fun onCancel() {
                 Log.e(TAG, "onCancel: " + "facebook login cancelled" )
+                hideProgressBar()
             }
 
             override fun onError(error: FacebookException?) {
                 Log.e(TAG, "onError: " + error?.message )
+                hideProgressBar()
             }
         })
+    }
+
+    private fun showProgressBar() {
+        loginPb.visibility = View.VISIBLE
+        signInBtn.visibility = View.INVISIBLE
+    }
+
+    private fun hideProgressBar() {
+        loginPb.visibility = View.GONE
+        signInBtn.visibility = View.VISIBLE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -120,6 +133,7 @@ class LoginActivity : BaseActivity() {
 
     private fun handleSignInResult(task: Task<GoogleSignInAccount>) {
         try {
+            showProgressBar()
             val account = task.getResult(ApiException::class.java)
             val idToken = account?.serverAuthCode
             idToken?.let {
@@ -127,7 +141,7 @@ class LoginActivity : BaseActivity() {
             }
 //            idToken?.let { sendTokenToBackend("google-oauth2", it) }
         } catch (e: ApiException) {
-
+            hideProgressBar()
         }
     }
 
@@ -155,12 +169,14 @@ class LoginActivity : BaseActivity() {
             Callback<LoginResponse> {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 Log.e(TAG, "onFailure: " + t.message!!)
+                hideProgressBar()
             }
 
             override fun onResponse(
                 call: Call<LoginResponse>,
                 response: Response<LoginResponse>
             ) {
+                hideProgressBar()
                 if (response.isSuccessful) {
                     Log.e(TAG, "onResponse: " + "retrofit success" )
                     response.body()?.let { body ->

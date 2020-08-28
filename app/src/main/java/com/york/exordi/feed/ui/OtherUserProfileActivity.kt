@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.york.exordi.R
 import com.york.exordi.adapters.UserPostAdapter
+import com.york.exordi.events.DeletePostEvent
 import com.york.exordi.events.FollowUnfollowEvent
 import com.york.exordi.events.UpvoteEvent
 import com.york.exordi.feed.viewmodel.OtherUserProfileViewModel
@@ -39,7 +40,9 @@ class OtherUserProfileActivity : AppCompatActivity() {
         otherProfileToolbar.setNavigationOnClickListener { finish() }
 
         viewModel.username = intent.getStringExtra(Const.EXTRA_USERNAME) ?: ""
-        viewModel.getNewProfile()
+        makeInternetSafeRequest {
+            viewModel.getNewProfile()
+        }
         viewModel.profile.observe(this) {
             setupViews(it)
         }
@@ -99,6 +102,11 @@ class OtherUserProfileActivity : AppCompatActivity() {
         viewModel.upvotePostLocally(event.postId)
     }
 
+    @Subscribe
+    fun onDeletePost(event: DeletePostEvent) {
+        viewModel.getNewProfile()
+        populatePosts()
+    }
 
     @Subscribe
     fun onFollowUnfollow(event: FollowUnfollowEvent) {
@@ -107,6 +115,7 @@ class OtherUserProfileActivity : AppCompatActivity() {
     }
 
     private fun launchSinglePostActivity(result: Result) {
+        registerActivityForEvents()
         startActivityForResult(Intent(this, SinglePostActivity::class.java).apply {
             putExtra(Const.EXTRA_POST, result)
         }, RC_SINGLE_POST)

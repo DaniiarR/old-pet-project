@@ -4,6 +4,7 @@ import com.york.exordi.models.*
 import com.york.exordi.shared.Const
 import okhttp3.MultipartBody
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.*
 
 interface WebService {
@@ -91,6 +92,9 @@ interface WebService {
 
     @GET
     fun searchAdjacentUser(@Header(Const.AUTH) authToken: String, @Url url: String): Call<SearchUser>
+
+    @DELETE("post/{id}/")
+    fun deletePost(@Header(Const.AUTH) authToken: String, @Path("id") postId: String): Call<ResponseMessage>
 
 }
 

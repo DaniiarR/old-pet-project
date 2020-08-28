@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide
 import com.york.exordi.R
 import com.york.exordi.adapters.ProfilePhotosAdapter
 import com.york.exordi.adapters.UserPostAdapter
+import com.york.exordi.events.DeletePostEvent
 import com.york.exordi.events.EditProfileEvent
 import com.york.exordi.events.FollowUnfollowEvent
 import com.york.exordi.feed.viewmodel.ProfileViewModel
@@ -58,8 +59,9 @@ class ProfileActivity : AppCompatActivity() {
         
         viewModel.profile.observe(this) {
             setupViews(it)
+            populatePosts()
         }
-        populatePosts()
+//        populatePosts()
         editProfileButton.setOnClickListener { startEditProfileActivity() }
         ratingLl.setOnClickListener { showBottomSheetDialog() }
         profileFollowersLayout.setOnClickListener { startFollowersOrFollowingsActivity(Const.EXTRA_MODE_FOLLOWERS) }
@@ -123,6 +125,12 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     @Subscribe
+    fun onDeletePost(event: DeletePostEvent) {
+        viewModel.getNewProfile()
+        populatePosts()
+    }
+
+    @Subscribe
     fun onEditProfile(event: EditProfileEvent) {
         viewModel.getNewProfile()
         populatePosts()
@@ -154,7 +162,6 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun populatePosts() {
-        makeInternetSafeRequest {
             val adapter = UserPostAdapter(object : OnItemClickListener {
                 override fun <T> onItemClick(listItem: T) {
                     registerActivityForEvents()
@@ -166,10 +173,10 @@ class ProfileActivity : AppCompatActivity() {
             viewModel.getPosts()?.observe(this) {
                 adapter.submitList(it)
             }
-        }
     }
 
     private fun launchSinglePostActivity(result: Result) {
+        registerActivityForEvents()
         startActivityForResult(Intent(this, SinglePostActivity::class.java).apply {
             putExtra(Const.EXTRA_POST, result)
         }, RC_SINGLE_POST)

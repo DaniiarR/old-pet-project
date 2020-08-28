@@ -13,6 +13,7 @@ import com.york.exordi.models.Result
 import com.york.exordi.shared.Const
 
 import com.york.exordi.shared.OnPostClickListener
+import com.york.exordi.shared.PrefManager
 import com.york.exordi.shared.toHoursAgo
 
 class PostViewHolder : RecyclerView.ViewHolder {
@@ -28,6 +29,7 @@ class PostViewHolder : RecyclerView.ViewHolder {
     lateinit var commentsButton: ImageButton
     lateinit var commentsAmount: TextView
     lateinit var description: TextView
+    lateinit var deletePostBtn: ImageButton
     lateinit var postedOn: TextView
     lateinit var requestManager: RequestManager
     lateinit var photoProgressBar: CircularProgressDrawable
@@ -43,6 +45,8 @@ class PostViewHolder : RecyclerView.ViewHolder {
         username = itemView.findViewById(R.id.feedUsernameTv)
         username.tag = Const.TAG_PROFILE
         publicationDate = itemView.findViewById(R.id.feedPublicationDateTv)
+        deletePostBtn = itemView.findViewById(R.id.feedDeletePost)
+        deletePostBtn.tag = Const.TAG_DELETE_POST
         postImageView = itemView.findViewById(R.id.feedPhotoIv)
         progressBar = itemView.findViewById(R.id.feedListItemPb)
         postedOn = itemView.findViewById(R.id.feedPublicationDateTv)
@@ -71,6 +75,12 @@ class PostViewHolder : RecyclerView.ViewHolder {
                     Glide.with(itemView.context).load(it.author.photo).into(profilePicture)
                 } else {
                     profilePicture.setImageResource(R.drawable.ic_profile)
+                }
+                if (it.author.username == PrefManager.getMyPrefs(itemView.context).getString(Const.PREF_USERNAME, "")) {
+                    deletePostBtn.visibility = View.VISIBLE
+                    deletePostBtn.setOnClickListener { clickListener?.onItemClick(position, post, it.tag.toString(), null) }
+                } else {
+                    deletePostBtn.visibility = View.GONE
                 }
                 profilePicture.setOnClickListener { clickListener?.onItemClick(position, post, it.tag.toString(), null) }
                 username.setOnClickListener { clickListener?.onItemClick(position, post, it.tag.toString(), null) }

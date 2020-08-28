@@ -47,5 +47,6 @@ class Const {
         const val TAG_FOLLOW = "follow"
         const val TAG_UNFOLLOW = "unfollow"
         const val TAG_WHOLE_VIEW = "whole"
+        const val TAG_DELETE_POST = "deletePost"
     }
 }

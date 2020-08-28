@@ -21,6 +21,7 @@ import com.google.android.exoplayer2.util.Util
 import com.york.exordi.R
 import com.york.exordi.base.BaseActivity
 import com.york.exordi.shared.Const
+import com.york.exordi.shared.makeInternetSafeRequest
 import kotlinx.android.synthetic.main.activity_fullscreen_video.*
 import kotlinx.android.synthetic.main.exo_playback_control_view.*
 
@@ -56,7 +57,7 @@ class FullscreenVideoActivity : BaseActivity() {
         exoPlayer.prepare(mediaSource)
         exoPlayer.seekTo(playbackPosition)
         //4
-        exoPlayer.playWhenReady = true
+        makeInternetSafeRequest { exoPlayer.playWhenReady = true }
         fullscreenPlayerView.player = exoPlayer
     }
 

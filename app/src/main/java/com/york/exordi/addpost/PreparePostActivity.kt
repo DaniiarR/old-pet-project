@@ -41,6 +41,7 @@ import com.york.exordi.repository.AppRepository
 import com.york.exordi.shared.Const
 import com.york.exordi.shared.getFileName
 import com.york.exordi.shared.getPathFromUri
+import com.york.exordi.shared.makeInternetSafeRequest
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.*
 import kotlinx.android.synthetic.main.activity_prepare_post.*
@@ -75,9 +76,6 @@ class PreparePostActivity : AppCompatActivity() {
     private var fileType: String? = null
 
     private var videoPlayer: SimpleExoPlayer? = null
-
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,11 +114,13 @@ class PreparePostActivity : AppCompatActivity() {
         publishBtn.setOnClickListener {
             publishPb.visibility = View.VISIBLE
             publishBtn.visibility = View.INVISIBLE
-            if (fileType == Const.EXTRA_FILE_TYPE_PHOTO) {
-                compressImage()
-            } else {
-                compressVideo()
+            makeInternetSafeRequest {
+                if (fileType == Const.EXTRA_FILE_TYPE_PHOTO) {
+                    compressImage()
+                } else {
+                    compressVideo()
 
+                }
             }
         }
     }

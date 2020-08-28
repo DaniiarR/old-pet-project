@@ -41,8 +41,9 @@
             android:textColor="@color/textColorSecondary"/>
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/feedDeletePost"
+            android:layout_width="50dp"
+            android:layout_height="30dp"
             android:src="@drawable/ic_details"
             android:background="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintEnd_toEndOf="parent"

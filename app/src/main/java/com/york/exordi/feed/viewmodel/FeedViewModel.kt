@@ -35,6 +35,7 @@ class FeedViewModel(application: Application) : BaseViewModel(application) {
     val isUpvoteSuccessful = MutableLiveData<Boolean?>(null)
     val isCommentSuccessful = MutableLiveData<Boolean?>(null)
     val isDeleteCommentSuccessful = MutableLiveData<Boolean?>(null)
+    val isDeletePostSuccessful = MutableLiveData<Boolean?>(null)
 
     init {
         getProfileInfo()
@@ -149,6 +150,13 @@ class FeedViewModel(application: Application) : BaseViewModel(application) {
         repository.deleteComment(comment.id) {
             isDeleteCommentSuccessful.value = it
             isDeleteCommentSuccessful.value = null
+        }
+    }
+
+    fun deletePost(postId: String) {
+        repository.deletePost(postId) {
+            isDeletePostSuccessful.value = it
+            isDeletePostSuccessful.value = null
         }
     }
 }

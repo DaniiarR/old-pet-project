@@ -6,6 +6,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.facebook.AccessToken
+import com.facebook.login.LoginManager
 import com.york.exordi.R
 import com.york.exordi.adapters.SettingsAdapter
 import com.york.exordi.events.EditProfileEvent
@@ -56,6 +58,10 @@ class SettingsActivity : AppCompatActivity() {
             .remove(Const.PREF_REFRESH_TOKEN)
             .remove(Const.PREF_USERNAME)
             .apply()
+        AccessToken.setCurrentAccessToken(null)
+        LoginManager.getInstance()?.let {
+            it.logOut()
+        }
         startActivity(Intent(this, LoginActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         })

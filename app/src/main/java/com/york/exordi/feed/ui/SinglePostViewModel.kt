@@ -19,6 +19,7 @@ class SinglePostViewModel(application: Application) : BaseViewModel(application)
     val isUpvoteSuccessful = MutableLiveData<Boolean?>(null)
     val isCommentSuccessful = MutableLiveData<Boolean?>(null)
     val isDeleteCommentSuccessful = MutableLiveData<Boolean?>(null)
+    val isDeletePostSuccessful = MutableLiveData<Boolean?>(null)
 
 
     var commentDataSourceLiveData: LiveData<PageKeyedDataSource<String, CommentResult>>? = null
@@ -60,6 +61,13 @@ class SinglePostViewModel(application: Application) : BaseViewModel(application)
         repository.deleteComment(comment.id) {
             isDeleteCommentSuccessful.value = it
             isDeleteCommentSuccessful.value = null
+        }
+    }
+
+    fun deletePost(postId: String) {
+        repository.deletePost(postId) {
+            isDeletePostSuccessful.value = it
+            isDeletePostSuccessful.value = null
         }
     }
 }

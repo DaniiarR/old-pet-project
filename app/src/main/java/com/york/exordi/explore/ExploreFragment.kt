@@ -18,6 +18,7 @@ import com.york.exordi.feed.ui.ProfileActivity
 import com.york.exordi.models.SearchUserResult
 import com.york.exordi.shared.Const
 import com.york.exordi.shared.OnItemClickListener
+import com.york.exordi.shared.PrefManager
 import com.york.exordi.shared.makeInternetSafeRequest
 import kotlinx.android.synthetic.main.fragment_explore.*
 import org.greenrobot.eventbus.EventBus
@@ -58,12 +59,20 @@ class ExploreFragment : Fragment() {
         }
     }
 
+    private fun startProfileActivity(username: String) {
+        if (username == PrefManager.getMyPrefs(requireContext().applicationContext).getString(Const.PREF_USERNAME, "")) {
+            startActivity(Intent(activity, ProfileActivity::class.java))
+        } else {
+            startActivity(Intent(activity, OtherUserProfileActivity::class.java).apply {
+                putExtra(Const.EXTRA_USERNAME, username)
+            })
+        }
+    }
+
     private fun searchUser(username: String) {
         val adapter = SearchUserAdapter(object: OnItemClickListener {
             override fun <T> onItemClick(listItem: T) {
-                startActivity(Intent(activity, OtherUserProfileActivity::class.java).apply {
-                    putExtra(Const.EXTRA_USERNAME, (listItem as SearchUserResult).username)
-                })
+                startProfileActivity((listItem as SearchUserResult).username)
             }
 
         })

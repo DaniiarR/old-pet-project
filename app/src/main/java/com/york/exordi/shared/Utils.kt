@@ -60,6 +60,10 @@ interface OnBindListener {
     fun onBind(postId: String, recyclerView: RecyclerView)
 }
 
+interface OnPlayerReadyListener {
+    fun onPlayerReady()
+}
+
 interface OnFullscreenButtonClickListener {
     fun onButtonClick(videoUrl: String, currentPosition: Long)
 }
@@ -78,7 +82,7 @@ fun Fragment.handleOnBackPressed(owner: LifecycleOwner) {
 }
 
 fun Context.isNetworkAvailable(): Boolean {
-    val cm: ConnectivityManager? = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val cm: ConnectivityManager? = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         cm?.let { it ->
             val capabilities: NetworkCapabilities? = it.getNetworkCapabilities(it.activeNetwork)
@@ -104,7 +108,7 @@ fun Context.isNetworkAvailable(): Boolean {
 }
 
 fun Context.makeNoConnectionToast() {
-    Toast.makeText(applicationContext, "Нет подключения к интернету!", Toast.LENGTH_SHORT).show()
+    Toast.makeText(applicationContext, "There is no internet connection", Toast.LENGTH_LONG).show()
 }
 
 fun String.toErrorString(): String {
@@ -289,3 +293,4 @@ private fun copy(`in`: InputStream, out: OutputStream) {
     }
     out.flush()
 }
+

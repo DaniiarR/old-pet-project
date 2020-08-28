@@ -268,4 +268,24 @@ class AppRepository(application: Application) {
         })
     }
 
+    fun deletePost(postId: String, callback: (Boolean) -> Unit) {
+        webService.deletePost(getAuthToken(), postId).enqueue(object: Callback<ResponseMessage> {
+            override fun onFailure(call: Call<ResponseMessage>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message )
+            }
+
+            override fun onResponse(
+                call: Call<ResponseMessage>,
+                response: Response<ResponseMessage>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        callback(it.code == 200)
+                    }
+                }
+            }
+
+        })
+    }
+
 }
