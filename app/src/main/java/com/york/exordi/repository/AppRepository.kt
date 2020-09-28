@@ -288,4 +288,38 @@ class AppRepository(application: Application) {
         })
     }
 
+    fun watchVideo(postId: PostId) {
+        webService.watchVideo(getAuthToken(), postId).enqueue(object : Callback<ResponseMessage> {
+            override fun onFailure(call: Call<ResponseMessage>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message!! )
+            }
+
+            override fun onResponse(
+                call: Call<ResponseMessage>,
+                response: Response<ResponseMessage>
+            ) {
+                if (response.isSuccessful) {
+                    Log.e(TAG, "onResponse: " + "video watched successfully")
+                }
+            }
+
+        })
+    }
+
+    fun reportPost(post: ReportPost, callback: (Boolean) -> Unit) {
+        webService.reportPost(getAuthToken(), post).enqueue(object : Callback<ResponseMessage> {
+            override fun onFailure(call: Call<ResponseMessage>, t: Throwable) {
+                Log.e(TAG, "onFailure: " + t.message )
+            }
+
+            override fun onResponse(
+                call: Call<ResponseMessage>,
+                response: Response<ResponseMessage>
+            ) {
+                callback(response.isSuccessful)
+            }
+
+        })
+    }
+
 }

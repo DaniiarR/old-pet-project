@@ -18,6 +18,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import com.york.exordi.R
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.models.ActivationCode
 import com.york.exordi.models.AuthToken
 import com.york.exordi.models.LoginToken
@@ -27,7 +28,7 @@ import com.york.exordi.network.WebService
 import com.york.exordi.shared.makeInternetSafeRequest
 import kotlinx.android.synthetic.main.activity_code_input.*
 
-class CodeInputActivity : AppCompatActivity() {
+class CodeInputActivity : BaseActivity() {
 
     private val TAG = "CodeInputActivity"
 

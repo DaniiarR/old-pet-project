@@ -7,30 +7,27 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.viewModels
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.york.exordi.R
-import com.york.exordi.adapters.ProfilePhotosAdapter
 import com.york.exordi.adapters.UserPostAdapter
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.events.DeletePostEvent
 import com.york.exordi.events.EditProfileEvent
 import com.york.exordi.events.FollowUnfollowEvent
 import com.york.exordi.feed.viewmodel.ProfileViewModel
 import com.york.exordi.models.Profile
-import com.york.exordi.models.ProfileData
 import com.york.exordi.models.Result
 import com.york.exordi.settings.SettingsActivity
 import com.york.exordi.shared.*
-import kotlinx.android.synthetic.main.activity_other_user_profile.*
 import kotlinx.android.synthetic.main.activity_profile.*
-import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
-class ProfileActivity : AppCompatActivity() {
+class ProfileActivity : BaseActivity() {
 
     companion object {
         const val RC_SINGLE_POST = 100
@@ -63,7 +60,7 @@ class ProfileActivity : AppCompatActivity() {
         }
 //        populatePosts()
         editProfileButton.setOnClickListener { startEditProfileActivity() }
-        ratingLl.setOnClickListener { showBottomSheetDialog() }
+        ratingView.setOnClickListener { showBottomSheetDialog() }
         profileFollowersLayout.setOnClickListener { startFollowersOrFollowingsActivity(Const.EXTRA_MODE_FOLLOWERS) }
         profileFollowingsLayout.setOnClickListener { startFollowersOrFollowingsActivity(Const.EXTRA_MODE_FOLLOWINGS) }
     }
@@ -85,6 +82,7 @@ class ProfileActivity : AppCompatActivity() {
                         putInt(Const.EXTRA_RATING_CHANGE, viewModel.profile.value!!.data.ratingChange)
                         putInt(Const.EXTRA_UPVOTES_CHANGE, viewModel.profile.value!!.data.upvotesChange)
                         putDouble(Const.EXTRA_RATING, viewModel.profile.value?.data?.rating!!)
+                        putString(Const.EXTRA_CALLING_ACTIVITY, Const.EXTRA_OWN_PROFILE)
                     }
                 }
             }
@@ -172,6 +170,15 @@ class ProfileActivity : AppCompatActivity() {
             profilePostsRv.adapter = adapter
             viewModel.getPosts()?.observe(this) {
                 adapter.submitList(it)
+            }
+            viewModel.isResultListEmpty.observe(this) {
+                if (it) {
+                    profilePostsRv.visibility = View.GONE
+                    profileEmptyView.visibility = View.VISIBLE
+                } else {
+                    profilePostsRv.visibility = View.VISIBLE
+                    profileEmptyView.visibility = View.GONE
+                }
             }
     }
 

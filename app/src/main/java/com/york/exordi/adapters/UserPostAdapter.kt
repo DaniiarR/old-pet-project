@@ -44,7 +44,10 @@ class UserPostAdapter(val clickListener: OnItemClickListener) :
                 when (it.files[0].type) {
                     "video" -> {
                         itemView.profilePlayIv.visibility = View.VISIBLE
-                        //TODO load preview image
+                        Glide.with(itemView.context)
+                            .load(it.files[0].thumb)
+                            .placeholder(itemView.context.getCircularProgressDrawable())
+                            .into(itemView.profilePostIv)
                     }
                     "image" -> {
                         itemView.profilePlayIv.visibility = View.GONE

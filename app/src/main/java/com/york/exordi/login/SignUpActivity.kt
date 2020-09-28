@@ -57,10 +57,12 @@ class SignUpActivity : BaseActivity() {
 
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestScopes(Scope(Scopes.EMAIL))
-            .requestServerAuthCode("214536121200-0eelqcmuaqbe0shjpk9pdhvcp4hc5adk.apps.googleusercontent.com")
+                .requestIdToken("214536121200-0eelqcmuaqbe0shjpk9pdhvcp4hc5adk.apps.googleusercontent.com")
+                .requestServerAuthCode("214536121200-0eelqcmuaqbe0shjpk9pdhvcp4hc5adk.apps.googleusercontent.com")
 //                .requestServerAuthCode("663429823844-a2sjdhehrmeu7rij1h77ok9ij0trfeof.apps.googleusercontent.com")
             .requestEmail()
             .build()
+
         googleSignInClient = GoogleSignIn.getClient(this, gso)
         signUpWithGoogleBtn.setOnClickListener {
             startActivityForResult(googleSignInClient?.signInIntent, GOOGLE_SIGN_IN_RC)
@@ -89,7 +91,7 @@ class SignUpActivity : BaseActivity() {
             }
 
             override fun onError(error: FacebookException?) {
-                TODO("Not yet implemented")
+                Toast.makeText(this@SignUpActivity, error?.message, Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -142,6 +144,7 @@ class SignUpActivity : BaseActivity() {
             Callback<LoginResponse> {
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 Log.e(TAG, "onFailure: " + t.message!!)
+                Toast.makeText(this@SignUpActivity, t.message!!, Toast.LENGTH_SHORT).show()
             }
 
             override fun onResponse(
@@ -155,7 +158,8 @@ class SignUpActivity : BaseActivity() {
                                 PrefManager.getMyPrefs(this@SignUpActivity).edit()
                                     .putString(Const.PREF_AUTH_TOKEN, "JWT " + token)
                                     .putString(Const.PREF_REFRESH_TOKEN, body.data.refreshToken)
-                                    .commit()
+                                    .putString(Const.PREF_USERNAME, body.data.username)
+                                    .apply()
                                 startActivity(Intent(this@SignUpActivity, MainActivity::class.java))
                                 finish()
                             }

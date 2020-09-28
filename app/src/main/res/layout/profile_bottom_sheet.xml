@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="30dp"
-
     android:background="@drawable/profile_bottom_sheet_background">
 
     <View
@@ -186,18 +185,18 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:id="@+id/bottomSheetDescriptionTv"
-        android:textSize="12sp"
-        android:lineSpacingExtra="4dp"
-        android:layout_marginTop="22dp"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/constraintLayout"
-        android:text="Description goes here. Description goes here. Description goes here. Description goes here. Description goes here."/>
+<!--    <TextView-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        android:layout_marginStart="20dp"-->
+<!--        android:layout_marginEnd="20dp"-->
+<!--        android:id="@+id/bottomSheetDescriptionTv"-->
+<!--        android:textSize="12sp"-->
+<!--        android:lineSpacingExtra="4dp"-->
+<!--        android:layout_marginTop="22dp"-->
+<!--        android:gravity="center"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/constraintLayout"-->
+<!--        android:text="Description goes here. Description goes here. Description goes here. Description goes here. Description goes here."/>-->
 </androidx.constraintlayout.widget.ConstraintLayout>

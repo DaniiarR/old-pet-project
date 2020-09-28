@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.york.exordi.R
 import com.york.exordi.adapters.PreparePostCategoryAdapter
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.models.AddPostCategory
 import com.york.exordi.models.Category
 import com.york.exordi.models.CategoryData
@@ -27,7 +28,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SelectCategoryActivity : AppCompatActivity() {
+class SelectCategoryActivity : BaseActivity() {
 
     companion object {
         private const val TAG = "SelectCategoryActivity"

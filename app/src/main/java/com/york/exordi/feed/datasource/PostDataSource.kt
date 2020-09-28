@@ -41,7 +41,7 @@ class PostDataSource(val application: Application, var categoryId: Int, var orde
         callback: LoadInitialCallback<String, Result>
     ) {
         Log.e(TAG, "loadInitial: " + getAuthToken())
-        this.webService.getAllPosts(getAuthToken(), categoryId, order).enqueue(object : Callback<Post> {
+        val retrofitCallback = object : Callback<Post> {
             override fun onFailure(call: Call<Post>, t: Throwable) {
                 Log.e(TAG, "onFailure: " +  t.message!!)
             }
@@ -55,7 +55,12 @@ class PostDataSource(val application: Application, var categoryId: Int, var orde
                     }
                 }
             }
-        })
+        }
+        if (order == "following") {
+            this.webService.getAllPostsFollowing(getAuthToken(), "https://exordi.dns-cloud.net/api/post?following&category=$categoryId").enqueue(retrofitCallback)
+        } else {
+            this.webService.getAllPosts(getAuthToken(), categoryId, order).enqueue(retrofitCallback)
+        }
     }
 
     private fun setCurrentUserPosts(posts: List<Result>): List<Result> {

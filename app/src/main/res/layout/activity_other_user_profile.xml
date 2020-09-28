@@ -49,39 +49,51 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/otherUsernameTv"
+
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:id="@+id/otherRatingView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="DaniiarR" />
-
-            <LinearLayout
-                android:id="@+id/otherRatingLl"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="7dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/otherUsernameTv">
-
-                <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:src="@drawable/ic_star" />
+                android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/otherRatingTv"
+                    android:id="@+id/otherUsernameTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="12sp"
-                    tools:text="9.5" />
+                    tools:text="DaniiarR" />
 
+                <LinearLayout
+                    android:id="@+id/otherRatingLl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:layout_gravity="center_horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/otherUsernameTv">
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:src="@drawable/ic_star" />
+
+                    <TextView
+                        android:id="@+id/otherRatingTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:textSize="12sp"
+                        tools:text="9.5" />
+
+                </LinearLayout>
             </LinearLayout>
+
+
+
 
             <LinearLayout
                 android:id="@+id/otherProfileInfoLl"
@@ -93,7 +105,7 @@
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/otherRatingLl">
+                app:layout_constraintTop_toBottomOf="@id/otherRatingView">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -220,6 +232,18 @@
                 tools:listitem="@layout/profile_post_list_item"
                 app:layout_constraintTop_toBottomOf="@id/otherProfileFollowBtn"
                 app:layout_constraintStart_toStartOf="parent"/>
+
+            <TextView
+                android:id="@+id/otherProfileEmptyView"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/otherProfileFollowBtn"
+                android:text="No photos or videos yet"
+                android:textColor="@color/textColorSecondary"
+                android:layout_marginTop="100dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

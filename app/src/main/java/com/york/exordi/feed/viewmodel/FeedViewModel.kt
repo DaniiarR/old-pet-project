@@ -10,6 +10,7 @@ import com.york.exordi.base.BaseViewModel
 import com.york.exordi.feed.datasource.CommentDataSourceFactory
 import com.york.exordi.feed.datasource.PostDataSourceFactory
 import com.york.exordi.models.*
+import com.york.exordi.shared.Const
 
 class FeedViewModel(application: Application) : BaseViewModel(application) {
 
@@ -36,6 +37,8 @@ class FeedViewModel(application: Application) : BaseViewModel(application) {
     val isCommentSuccessful = MutableLiveData<Boolean?>(null)
     val isDeleteCommentSuccessful = MutableLiveData<Boolean?>(null)
     val isDeletePostSuccessful = MutableLiveData<Boolean?>(null)
+    val isReportPostSuccessful = MutableLiveData<Boolean?>(null)
+    val isReportCommentSuccessful = MutableLiveData<Boolean?>(null)
 
     init {
         getProfileInfo()
@@ -87,6 +90,7 @@ class FeedViewModel(application: Application) : BaseViewModel(application) {
                 }
 
             }).build()
+            
         }
     }
 
@@ -157,6 +161,24 @@ class FeedViewModel(application: Application) : BaseViewModel(application) {
         repository.deletePost(postId) {
             isDeletePostSuccessful.value = it
             isDeletePostSuccessful.value = null
+        }
+    }
+
+    fun watchVideo(postId: PostId) {
+        repository.watchVideo(postId)
+    }
+
+    fun reportPost(postId: String) {
+        repository.reportPost(ReportPost(postId, Const.INAPPROPRIATE_CONTENT_POST, null)) {
+            isReportPostSuccessful.value = it
+            isReportPostSuccessful.value = null
+        }
+    }
+
+    fun reportComment(userId: Int) {
+        repository.reportPost(ReportPost(null, Const.INAPPROPRIATE_CONTENT_COMMENT, userId)) {
+            isReportCommentSuccessful.value = it
+            isReportCommentSuccessful.value = null
         }
     }
 }

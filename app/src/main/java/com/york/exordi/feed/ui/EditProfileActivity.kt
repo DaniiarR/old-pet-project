@@ -23,6 +23,8 @@ import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.york.exordi.BuildConfig
 import com.york.exordi.R
+import com.york.exordi.addpost.CropImageActivity
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.events.EditProfileEvent
 import com.york.exordi.models.Profile
 import com.york.exordi.models.UsernameCheck
@@ -34,18 +36,14 @@ import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.format
 import id.zelory.compressor.constraint.quality
 import id.zelory.compressor.constraint.resolution
-import id.zelory.compressor.constraint.size
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 import kotlinx.android.synthetic.main.activity_edit_profile.usernameErrorTv
 import kotlinx.android.synthetic.main.activity_edit_profile.usernameEt
 import kotlinx.android.synthetic.main.activity_edit_profile.usernamePb
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import org.apache.commons.io.IOUtils
 import org.greenrobot.eventbus.EventBus
@@ -56,9 +54,8 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.coroutines.CoroutineContext
 
-class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
+class EditProfileActivity : BaseActivity(), EasyPermissions.PermissionCallbacks {
 
     companion object {
         const val RC_CAMERA = 100
@@ -66,6 +63,8 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
 
         const val CAMERA = 10
         const val GALLERY = 11
+
+        const val INTENT_CROP = 1000
         private const val TAG = "EditProfileActivity"
     }
 
@@ -256,18 +255,40 @@ class EditProfileActivity : AppCompatActivity(), EasyPermissions.PermissionCallb
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                CAMERA -> setImage()
+                CAMERA -> startCropActivityFromCamera()
                 GALLERY -> {
                     imageUri = data?.data
-                    setImageFromGallery(data?.data)
+                    startCropActivityFromGallery(imageUri!!)
+                }
+                INTENT_CROP -> {
+                    setImage(data?.getStringExtra(Const.EXTRA_FILE_URI))
                 }
             }
         }
     }
 
-    private fun setImage() {
-        Glide.with(this).load(imageAbsolutePath).into(profileIv)
+    private fun setImage(fileUri: String?) {
+        fileUri?.let {
+            imageUri = Uri.parse(fileUri)
+            Glide.with(this).load(it).into(profileIv)
+
+        }
+    }
+
+    private fun startCropActivityFromGallery(uri: Uri) {
+        imageAbsolutePath = null
+        startActivityForResult(Intent(this, CropImageActivity::class.java).apply {
+            putExtra(Const.EXTRA_FILE_URI, uri.toString())
+            putExtra(Const.EXTRA_REQUEST_CODE, INTENT_CROP)
+        }, INTENT_CROP)
+    }
+
+    private fun startCropActivityFromCamera() {
         imageUri = null
+        startActivityForResult(Intent(this, CropImageActivity::class.java).apply {
+            putExtra(Const.EXTRA_FILE_PATH, imageAbsolutePath)
+            putExtra(Const.EXTRA_REQUEST_CODE, INTENT_CROP)
+        }, INTENT_CROP)
     }
 
     private fun setImageFromGallery(uri: Uri?) {

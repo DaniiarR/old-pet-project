@@ -3,18 +3,22 @@ package com.york.exordi.addpost
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
+import android.media.MediaPlayer
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.iammert.library.cameravideobuttonlib.CameraVideoButton
 import com.otaliastudios.cameraview.CameraListener
 import com.otaliastudios.cameraview.PictureResult
 import com.otaliastudios.cameraview.VideoResult
 import com.otaliastudios.cameraview.controls.Mode
 import com.york.exordi.R
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.events.CreatePostEvent
 import com.york.exordi.shared.Const
 import com.york.exordi.shared.registerActivityForEvents
@@ -27,7 +31,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CameraActivity : AppCompatActivity() {
+class CameraActivity : BaseActivity() {
 
     companion object {
         const val RC_ALL = 100
@@ -196,9 +200,11 @@ class CameraActivity : AppCompatActivity() {
         val intent = Intent(Intent.ACTION_PICK).apply {
             setType("image/* video/*")
             putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png", "video/mp4", "video/avi", "video/quicktime"))
-            putExtra(MediaStore.EXTRA_DURATION_LIMIT, 60)
         }
-        startActivityForResult(intent, GALLERY_CODE)
+        if (intent.resolveActivity(packageManager) != null) {
+//            startActivityForResult(takeImageIntent, REQUEST_IMAGE_CAPTURE);
+            startActivityForResult(intent, GALLERY_CODE)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -209,28 +215,73 @@ class CameraActivity : AppCompatActivity() {
             path?.let {
                 registerActivityForEvents()
                 if (it.contains(".mp4") || it.contains("video")) {
-                    startPreparePostActivity(uri!!)
+                    checkVideoLength(uri!!)
+//                    startPreparePostActivity(uri!!)
                 } else if (it.contains(".jpg") || it.contains(".jpeg") || it.contains(".png") || it.contains("images")) {
                     startCropActivity(uri!!)
+
                 }
             }
 
         }
     }
 
-    private fun startCropActivity(uri: Uri) {
-        startActivity(Intent(this@CameraActivity, CropImageActivity::class.java).apply {
-            setData(uri)
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+    private fun checkVideoLength(uri: Uri) {
+        val mp: MediaPlayer = MediaPlayer.create(this, uri)
+        if ((mp.duration / 1000) > 60) {
+//            Toast.makeText(this, "Maximum duration of video must be 1 minute", Toast.LENGTH_LONG).show()
+            startTrimVideoActivity(uri)
+        } else {
+            startPreparePostActivity(uri)
+        }
+    }
+
+    private fun startTrimVideoActivity(uri: Uri) {
+        startActivity(Intent(this, ProgressBarActivity::class.java).apply {
+            putExtra(Const.EXTRA_FILE_URI, uri.toString())
         })
     }
 
+    private fun startCropActivity(uri: Uri) {
+//        val intent = Intent(this@CameraActivity, CropImageActivity::class.java).apply {
+//            setData(uri)
+//                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//                .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+//        }
+        startActivity(Intent(this, CropImageActivity::class.java).apply {
+            putExtra(Const.EXTRA_FILE_URI, uri.toString())
+        })
+//        grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//        grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+//        val takeFlags: Int = intent.flags and
+//                (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+//        contentResolver.takePersistableUriPermission(uri, takeFlags)
+//        val resolvedIntentActivities: List<ResolveInfo> = packageManager
+//            .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+//        for (resolvedIntentInfo in resolvedIntentActivities) {
+//            val packageName: String = resolvedIntentInfo.activityInfo.packageName
+//            grantUriPermission(
+//                packageName,
+//                uri,
+//                Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+//            )
+//        }
+//        startActivity(intent)
+    }
+
     private fun startPreparePostActivity(uri: Uri) {
-        startActivity(Intent(this@CameraActivity, PreparePostActivity::class.java).apply {
-            setData(uri)
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+//        val intent = Intent(this@CameraActivity, PreparePostActivity::class.java).apply {
+//            setData(uri)
+//                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//                .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+//            putExtra(Const.EXTRA_FILE_TYPE, Const.EXTRA_FILE_TYPE_VIDEO)
+//        }
+//        val takeFlags: Int = intent.flags and
+//                (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+//        contentResolver.takePersistableUriPermission(uri, takeFlags)
+//        startActivity(intent)
+        startActivity(Intent(this, PreparePostActivity::class.java).apply {
+            putExtra(Const.EXTRA_FILE_URI, uri.toString())
             putExtra(Const.EXTRA_FILE_TYPE, Const.EXTRA_FILE_TYPE_VIDEO)
         })
     }

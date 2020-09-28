@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.york.exordi.R
 import com.york.exordi.models.CommentResult
-import com.york.exordi.models.SearchUserResult
+import com.york.exordi.models.PostId
 import com.york.exordi.models.Result
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
@@ -56,8 +56,8 @@ interface OnViewDetachedFromWindowListener {
     fun onViewDetached()
 }
 
-interface OnBindListener {
-    fun onBind(postId: String, recyclerView: RecyclerView)
+interface OnVideoWatchedListener {
+    fun onVideoWatched(postId: PostId)
 }
 
 interface OnPlayerReadyListener {
@@ -65,7 +65,13 @@ interface OnPlayerReadyListener {
 }
 
 interface OnFullscreenButtonClickListener {
-    fun onButtonClick(videoUrl: String, currentPosition: Long)
+    fun onButtonClick(videoUrl: String, currentPosition: Long, seconds: Long, postId: String)
+}
+
+interface FileUploadCallback {
+    fun onProgressUpdate(percentage: Int)
+    fun onError(message: String?)
+    fun onSuccess(message: String?)
 }
 
 inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {

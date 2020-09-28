@@ -42,8 +42,8 @@ class ExploreFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        browseArtBtn.setOnClickListener { EventBus.getDefault().post(ChangeTabEvent("art")) }
-        browseFashionBtn.setOnClickListener { EventBus.getDefault().post(ChangeTabEvent("fashion")) }
+//        browseArtBtn.setOnClickListener { EventBus.getDefault().post(ChangeTabEvent("art")) }
+//        browseFashionBtn.setOnClickListener { EventBus.getDefault().post(ChangeTabEvent("fashion")) }
         browseMusicBtn.setOnClickListener { EventBus.getDefault().post(ChangeTabEvent("music")) }
         browseSportBtn.setOnClickListener { EventBus.getDefault().post(ChangeTabEvent("sport")) }
 

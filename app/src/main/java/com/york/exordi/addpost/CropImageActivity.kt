@@ -1,5 +1,6 @@
 package com.york.exordi.addpost
 
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
@@ -14,7 +15,9 @@ import com.isseiaoki.simplecropview.callback.CropCallback
 import com.isseiaoki.simplecropview.callback.LoadCallback
 import com.isseiaoki.simplecropview.callback.SaveCallback
 import com.york.exordi.R
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.events.CreatePostEvent
+import com.york.exordi.feed.ui.EditProfileActivity
 import com.york.exordi.shared.Const
 import com.york.exordi.shared.registerActivityForEvents
 import com.york.exordi.shared.unregisterActivityFromEvents
@@ -24,7 +27,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CropImageActivity : AppCompatActivity() {
+class CropImageActivity : BaseActivity() {
 
     private var imagePath: String? = null
     private var imageUri: Uri? = null
@@ -54,9 +57,10 @@ class CropImageActivity : AppCompatActivity() {
         backBtn.setOnClickListener { finish() }
         imagePath = intent.getStringExtra(Const.EXTRA_FILE_PATH)
         // this logic is for checking whether the image came from camera or gallery
-        // if images is selected from gallery, we only have its URI that is passes as setData()
+//         if images is selected from gallery, we only have its URI that is passes as setData()
         if (imagePath == null) {
-            imageUri = intent.data
+//            imageUri = intent.data
+            imageUri = Uri.parse(intent.getStringExtra(Const.EXTRA_FILE_URI))
         } else {
             imageUri = Uri.fromFile(File(imagePath))
         }
@@ -76,14 +80,25 @@ class CropImageActivity : AppCompatActivity() {
         cropView.setCustomRatio(4, 5)
 
         continueBtn.setOnClickListener {
-           registerActivityForEvents()
-            startActivity(Intent(this, PreparePostActivity::class.java).apply {
-                putExtra(Const.EXTRA_FILE_PATH, imagePath)
-                putExtra(Const.EXTRA_FILE_TYPE, Const.EXTRA_FILE_TYPE_PHOTO)
-                setData(imageUri)
-                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-            })
+
+            val requestCode = intent.getIntExtra(Const.EXTRA_REQUEST_CODE, 0)
+            if (requestCode == EditProfileActivity.INTENT_CROP) {
+                val intent = Intent()
+                intent.putExtra(Const.EXTRA_FILE_URI, imageUri.toString())
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            } else {
+                registerActivityForEvents()
+
+                startActivity(Intent(this, PreparePostActivity::class.java).apply {
+                    putExtra(Const.EXTRA_FILE_PATH, imagePath)
+                    putExtra(Const.EXTRA_FILE_TYPE, Const.EXTRA_FILE_TYPE_PHOTO)
+//                setData(imageUri)
+//                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//                    .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                    putExtra(Const.EXTRA_FILE_URI, imageUri.toString())
+                })
+            }
         }
         cropBtn.setOnClickListener {
             continueBtn.isEnabled = false

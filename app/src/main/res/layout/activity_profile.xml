@@ -48,44 +48,55 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/usernameTv"
+            <LinearLayout
+                android:id="@+id/ratingView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_marginTop="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="DaniiarR" />
-
-            <LinearLayout
-                android:id="@+id/ratingLl"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="7dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/usernameTv">
-
-                <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:src="@drawable/ic_star" />
+                android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/ratingTv"
+                    android:id="@+id/usernameTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="12sp"
-                    tools:text="9.5" />
+                    tools:text="DaniiarR" />
 
-                <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:layout_marginStart="10dp"
-                    android:src="@drawable/ic_more" />
+                <LinearLayout
+                    android:id="@+id/ratingLl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:layout_gravity="center_horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/usernameTv">
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:src="@drawable/ic_star" />
+
+                    <TextView
+                        android:id="@+id/ratingTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:textSize="12sp"
+                        tools:text="9.5" />
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_marginStart="10dp"
+                        android:src="@drawable/ic_more" />
+                </LinearLayout>
             </LinearLayout>
+
+
+
 
             <TextView
                 android:id="@+id/profileDescriptionTv"
@@ -98,7 +109,7 @@
                 android:lineSpacingExtra="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ratingLl"
+                app:layout_constraintTop_toBottomOf="@id/ratingView"
                 tools:text="Description goes here. Description goes here. Description goes here. Description goes here. Description goes here." />
 
             <com.balysv.materialripple.MaterialRippleLayout
@@ -234,6 +245,18 @@
                 tools:listitem="@layout/profile_post_list_item"
                 app:layout_constraintTop_toBottomOf="@id/profileInfoLl"
                 app:layout_constraintStart_toStartOf="parent"/>
+            
+            <TextView
+                android:id="@+id/profileEmptyView"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profileInfoLl"
+                android:text="No photos or videos yet"
+                android:textColor="@color/textColorSecondary"
+                android:layout_marginTop="100dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

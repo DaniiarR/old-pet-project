@@ -4,6 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -35,18 +38,21 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.york.exordi.R
 import com.york.exordi.adapters.CommentAdapter
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.events.DeletePostEvent
 import com.york.exordi.events.UpvoteEvent
 import com.york.exordi.models.CommentResult
+import com.york.exordi.models.PostId
 import com.york.exordi.models.Result
 import com.york.exordi.shared.*
 import kotlinx.android.synthetic.main.feed_list_item.*
 import kotlinx.android.synthetic.main.feed_list_item.view.*
 import kotlinx.android.synthetic.main.fragment_feed.*
 import kotlinx.android.synthetic.main.fragment_feed.view.*
+import kotlinx.android.synthetic.main.profile_bottom_sheet.*
 import org.greenrobot.eventbus.EventBus
 
-class SinglePostActivity : AppCompatActivity() {
+class SinglePostActivity : BaseActivity() {
 
     companion object {
         const val RC_FULLSCREEN_ACTIVITY = 10
@@ -58,6 +64,8 @@ class SinglePostActivity : AppCompatActivity() {
     private var exoPlayer: SimpleExoPlayer? = null
     private var videoSurfaceView: PlayerView? = null
     private var fullscreenButton: ImageButton? = null
+
+    private var seconds: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,13 +89,14 @@ class SinglePostActivity : AppCompatActivity() {
             if (!it.author.photo.isNullOrEmpty()) {
                 Glide.with(this).load(it.author.photo).placeholder(getCircularProgressDrawable()).into(feedProfilePictureIv)
             }
-            if (it.author.username == PrefManager.getMyPrefs(applicationContext).getString(Const.PREF_USERNAME, "")) {
-                feedDeletePost.visibility = View.VISIBLE
-                feedDeletePost.setOnClickListener { v ->
+            feedDeletePost.setOnClickListener { v ->
+                if (it.author.username == PrefManager.getMyPrefs(applicationContext)
+                        .getString(Const.PREF_USERNAME, "")
+                ) {
                     showDeletePostDialog(it.id)
+                } else {
+                    reportPost(it.id)
                 }
-            } else {
-                feedDeletePost.visibility = View.GONE
             }
             feedUsernameTv.text = it.author.username
             feedPublicationDateTv.text = it.postedOn.toHoursAgo()
@@ -95,6 +104,7 @@ class SinglePostActivity : AppCompatActivity() {
             feedDescriptionTv.text = it.text
             if (it.files[0].type == "video") {
                 setupVideo()
+                Glide.with(this).load(it.files[0].thumb).into(feedPhotoIv)
             } else if (it.files[0].type == "image") {
                 Glide.with(this).load(it.files[0].file).placeholder(getCircularProgressDrawable()).into(feedPhotoIv)
             }
@@ -127,6 +137,41 @@ class SinglePostActivity : AppCompatActivity() {
         }
     }
 
+    private fun reportPost(postId: String) {
+        showReportPostDialog(postId)
+        viewModel.isReportPostSuccessful.observe(this) {
+            it?.let {
+                if (it) {
+                    showReportPostSuccessfulDialog()
+                } else {
+                    Toast.makeText(this, "We could not report this post. Try again later.", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun showReportPostSuccessfulDialog() {
+        makeInternetSafeRequest {
+            AlertDialog.Builder(this)
+                .setTitle("Report post")
+                .setMessage("Thank you for reporting inappropriate content. We will definitely review your complaint")
+                .setNeutralButton("OK", null)
+                .show()
+        }
+    }
+
+    private fun showReportPostDialog(postId: String) {
+        makeInternetSafeRequest {
+            AlertDialog.Builder(this)
+                .setTitle("Report post")
+                .setMessage("Would you like to report this post?")
+                .setPositiveButton("Report") { _, _ ->
+                    viewModel.reportPost(postId)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
+    }
     private fun showDeletePostDialog(postId: String) {
         AlertDialog.Builder(this)
             .setTitle("Delete post")
@@ -172,7 +217,13 @@ class SinglePostActivity : AppCompatActivity() {
                     override fun onItemClick(comment: CommentResult, tag: String) {
                         when (tag) {
                             Const.TAG_PROFILE -> launchOtherUserProfileActivity(comment.author.username)
-                            Const.TAG_COMMENT_DETAILS -> showDeleteCommentDialog(comment)
+                            Const.TAG_COMMENT_DETAILS -> {
+                                if (comment.author.username == PrefManager.getMyPrefs(applicationContext).getString(Const.PREF_USERNAME, "")) {
+                                    showDeleteCommentDialog(comment)
+                                } else {
+                                    reportComment(comment)
+                                }
+                            }
                         }
                     }
                 })
@@ -192,6 +243,40 @@ class SinglePostActivity : AppCompatActivity() {
         }
         if (post.commentsAmount == 0) {
             feedCommentsEmptyView.visibility = View.VISIBLE
+        }
+    }
+
+    private fun reportComment(comment: CommentResult) {
+        showReportCommentDialog(comment)
+        viewModel.isReportCommentSuccessful.observe(this) {
+            it?.let {
+                if (it) {
+                    showReportCommentSuccessfulDialog()
+                } else {
+                    Toast.makeText(this, "Could not report this comment. Try again later.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun showReportCommentSuccessfulDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Report post")
+            .setMessage("Thank you for reporting inappropriate content. We will definitely review your complaint")
+            .setNeutralButton("OK", null)
+            .show()
+    }
+
+    private fun showReportCommentDialog(comment: CommentResult) {
+        makeInternetSafeRequest {
+            AlertDialog.Builder(this)
+                .setTitle("Report comment")
+                .setMessage("Would you like to report this comment?")
+                .setPositiveButton("Report") { _, _ ->
+                    viewModel.reportComment(comment.author.id)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
     }
 
@@ -250,6 +335,7 @@ class SinglePostActivity : AppCompatActivity() {
     }
 
     private fun setupVideo() {
+
         videoSurfaceView = PlayerView(this)
         videoSurfaceView?.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
         fullscreenButton = videoSurfaceView?.findViewById<ImageButton>(R.id.exo_fullscreen)
@@ -263,14 +349,19 @@ class SinglePostActivity : AppCompatActivity() {
         }
         val videoTrackSelectionFactory: TrackSelection.Factory = AdaptiveTrackSelection.Factory()
         val trackSelector: TrackSelector = DefaultTrackSelector(videoTrackSelectionFactory)
+        val handler = Handler(Looper.getMainLooper())
         exoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector)
         exoPlayer?.addListener(object : Player.EventListener {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 when (playbackState) {
                     Player.STATE_BUFFERING -> feedListItemPb.visibility = View.VISIBLE
-                    Player.STATE_ENDED -> exoPlayer?.seekTo(0)
+                    Player.STATE_ENDED -> {
+                        exoPlayer?.seekTo(0)
+                        seconds = 0
+                    }
                     Player.STATE_IDLE -> {}
                     Player.STATE_READY -> {
+                        feedPhotoIv.visibility = View.INVISIBLE
                         feedListItemPb.visibility = View.GONE
                         if (!viewModel.isVideoViewAdded) {
                             addVideoView()
@@ -278,13 +369,33 @@ class SinglePostActivity : AppCompatActivity() {
                     }
                 }
             }
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                if (isPlaying) {
+                    handler.post(object : Runnable {
+                        override fun run() {
+                            Log.e(TAG, "onIsPlayingChanged: handler started:$seconds")
+                            if (++seconds >= exoPlayer!!.duration / 1000 / 2) {
+                                watchVideo(PostId(viewModel.post.id))
+                            } else {
+                                handler.postDelayed(this, 1000)
+                            }
+                        }
+                    }
+                    )
+                } else {
+                    Log.e(
+                        TAG,
+                        "onIsPlayingChanged: " + "handler stopped"
+                    )
+                    handler.removeCallbacksAndMessages(null)
+                }
+            }
         })
         val userAgent = Util.getUserAgent(this, getString(R.string.app_name))
         //2
 
         val mediaUrl = viewModel.post.files[0].file
-//        val mediaUrl =
-//            "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.mp4"
         val dataSourceFactory = DefaultHttpDataSourceFactory(
             userAgent,
             DefaultBandwidthMeter(),
@@ -295,6 +406,7 @@ class SinglePostActivity : AppCompatActivity() {
 
         val mediaSource = HlsMediaSource
             .Factory(dataSourceFactory)
+            .setAllowChunklessPreparation(true)
             .createMediaSource(Uri.parse(mediaUrl))
         //3
         exoPlayer?.prepare(mediaSource)
@@ -302,6 +414,10 @@ class SinglePostActivity : AppCompatActivity() {
         exoPlayer?.playWhenReady = true
         videoSurfaceView?.player = exoPlayer
 
+    }
+
+    private fun watchVideo(postId: PostId) {
+        viewModel.watchVideo(postId)
     }
 
     override fun onDestroy() {
@@ -316,14 +432,28 @@ class SinglePostActivity : AppCompatActivity() {
         startActivityForResult(Intent(this, FullscreenVideoActivity::class.java).apply {
             putExtra(Const.EXTRA_VIDEO_URL, videoUrl)
             putExtra(Const.EXTRA_PLAYBACK_POSITION, currentPosition)
+            putExtra(Const.EXTRA_FULLSCREEN_MODE, Const.EXTRA_FULLSCREEN_MODE_HLS)
+            putExtra(Const.EXTRA_SECONDS, seconds)
+            putExtra(Const.EXTRA_POST_ID, viewModel.post.id)
         }, RC_FULLSCREEN_ACTIVITY)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FeedFragment.RC_FULLSCREEN_ACTIVITY && resultCode == Activity.RESULT_OK) {
-            setPlaybackPosition(data!!.getLongExtra(Const.EXTRA_PLAYBACK_POSITION, 0))
+            data?.let {
+                if (!it.getBooleanExtra(Const.EXTRA_IS_WATCHED, false)) {
+                    setSeconds(it.getLongExtra(Const.EXTRA_SECONDS, 0))
+                } else {
+                    setSeconds(0)
+                }
+                setPlaybackPosition(data!!.getLongExtra(Const.EXTRA_PLAYBACK_POSITION, 0))
+            }
         }
+    }
+
+    private fun setSeconds(seconds: Long) {
+        this.seconds = seconds
     }
 
     private fun setPlaybackPosition(position: Long) {

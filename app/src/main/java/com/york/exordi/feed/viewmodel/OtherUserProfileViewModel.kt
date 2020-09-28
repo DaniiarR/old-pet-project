@@ -18,6 +18,7 @@ class OtherUserProfileViewModel(application: Application) : BaseViewModel(applic
     var profile = MutableLiveData<OtherProfileData>()
 
     var results: LiveData<PagedList<Result>>? = null
+    val isResultListEmpty = MutableLiveData<Boolean>(false)
     var dataSourceLiveData: LiveData<PageKeyedDataSource<String, Result>>? = null
     lateinit var dataSourceFactory: UserPostDataSourceFactory
 
@@ -37,7 +38,23 @@ class OtherUserProfileViewModel(application: Application) : BaseViewModel(applic
                 .setInitialLoadSizeHint(1)
                 .setPageSize(1)
                 .build()
-            results = LivePagedListBuilder(dataSourceFactory, config).build()
+            results = LivePagedListBuilder(dataSourceFactory, config)
+                .setBoundaryCallback(object: PagedList.BoundaryCallback<Result>() {
+                    override fun onZeroItemsLoaded() {
+                        super.onZeroItemsLoaded()
+                        isResultListEmpty.value = true
+                    }
+
+                    override fun onItemAtEndLoaded(itemAtEnd: Result) {
+                        super.onItemAtEndLoaded(itemAtEnd)
+                        isResultListEmpty.value = false
+                    }
+
+                    override fun onItemAtFrontLoaded(itemAtFront: Result) {
+                        super.onItemAtFrontLoaded(itemAtFront)
+                        isResultListEmpty.value = false
+                    }
+                }).build()
         }
         return results
     }

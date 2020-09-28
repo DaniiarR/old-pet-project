@@ -5,14 +5,17 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.StrictMode
+import android.se.omapi.Session
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
+import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
+import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -59,12 +62,18 @@ class LoginActivity : BaseActivity() {
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestScopes(Scope(Scopes.EMAIL))
+            .requestIdToken("214536121200-0eelqcmuaqbe0shjpk9pdhvcp4hc5adk.apps.googleusercontent.com")
             .requestServerAuthCode("214536121200-0eelqcmuaqbe0shjpk9pdhvcp4hc5adk.apps.googleusercontent.com")
 //                .requestServerAuthCode("663429823844-a2sjdhehrmeu7rij1h77ok9ij0trfeof.apps.googleusercontent.com")
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
+        googleSignInClient?.signOut()
+        AccessToken.setCurrentAccessToken(null)
+        LoginManager.getInstance()?.let {
+            it.logOut()
+        }
         signUpBtn.setOnClickListener {
             startActivity(Intent(this, SignUpActivity::class.java))
         }
@@ -185,7 +194,8 @@ class LoginActivity : BaseActivity() {
                                 PrefManager.getMyPrefs(this@LoginActivity).edit()
                                     .putString(Const.PREF_AUTH_TOKEN, "JWT " + token)
                                     .putString(Const.PREF_REFRESH_TOKEN, body.data.refreshToken)
-                                    .commit()
+                                    .putString(Const.PREF_USERNAME, body.data.username)
+                                    .apply()
                                 startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                                 finish()
                             }

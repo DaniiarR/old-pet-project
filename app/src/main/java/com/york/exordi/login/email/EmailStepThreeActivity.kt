@@ -15,6 +15,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.observe
 import com.york.exordi.R
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.models.*
 import com.york.exordi.network.RetrofitInstance
 import com.york.exordi.network.WebService
@@ -25,7 +26,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class EmailStepThreeActivity : AppCompatActivity() {
+class EmailStepThreeActivity : BaseActivity() {
 
     private val TAG = "EmailStepThreeActivity"
 
@@ -47,10 +48,6 @@ class EmailStepThreeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_email_step_three)
 
-        hideUsernameError()
-        hideEmailError()
-        hideError(passwordDrawable, passwordErrorTv)
-        hideError(confirmPasswordDrawable, confirmPasswordErrorTv)
         birthDay = intent.getStringExtra(Const.EXTRA_BIRTHDATE)
         country = intent.getStringExtra(Const.EXTRA_COUNTRY)
 
@@ -68,6 +65,11 @@ class EmailStepThreeActivity : AppCompatActivity() {
         usernameDrawable = usernameEt.background as GradientDrawable
         passwordDrawable = passwordEt.background as GradientDrawable
         confirmPasswordDrawable = confirmPasswordEt.background as GradientDrawable
+
+        hideUsernameError()
+        hideEmailError()
+        hideError(passwordDrawable, passwordErrorTv)
+        hideError(confirmPasswordDrawable, confirmPasswordErrorTv)
 
         emailEt.doOnTextChanged {text, _, _, _ ->
             if (!TextUtils.isEmpty(text)) {

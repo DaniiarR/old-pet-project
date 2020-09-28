@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">EX ORDI</string>
+    <string name="app_name">Exordi</string>
     <string name="login_welcome_back">Welcome Back!</string>
     <string name="login_sign_in">Sign in to your account</string>
     <string name="login_forgot_password">Forgot Password?</string>

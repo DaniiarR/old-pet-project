@@ -18,8 +18,6 @@ import kotlinx.android.synthetic.main.profile_bottom_sheet.*
 
 class ProfileBottomSheetDialog : BottomSheetDialogFragment() {
 
-    private val viewModel by activityViewModels<ProfileViewModel>()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,21 +30,32 @@ class ProfileBottomSheetDialog : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.let {
-            bottomSheetRatingTv.text = it.getDouble(Const.EXTRA_RATING).toString()
-            followersAmountTv.text = it.getInt(Const.EXTRA_NUMBER_OF_FOLLOWERS).toString()
-            ratingIncreaseTv.text = it.getInt(Const.EXTRA_RATING_CHANGE).toString()
-            followersIncreaseTv.text = it.getInt(Const.EXTRA_FOLLOWERS_CHANGE).toString()
-            upvotesIncreaseTv.text = it.getInt(Const.EXTRA_UPVOTES_CHANGE).toString()
+            if (it.getString(Const.EXTRA_CALLING_ACTIVITY) == Const.EXTRA_OWN_PROFILE) {
+                bottomSheetRatingTv.text = it.getDouble(Const.EXTRA_RATING).toString()
+                followersAmountTv.text = it.getInt(Const.EXTRA_NUMBER_OF_FOLLOWERS).toString()
+                ratingIncreaseTv.text = it.getInt(Const.EXTRA_RATING_CHANGE).toString()
+                followersIncreaseTv.text = it.getInt(Const.EXTRA_FOLLOWERS_CHANGE).toString()
+                upvotesIncreaseTv.text = it.getInt(Const.EXTRA_UPVOTES_CHANGE).toString()
 
-            if (it.getInt(Const.EXTRA_RATING_CHANGE) < 0) {
-                makeViewsRed(ratingIncreaseTv, ratingIncreaseIv)
+                if (it.getInt(Const.EXTRA_RATING_CHANGE) < 0) {
+                    makeViewsRed(ratingIncreaseTv, ratingIncreaseIv)
+                }
+                if (it.getInt(Const.EXTRA_FOLLOWERS_CHANGE) < 0) {
+                    makeViewsRed(followersIncreaseTv, followersIncreaseIv)
+                }
+                if (it.getInt(Const.EXTRA_UPVOTES_CHANGE) < 0) {
+                    makeViewsRed(upvotesIncreaseTv, upvotesIncreaseIv)
+                }
+            } else if (it.getString(Const.EXTRA_CALLING_ACTIVITY) == Const.EXTRA_OTHER_PROFILE) {
+                divider.visibility = View.GONE
+                constraintLayout.visibility = View.GONE
+                constraintLayout2.visibility = View.GONE
+                ratingIncreaseIv.visibility = View.GONE
+                ratingIncreaseTv.visibility = View.GONE
+
+                bottomSheetRatingTv.text = it.getDouble(Const.EXTRA_RATING, 0.0).toString()
             }
-            if (it.getInt(Const.EXTRA_FOLLOWERS_CHANGE) < 0) {
-                makeViewsRed(followersIncreaseTv, followersIncreaseIv)
-            }
-            if (it.getInt(Const.EXTRA_UPVOTES_CHANGE) < 0) {
-                makeViewsRed(upvotesIncreaseTv, upvotesIncreaseIv)
-            }
+
         }
     }
 

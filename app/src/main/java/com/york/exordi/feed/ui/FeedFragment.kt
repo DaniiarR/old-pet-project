@@ -154,17 +154,12 @@ class FeedFragment : Fragment() {
                         }
                     }
                     Const.TAG_DELETE_POST -> {
-                        showDeletePostDialog(post.id)
-                        viewModel.isDeletePostSuccessful.observe(viewLifecycleOwner) {
-                            it?.let {
-                                if (it) {
-                                    Toast.makeText(requireContext(), "Post deleted successfully", Toast.LENGTH_SHORT).show()
-                                    adapter?.notifyItemRemoved(position)
-                                } else {
-                                    Toast.makeText(requireContext(), "Could not delete this post", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                        if (post.author.username == PrefManager.getMyPrefs(requireContext().applicationContext).getString(Const.PREF_USERNAME, "")) {
+                            deletePost(post.id)
+                        } else {
+                            reportPost(post.id)
                         }
+
                     }
                 }
             }
@@ -203,6 +198,56 @@ class FeedFragment : Fragment() {
         })
     }
 
+    private fun reportPost(postId: String) {
+        showReportPostDialog(postId)
+        viewModel.isReportPostSuccessful.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    showReportPostSuccessfulDialog()
+                } else {
+                    Toast.makeText(requireContext(), "We could not report this post. Try again later.", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun showReportPostSuccessfulDialog() {
+        requireContext().makeInternetSafeRequest {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Report post")
+                .setMessage("Thank you for reporting inappropriate content. We will definitely review your complaint")
+                .setNeutralButton("OK", null)
+                .show()
+        }
+    }
+
+    private fun showReportPostDialog(postId: String) {
+        requireContext().makeInternetSafeRequest {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Report post")
+                .setMessage("Would you like to report this post?")
+                .setPositiveButton("Report") { _, _ ->
+                    viewModel.reportPost(postId)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
+    }
+
+    private fun deletePost(postId: String) {
+        showDeletePostDialog(postId)
+        viewModel.isDeletePostSuccessful.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    Toast.makeText(requireContext(), "Post deleted successfully", Toast.LENGTH_SHORT).show()
+//                                    adapter?.notifyItemRemoved(position)
+                    adapter?.notifyDataSetChanged()
+                } else {
+                    Toast.makeText(requireContext(), "Could not delete this post", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     private fun showDeletePostDialog(postId: String) {
         requireContext().makeInternetSafeRequest {
             AlertDialog.Builder(requireContext())
@@ -275,7 +320,13 @@ class FeedFragment : Fragment() {
                 override fun onItemClick(comment: CommentResult, tag: String) {
                     when (tag) {
                         Const.TAG_PROFILE -> launchOtherUserProfileActivity(comment.author.username)
-                        Const.TAG_COMMENT_DETAILS -> showDeleteCommentDialog(comment)
+                        Const.TAG_COMMENT_DETAILS -> {
+                            if (comment.author.username == PrefManager.getMyPrefs(requireContext().applicationContext).getString(Const.PREF_USERNAME, "")) {
+                                    showDeleteCommentDialog(comment)
+                            } else {
+                                reportComment(comment)
+                            }
+                        }
                     }
                 }
             })
@@ -307,6 +358,39 @@ class FeedFragment : Fragment() {
 //        if (viewModel.commentsAmount.value == 0) {
 //            itemView.feedCommentsEmptyView.visibility = View.VISIBLE
 //        }
+    }
+
+    private fun reportComment(comment: CommentResult) {
+        showReportCommentDialog(comment)
+        viewModel.isReportCommentSuccessful.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    showReportCommentSuccessfulDialog()
+                } else {
+                    Toast.makeText(requireContext(), "Could not report this comment. Try again later.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun showReportCommentSuccessfulDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Report post")
+            .setMessage("Thank you for reporting inappropriate content. We will definitely review your complaint")
+            .setNeutralButton("OK", null)
+            .show()
+    }
+    private fun showReportCommentDialog(comment: CommentResult) {
+        requireContext().makeInternetSafeRequest {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Report comment")
+                .setMessage("Would you like to report this comment?")
+                .setPositiveButton("Report") { _, _ ->
+                    viewModel.reportComment(comment.author.id)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
     }
 
     private fun showDeleteCommentDialog(comment: CommentResult) {
@@ -376,11 +460,16 @@ class FeedFragment : Fragment() {
 
     private fun launchFullscreenVideoActivity(
         videoUrl: String,
-        currentPosition: Long
+        currentPosition: Long,
+        seconds: Long,
+        postId: String
     ) {
         startActivityForResult(Intent(activity, FullscreenVideoActivity::class.java).apply {
             putExtra(Const.EXTRA_VIDEO_URL, videoUrl)
             putExtra(Const.EXTRA_PLAYBACK_POSITION, currentPosition)
+            putExtra(Const.EXTRA_FULLSCREEN_MODE, Const.EXTRA_FULLSCREEN_MODE_HLS)
+            putExtra(Const.EXTRA_SECONDS, seconds)
+            putExtra(Const.EXTRA_POST_ID, postId)
         }, RC_FULLSCREEN_ACTIVITY)
     }
 
@@ -388,12 +477,24 @@ class FeedFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RC_FULLSCREEN_ACTIVITY && resultCode == Activity.RESULT_OK) {
-            setPlaybackPosition(data!!.getLongExtra(Const.EXTRA_PLAYBACK_POSITION, 0))
+            data?.let {
+                if (!it.getBooleanExtra(Const.EXTRA_IS_WATCHED, false)) {
+                    setSeconds(it.getLongExtra(Const.EXTRA_SECONDS, 0))
+                } else {
+                    setSeconds(0)
+                }
+                setPlaybackPosition(it.getLongExtra(Const.EXTRA_PLAYBACK_POSITION, 0))
+            }
+
         }
     }
 
     private fun setPlaybackPosition(position: Long) {
         feedRv.setPlaybackPosition(position)
+    }
+
+    private fun setSeconds(seconds: Long) {
+        feedRv.setSeconds(seconds)
     }
 
     override fun onDestroy() {
@@ -422,8 +523,6 @@ class FeedFragment : Fragment() {
                     feedCategoryBtn.text = data.name
                     viewModel.selectedCategory.value = data.id
                 }
-            }
-            requireContext().makeInternetSafeRequest {
             }
             setupPosts()
             categoryAdapter.setOnItemClickListener(object : OnItemClickListener {
@@ -467,6 +566,9 @@ class FeedFragment : Fragment() {
             feedPb.visibility = View.GONE
             feedSwipeRefreshLayout.isRefreshing = false
             feedRv.setResultArrayList(it)
+            feedRv.post {
+                feedRv.smoothScrollBy(1, 0)
+            }
             adapter?.submitList(it)
         }
         viewModel.isFollowersListEmpty.observe(viewLifecycleOwner) {empty ->
@@ -481,15 +583,15 @@ class FeedFragment : Fragment() {
 //        viewModel.commentsAmount.observe(viewLifecycleOwner) {
 //            adapter.setCommentsAmount()
 //        }
-        feedRv.setOnPlayerReadyListener(object : OnPlayerReadyListener {
-            override fun onPlayerReady() {
-
+        feedRv.setOnVideoWatchedListener(object : OnVideoWatchedListener {
+            override fun onVideoWatched(postId: PostId) {
+                viewModel.watchVideo(postId)
             }
         })
         feedRv.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         feedRv.setOnFullscreenButtonClickListener(object : OnFullscreenButtonClickListener {
-            override fun onButtonClick(videoUrl: String, currentPosition: Long) {
-                launchFullscreenVideoActivity(videoUrl, currentPosition)
+            override fun onButtonClick(videoUrl: String, currentPosition: Long, seconds: Long, postId: String) {
+                launchFullscreenVideoActivity(videoUrl, currentPosition, seconds, postId)
             }
         })
         feedRv.adapter = adapter

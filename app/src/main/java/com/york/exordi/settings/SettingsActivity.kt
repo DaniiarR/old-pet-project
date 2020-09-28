@@ -7,7 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.facebook.AccessToken
+import com.facebook.FacebookSdk
 import com.facebook.login.LoginManager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.Scopes
+import com.google.android.gms.common.api.Scope
 import com.york.exordi.R
 import com.york.exordi.adapters.SettingsAdapter
 import com.york.exordi.events.EditProfileEvent
@@ -58,10 +63,18 @@ class SettingsActivity : AppCompatActivity() {
             .remove(Const.PREF_REFRESH_TOKEN)
             .remove(Const.PREF_USERNAME)
             .apply()
-        AccessToken.setCurrentAccessToken(null)
-        LoginManager.getInstance()?.let {
-            it.logOut()
+        if (AccessToken.getCurrentAccessToken() != null) {
+            LoginManager.getInstance().logOut()
         }
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestScopes(Scope(Scopes.EMAIL))
+            .requestIdToken("214536121200-0eelqcmuaqbe0shjpk9pdhvcp4hc5adk.apps.googleusercontent.com")
+            .requestServerAuthCode("214536121200-0eelqcmuaqbe0shjpk9pdhvcp4hc5adk.apps.googleusercontent.com")
+//                .requestServerAuthCode("663429823844-a2sjdhehrmeu7rij1h77ok9ij0trfeof.apps.googleusercontent.com")
+            .requestEmail()
+            .build()
+
+        GoogleSignIn.getClient(this, gso).signOut()
         startActivity(Intent(this, LoginActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         })

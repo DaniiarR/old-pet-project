@@ -9,6 +9,7 @@ import androidx.paging.PagedList
 import com.york.exordi.base.BaseViewModel
 import com.york.exordi.feed.datasource.CommentDataSourceFactory
 import com.york.exordi.models.*
+import com.york.exordi.shared.Const
 
 class SinglePostViewModel(application: Application) : BaseViewModel(application) {
 
@@ -20,7 +21,8 @@ class SinglePostViewModel(application: Application) : BaseViewModel(application)
     val isCommentSuccessful = MutableLiveData<Boolean?>(null)
     val isDeleteCommentSuccessful = MutableLiveData<Boolean?>(null)
     val isDeletePostSuccessful = MutableLiveData<Boolean?>(null)
-
+    val isReportCommentSuccessful = MutableLiveData<Boolean?>(null)
+    val isReportPostSuccessful = MutableLiveData<Boolean?>(null)
 
     var commentDataSourceLiveData: LiveData<PageKeyedDataSource<String, CommentResult>>? = null
     var commentDataSourceFactory: CommentDataSourceFactory? = null
@@ -68,6 +70,24 @@ class SinglePostViewModel(application: Application) : BaseViewModel(application)
         repository.deletePost(postId) {
             isDeletePostSuccessful.value = it
             isDeletePostSuccessful.value = null
+        }
+    }
+
+    fun watchVideo(postId: PostId) {
+        repository.watchVideo(postId)
+    }
+
+    fun reportComment(userId: Int) {
+        repository.reportPost(ReportPost(null, Const.INAPPROPRIATE_CONTENT_COMMENT, userId)) {
+            isReportCommentSuccessful.value = it
+            isReportCommentSuccessful.value = null
+        }
+    }
+
+    fun reportPost(postId: String) {
+        repository.reportPost(ReportPost(postId, Const.INAPPROPRIATE_CONTENT_POST, null)) {
+            isReportPostSuccessful.value = it
+            isReportPostSuccessful.value = null
         }
     }
 }

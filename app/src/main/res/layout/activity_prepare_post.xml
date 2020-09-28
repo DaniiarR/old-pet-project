@@ -58,6 +58,31 @@
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <ProgressBar
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        android:indeterminate="false"
+        android:max="100"
+        android:progressTint="@color/colorPrimary"
+        android:id="@+id/fileUploadPb"
+        app:layout_constraintTop_toBottomOf="@id/prepareBarLayout"/>
+
+    <ProgressBar
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:indeterminate="true"
+        android:visibility="gone"
+        android:indeterminateTint="@color/colorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/prepareBarLayout"
+        android:id="@+id/indeterminateCompressPb"/>
+
     <com.makeramen.roundedimageview.RoundedImageView
         android:layout_width="150dp"
         android:layout_height="150dp"

@@ -32,6 +32,17 @@ class Const {
         const val EXTRA_ACTIVITY_MODE = "mode"
         const val EXTRA_MODE_FOLLOWERS = "Followers"
         const val EXTRA_MODE_FOLLOWINGS = "Followings"
+        const val EXTRA_FILE_URI = "uri"
+        const val EXTRA_REQUEST_CODE = "requestCode"
+        const val EXTRA_CALLING_ACTIVITY = "callingActivity"
+        const val EXTRA_OWN_PROFILE = "own"
+        const val EXTRA_OTHER_PROFILE = "other"
+        const val EXTRA_VIDEO_DURATION = "duration"
+        const val EXTRA_FULLSCREEN_MODE = "fullscreenMode"
+        const val EXTRA_FULLSCREEN_MODE_HLS = "hls"
+        const val EXTRA_FULLSCREEN_MODE_LOCAL = "local"
+        const val EXTRA_SECONDS = "seconds"
+        const val EXTRA_IS_WATCHED = "isWatched"
 
         /** Authentication token */
         const val PREF_AUTH_TOKEN = "authToken"
@@ -48,5 +59,9 @@ class Const {
         const val TAG_UNFOLLOW = "unfollow"
         const val TAG_WHOLE_VIEW = "whole"
         const val TAG_DELETE_POST = "deletePost"
+
+        /** Other */
+        const val INAPPROPRIATE_CONTENT_POST = "This post contains inappropriate content"
+        const val INAPPROPRIATE_CONTENT_COMMENT = "This comment contains inappropriate content"
     }
 }

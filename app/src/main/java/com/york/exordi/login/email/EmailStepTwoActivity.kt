@@ -8,11 +8,12 @@ import android.text.TextUtils
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import com.york.exordi.R
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.shared.Const
 import kotlinx.android.synthetic.main.activity_email_step_two.*
 import java.util.*
 
-class EmailStepTwoActivity : AppCompatActivity() {
+class EmailStepTwoActivity : BaseActivity() {
 
     private lateinit var birthday: String
     private lateinit var countries: Array<String>

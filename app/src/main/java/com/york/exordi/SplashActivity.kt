@@ -4,11 +4,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.login.LoginActivity
 import com.york.exordi.shared.Const
 import com.york.exordi.shared.PrefManager
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)

@@ -11,6 +11,7 @@ import com.york.exordi.feed.viewmodel.FollowersViewModel
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.york.exordi.adapters.FollowerAdapter
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.events.FollowUnfollowEvent
 import com.york.exordi.models.FollowerResult
 import com.york.exordi.shared.*
@@ -18,7 +19,7 @@ import kotlinx.android.synthetic.main.activity_followers_or_followings.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
-class FollowersOrFollowingsActivity : AppCompatActivity() {
+class FollowersOrFollowingsActivity : BaseActivity() {
 
     private val viewModel by viewModels<FollowersViewModel>()
 

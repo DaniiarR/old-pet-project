@@ -14,8 +14,8 @@ import javax.net.ssl.SSLSession
 class RetrofitInstance {
 
     companion object {
-        private const val BASE_URL = "https://exordi.dns-cloud.net/api/"
-
+//        private const val BASE_URL = "https://exordi.dns-cloud.net/api/"
+    private const val BASE_URL = "https://exordi.xyz/api/"
         @Volatile
         private var okHttpClient: OkHttpClient? = null
         @Volatile
@@ -51,7 +51,6 @@ class RetrofitInstance {
     class SimpleInstance {
 
         companion object {
-            private const val BASE_URL = "https://exordi.dns-cloud.net/api/"
             @Volatile
             private var retrofit: Retrofit? = null
 

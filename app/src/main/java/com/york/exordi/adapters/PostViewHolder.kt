@@ -31,6 +31,7 @@ class PostViewHolder : RecyclerView.ViewHolder {
     lateinit var description: TextView
     lateinit var deletePostBtn: ImageButton
     lateinit var postedOn: TextView
+    lateinit var numberOfViews: TextView
     lateinit var requestManager: RequestManager
     lateinit var photoProgressBar: CircularProgressDrawable
     lateinit var commentsRv: RecyclerView
@@ -54,6 +55,7 @@ class PostViewHolder : RecyclerView.ViewHolder {
         upvoteButton.tag = Const.TAG_UPVOTE
         commentsButton = itemView.findViewById(R.id.feedCommentsBtn)
         commentsButton.tag = Const.TAG_COMMENTS
+        numberOfViews = itemView.findViewById(R.id.feedNumberOfViewsTv)
         commentsAmount = itemView.findViewById(R.id.feedCommentsTv)
         description = itemView.findViewById(R.id.feedDescriptionTv)
         photoProgressBar = CircularProgressDrawable(itemView.context).apply {
@@ -76,11 +78,12 @@ class PostViewHolder : RecyclerView.ViewHolder {
                 } else {
                     profilePicture.setImageResource(R.drawable.ic_profile)
                 }
+                deletePostBtn.setOnClickListener { clickListener?.onItemClick(position, post, it.tag.toString(), null) }
                 if (it.author.username == PrefManager.getMyPrefs(itemView.context).getString(Const.PREF_USERNAME, "")) {
-                    deletePostBtn.visibility = View.VISIBLE
-                    deletePostBtn.setOnClickListener { clickListener?.onItemClick(position, post, it.tag.toString(), null) }
+                    numberOfViews.visibility = View.VISIBLE
+                    numberOfViews.text = "${it.numberOfViews.toPlainString()} views"
                 } else {
-                    deletePostBtn.visibility = View.GONE
+                    numberOfViews.visibility = View.GONE
                 }
                 profilePicture.setOnClickListener { clickListener?.onItemClick(position, post, it.tag.toString(), null) }
                 username.setOnClickListener { clickListener?.onItemClick(position, post, it.tag.toString(), null) }
@@ -97,7 +100,7 @@ class PostViewHolder : RecyclerView.ViewHolder {
                 if (it.files[0].type == "image") {
                     Glide.with(itemView.context).load(it.files[0].file).placeholder(photoProgressBar).into(postImageView)
                 } else {
-
+                    Glide.with(itemView.context).load(it.files[0].thumb).into(postImageView)
                 }
                 commentsAmount.text = "${it.commentsAmount} comments"
                 description.text = it.text ?: ""

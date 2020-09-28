@@ -2,6 +2,7 @@ package com.york.exordi.models
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
+import java.math.BigDecimal
 
 class Profile(
     val data: ProfileData
@@ -57,7 +58,9 @@ class Result(
     @SerializedName("upvoted_by_req_user")
     var upvotedByUser: Boolean,
     val author: PostAuthor,
-    var isCurrentUserPost: Boolean = false
+    var isCurrentUserPost: Boolean = false,
+    @SerializedName("number_of_watches")
+    val numberOfViews: BigDecimal
 ) : Serializable
 
 class PostComment(
@@ -66,7 +69,8 @@ class PostComment(
 
 class PostFile(
     val file: String,
-    val type: String
+    val type: String,
+    val thumb: String?
 ) : Serializable
 
 class PostCategory(
@@ -163,4 +167,11 @@ class FollowerResult(
     val photo: String?,
     @SerializedName("followed_by_req_user")
     var isFollowedByUser: Boolean
+)
+
+class ReportPost(
+    val post: String?,
+    val description: String,
+    @SerializedName("accused_user")
+    val accusedUser: Int?
 )

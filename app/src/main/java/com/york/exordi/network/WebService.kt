@@ -51,6 +51,9 @@ interface WebService {
     fun getAllPosts(@Header(Const.AUTH) authToken: String, @Query("category") category: Int, @Query("order") order: String): Call<Post>
 
     @GET
+    fun getAllPostsFollowing(@Header(Const.AUTH) authToken: String, @Url url: String): Call<Post>
+
+    @GET
     fun getAdjacentPosts(@Header(Const.AUTH) authToken: String, @Url url: String): Call<Post>
 
     @GET("category")
@@ -95,6 +98,12 @@ interface WebService {
 
     @DELETE("post/{id}/")
     fun deletePost(@Header(Const.AUTH) authToken: String, @Path("id") postId: String): Call<ResponseMessage>
+
+    @POST("post/watch/")
+    fun watchVideo(@Header(Const.AUTH) authToken: String, @Body postId: PostId): Call<ResponseMessage>
+
+    @POST("user/report/")
+    fun reportPost(@Header(Const.AUTH) authToken: String, @Body post: ReportPost): Call<ResponseMessage>
 
 }
 

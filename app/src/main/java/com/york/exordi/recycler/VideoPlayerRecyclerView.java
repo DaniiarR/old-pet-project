@@ -3,6 +3,8 @@ package com.york.exordi.recycler;
 import android.content.Context;
 import android.graphics.Point;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -20,46 +22,35 @@ import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
-import com.google.android.exoplayer2.ExoPlaybackException;
+import com.github.vkay94.dtpv.DoubleTapPlayerView;
+import com.github.vkay94.dtpv.youtube.YouTubeOverlay;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.LoadControl;
-import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.york.exordi.R;
 import com.york.exordi.adapters.PostViewHolder;
+import com.york.exordi.models.PostId;
 import com.york.exordi.models.Result;
 import com.york.exordi.shared.OnFullscreenButtonClickListener;
 import com.york.exordi.shared.OnPlayerReadyListener;
+import com.york.exordi.shared.OnVideoWatchedListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
 
 public class VideoPlayerRecyclerView extends RecyclerView {
 
@@ -69,7 +60,7 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 
     private SnapHelper snapHelper;
     // ui
-    private ImageView postPhoto, volumeControl;
+    private ImageView thumbnail, volumeControl;
     private ProgressBar progressBar;
     private View viewHolderParent;
     private FrameLayout frameLayout;
@@ -84,13 +75,19 @@ public class VideoPlayerRecyclerView extends RecyclerView {
     private Context context;
     private int playPosition = -1;
     private boolean isVideoViewAdded;
+    private long videoDuration;
+    private long seconds = 0;
     private RequestManager requestManager;
+    private final boolean[] isScrolled = {false};
 
     // controlling playback state
     private VolumeState volumeState;
     private OnPlayerReadyListener onPlayerReadyListener;
 
     private OnFullscreenButtonClickListener listener;
+    private OnVideoWatchedListener onVideoWatchedListener;
+
+
 
     public VideoPlayerRecyclerView(@NonNull Context context) {
         super(context);
@@ -115,8 +112,11 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 
         videoSurfaceView = new PlayerView(this.context);
         videoSurfaceView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
+//        videoSurfaceView.setControllerAutoShow(false);
         fullscreenButton = videoSurfaceView.findViewById(R.id.exo_fullscreen);
+
         videoSurfaceView.findViewById(R.id.exoTimelineControls).setVisibility(View.GONE);
+
 
         BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
 //        TrackSelection.Factory videoTrackSelectionFactory =
@@ -127,11 +127,9 @@ public class VideoPlayerRecyclerView extends RecyclerView {
         // 2. Create the player
         videoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
         // Bind the player to the view.
-        videoSurfaceView.setUseController(false);
+//        videoSurfaceView.setUseController(false);
         videoSurfaceView.setPlayer(videoPlayer);
         setVolumeControl(VolumeState.ON);
-
-        final boolean[] isScrolled = {false};
         addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
@@ -140,9 +138,9 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     Log.d(TAG, "onScrollStateChanged: called.");
-//                    if(thumbnail != null){ // show the old thumbnail
-//                        thumbnail.setVisibility(VISIBLE);
-//                    }
+                    if(thumbnail != null){ // show the old thumbnail
+                        thumbnail.setVisibility(VISIBLE);
+                    }
 
                     // There's a special case when the end of the list has been reached.
                     // Need to handle that with this bit of logic
@@ -161,18 +159,19 @@ public class VideoPlayerRecyclerView extends RecyclerView {
                 super.onScrolled(recyclerView, dx, dy);
                 // this bit of logic is used when the first item is video
                 // since @onScrollStateChanged won't get called to play it
-//                if (!isScrolled[0]) {
-//                    if(!recyclerView.canScrollHorizontally(1)){
-//                        playVideo(true);
-//                    }
-//                    else{
-//                        playVideo(false);
-//                    }
-//                    isScrolled[0] = true;
-//                }
+                if (!isScrolled[0]) {
+                    if (!resultArrayList.isEmpty()) {
+                        if(!recyclerView.canScrollHorizontally(1)){
+                            playVideo(true);
+                        }
+                        else {
+                            playVideo(false);
+                        }
+                        isScrolled[0] = true;
+                    }
+                }
             }
         });
-
         addOnChildAttachStateChangeListener(new OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(View view) {
@@ -188,7 +187,31 @@ public class VideoPlayerRecyclerView extends RecyclerView {
             }
         });
 
+        Handler handler = new Handler(Looper.getMainLooper());
         videoPlayer.addListener(new Player.EventListener() {
+
+            @Override
+            public void onIsPlayingChanged(boolean isPlaying) {
+                if (isPlaying) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e(TAG, "onIsPlayingChanged: " + "handler started:" + seconds);
+                            if (++seconds >= videoDuration / 1000 / 2) {
+                                View visibleView = snapHelper.findSnapView(getLayoutManager());
+                                int position = getLayoutManager().getPosition(visibleView);
+                                onVideoWatchedListener.onVideoWatched(new PostId(resultArrayList.get(position).getId()));
+                            } else {
+                                handler.postDelayed(this, 1000);
+                            }
+                        }
+                    }
+                    );
+                } else {
+                    Log.e(TAG, "onIsPlayingChanged: " + "handler stopped" );
+                    handler.removeCallbacksAndMessages(null);                }
+            }
+
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
                 switch (playbackState) {
@@ -203,6 +226,7 @@ public class VideoPlayerRecyclerView extends RecyclerView {
                     case Player.STATE_ENDED:
                         Log.d(TAG, "onPlayerStateChanged: Video ended.");
                         videoPlayer.seekTo(0);
+                        seconds = 0;
                         break;
                     case Player.STATE_IDLE:
 
@@ -211,18 +235,23 @@ public class VideoPlayerRecyclerView extends RecyclerView {
                         Log.e(TAG, "onPlayerStateChanged: Ready to play.");
                         // this logic is required to check if the current visible post item is video
                         // because there was a bug when a video from previous post starts playing in the current post
-                        View visibleView = snapHelper.findSnapView(getLayoutManager());
-                        int position = getLayoutManager().getPosition(visibleView);
+
                         boolean isVideo = false;
-                        if (resultArrayList.get(position).getFiles().get(0).getType().equals("video")) {
-                            isVideo = true;
+                        if (resultArrayList != null && !resultArrayList.isEmpty()) {
+                            View visibleView = snapHelper.findSnapView(getLayoutManager());
+                            int position = getLayoutManager().getPosition(visibleView);
+                            if (resultArrayList.get(position).getFiles().get(0).getType().equals("video")) {
+                                isVideo = true;
+                            }
                         }
 
+                        if (progressBar != null) {
+                            progressBar.setVisibility(GONE);
+                        }
                         if(!isVideoViewAdded && isVideo){
-                            if (progressBar != null) {
-                                progressBar.setVisibility(GONE);
-                            }
-                            postPhoto.setVisibility(View.INVISIBLE);
+                            videoDuration = videoPlayer.getDuration();
+                            thumbnail.setVisibility(View.INVISIBLE);
+                            seconds = 0;
                             addVideoView();
                         }
                         break;
@@ -231,7 +260,6 @@ public class VideoPlayerRecyclerView extends RecyclerView {
                 }
             }
         });
-
     }
 
     public void setOnPlayerReadyListener(OnPlayerReadyListener listener) {
@@ -304,7 +332,7 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 //        volumeControl = holder.volumeControl;
         viewHolderParent = holder.itemView;
         requestManager = holder.requestManager;
-        postPhoto = holder.postImageView;
+        thumbnail = holder.postImageView;
         frameLayout = holder.itemView.findViewById(R.id.feedListItemFrameLayout);
 
         videoSurfaceView.setPlayer(videoPlayer);
@@ -316,11 +344,13 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 //                context, Util.getUserAgent(context, context.getString(R.string.app_name)));
         DataSource.Factory dataSourceFactory =
                 new DefaultHttpDataSourceFactory(Util.getUserAgent(context, context.getString(R.string.app_name)), new DefaultBandwidthMeter(), DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS, DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, true);
-        if (resultArrayList.get(targetPosition).getFiles().get(0).getType().equals("video")) {
+
+        if (!resultArrayList.isEmpty() && resultArrayList.get(targetPosition).getFiles().get(0).getType().equals("video")) {
+            final String postId = resultArrayList.get(targetPosition).getId();
             String mediaUrl = resultArrayList.get(targetPosition).getFiles().get(0).getFile();
 //            String mediaUrl = "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.mp4";
             fullscreenButton.setOnClickListener(v -> {
-                listener.onButtonClick(mediaUrl, videoPlayer.getCurrentPosition());
+                listener.onButtonClick(mediaUrl, videoPlayer.getCurrentPosition(), seconds, postId);
                 videoPlayer.setPlayWhenReady(false);
             });
             if (mediaUrl != null) {
@@ -395,7 +425,7 @@ public class VideoPlayerRecyclerView extends RecyclerView {
         videoSurfaceView.setVisibility(VISIBLE);
         videoSurfaceView.setAlpha(1);
 //        postPhoto.setVisibility(View.INVISIBLE);
-//        thumbnail.setVisibility(GONE);
+        thumbnail.setVisibility(INVISIBLE);
     }
 
     private void resetVideoView(){
@@ -470,6 +500,8 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 
     public void setResultArrayList(List<Result> resultArrayList){
         this.resultArrayList = resultArrayList;
+        isScrolled[0] = false;
+        smoothScrollBy(1, 0);
     }
 
     public void setPlaybackPosition(long playbackPosition) {
@@ -477,6 +509,14 @@ public class VideoPlayerRecyclerView extends RecyclerView {
             videoPlayer.seekTo(playbackPosition);
             videoPlayer.setPlayWhenReady(true);
         }
+    }
+
+    public void setSeconds(long seconds) {
+        this.seconds = seconds;
+    }
+
+    public void setOnVideoWatchedListener(OnVideoWatchedListener onVideoWatchedListener) {
+        this.onVideoWatchedListener = onVideoWatchedListener;
     }
 
 }

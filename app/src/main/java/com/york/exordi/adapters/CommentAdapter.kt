@@ -62,16 +62,17 @@ class CommentAdapter(
                     commentsPublicationDateTv.text = it.postedOn.toHoursAgo()
                     commentsCommentTv.text = it.text
                 }
-                setupDetailButton(comment)
+                itemView.commentsDetailsBtn.visibility = View.VISIBLE
+                itemView.commentsDetailsBtn.tag = Const.TAG_COMMENT_DETAILS
+                itemView.commentsDetailsBtn.setOnClickListener { clickListener.onItemClick(comment, itemView.commentsDetailsBtn.tag.toString()) }
+//                setupDetailButton(comment)
 
             }
         }
 
         fun setupDetailButton(comment: CommentResult) {
             if (isCurrentUserPost || comment.author.username == username) {
-                itemView.commentsDetailsBtn.visibility = View.VISIBLE
-                itemView.commentsDetailsBtn.tag = Const.TAG_COMMENT_DETAILS
-                itemView.commentsDetailsBtn.setOnClickListener { clickListener.onItemClick(comment, itemView.commentsDetailsBtn.tag.toString()) }
+
             } else {
 
             }

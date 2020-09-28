@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.york.exordi.R
 import com.york.exordi.adapters.UserPostAdapter
+import com.york.exordi.base.BaseActivity
 import com.york.exordi.events.DeletePostEvent
 import com.york.exordi.events.FollowUnfollowEvent
 import com.york.exordi.events.UpvoteEvent
@@ -22,10 +23,11 @@ import com.york.exordi.models.OtherProfileData
 import com.york.exordi.models.Result
 import com.york.exordi.shared.*
 import kotlinx.android.synthetic.main.activity_other_user_profile.*
+import kotlinx.android.synthetic.main.activity_profile.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
-class OtherUserProfileActivity : AppCompatActivity() {
+class OtherUserProfileActivity : BaseActivity() {
 
     companion object {
         const val RC_SINGLE_POST = 100
@@ -49,6 +51,9 @@ class OtherUserProfileActivity : AppCompatActivity() {
         otherUserFollowingsLayout.setOnClickListener {
             startFollowingsActivity()
         }
+        otherRatingView.setOnClickListener {
+            showBottomSheetDialog()
+        }
     }
 
     private fun startFollowingsActivity() {
@@ -57,6 +62,17 @@ class OtherUserProfileActivity : AppCompatActivity() {
             putExtra(Const.EXTRA_ACTIVITY_MODE, Const.EXTRA_MODE_FOLLOWINGS)
             putExtra(Const.EXTRA_USERNAME, viewModel.profile.value?.username)
         })
+    }
+
+    private fun showBottomSheetDialog() {
+        val bottomSheetDialog =
+            ProfileBottomSheetDialog().apply {
+                arguments = Bundle().apply {
+                    viewModel.profile.value?.rating?.let { putDouble(Const.EXTRA_RATING, it) }
+                    putString(Const.EXTRA_CALLING_ACTIVITY, Const.EXTRA_OTHER_PROFILE)
+                }
+            }
+        bottomSheetDialog.show(supportFragmentManager, "bottom_sheet_dialog")
     }
 
     private fun setupViews(profile: OtherProfileData?) {
@@ -88,6 +104,15 @@ class OtherUserProfileActivity : AppCompatActivity() {
             otherProfilePostsRv.adapter = adapter
             viewModel.getPosts()?.observe(this) {
                 adapter.submitList(it)
+            }
+            viewModel.isResultListEmpty.observe(this) {
+                if (it) {
+                    otherProfilePostsRv.visibility = View.GONE
+                    otherProfileEmptyView.visibility = View.VISIBLE
+                } else {
+                    otherProfilePostsRv.visibility = View.VISIBLE
+                    otherProfileEmptyView.visibility = View.GONE
+                }
             }
         }
     }
